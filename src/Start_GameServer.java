@@ -2,7 +2,7 @@ import ECS.Classes.PlayerGameScore;
 import ECS.Classes.Vector3;
 import ECS.Entity.CharacterEntity;
 import RMI.RMI_NettyServer;
-import com.google.gson.*; 
+import com.google.gson.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,7 +17,7 @@ public class Start_GameServer {
         if(!testMode){
 
             //서버 객체 생성.
-            RMI_NettyServer gameserver = new RMI_NettyServer(); //생성자로 기본 bind port값 지정 가능.
+            RMI_NettyServer gameserver = new RMI_NettyServer(); //생성자로 기본 bind port값 지정 가능. 
 
             //Java 옵션 인자값 지정.
             //서버 시작.
