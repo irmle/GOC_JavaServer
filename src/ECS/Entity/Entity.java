@@ -1,0 +1,85 @@
+package ECS.Entity;
+
+import ECS.Classes.Type.AttributeType;
+import ECS.Classes.Type.Team;
+import ECS.Classes.Vector3;
+import ECS.Components.PositionComponent;
+
+/**
+ * 업뎃날짜 : 2002 02 04 화 권령희
+ * 업뎃내용 : 속성 변수 추가
+ * 업뎃할 내용 :
+ *      아 생성자 엉망이네... 얘네도 스킬때 처럼 좀 정리할 필요 있을듯..
+ */
+public class Entity implements Cloneable {
+
+    public int entityID;
+    public int team;
+    public PositionComponent positionComponent;
+
+    public int attribute;
+
+
+    public Entity() {
+        entityID = 0;
+        positionComponent = new PositionComponent(new Vector3(0, 0, 0));
+
+        team = 0;
+        attribute = AttributeType.NONE;
+    }
+
+    public Entity(int entityID) {
+        this.entityID = entityID;
+
+        positionComponent = new PositionComponent(new Vector3(0, 0, 0));
+        team = 0;
+        attribute = AttributeType.NONE;
+    }
+
+    public Entity(PositionComponent positionComponent) {
+
+        entityID = 0;
+        this.positionComponent = positionComponent;
+
+        team = 0;
+        attribute = AttributeType.NONE;
+    }
+
+    public Entity(int entityID, int team, PositionComponent positionComponent, int attribute) {
+        this.entityID = entityID;
+        this.team = team;
+        this.positionComponent = positionComponent;
+        this.attribute = attribute;
+    }
+
+    public Entity(int entityID, int team, int attribute) {
+        this.entityID = entityID;
+        this.team = team;
+        this.attribute = attribute;
+
+        positionComponent = new PositionComponent(new Vector3(0, 0, 0));
+    }
+
+    public Entity(int entityID, int attribute) {
+        this.entityID = entityID;
+        this.attribute = attribute;
+
+        team = 0;
+        positionComponent = new PositionComponent(new Vector3(0, 0, 0));
+    }
+
+    @Override
+    public Entity clone() {
+        Entity entity = null;
+        try{
+            entity = (Entity) super.clone();
+
+            entity.positionComponent = (PositionComponent) positionComponent.clone();
+
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        return entity;
+    }
+
+}
