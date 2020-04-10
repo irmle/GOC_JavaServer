@@ -1,5 +1,7 @@
 package ECS.Classes;
 
+import java.util.ArrayList;
+
 /**
  * 작 성 자 : 권령희
  * 작성날짜 : 2019 12 14 토요일
@@ -31,7 +33,9 @@ public class Reward implements Cloneable{
     public int rewardGold;
 
     /** 2020 02 28 */
-    public BuffAction rewardBuff;
+    //public BuffAction rewardBuff;
+
+    public ArrayList<BuffAction> rewardBuff;
 
 
 
@@ -41,10 +45,11 @@ public class Reward implements Cloneable{
         this.rewardExp = rewardExp;
         this.rewardGold = rewardGold;
 
-        rewardBuff = new BuffAction();
+        //rewardBuff = new BuffAction();
+        rewardBuff = new ArrayList<>();
     }
 
-    public Reward(int rewardType, float rewardExp, int rewardGold, BuffAction rewardBuff) {
+    public Reward(int rewardType, float rewardExp, int rewardGold, ArrayList<BuffAction> rewardBuff) {
         this.rewardType = rewardType;
         this.rewardExp = rewardExp;
         this.rewardGold = rewardGold;
@@ -60,6 +65,11 @@ public class Reward implements Cloneable{
 
         try {
             reward = (Reward) super.clone();
+
+            reward.rewardBuff = new ArrayList<>();
+            for(int i=0; i<rewardBuff.size(); i++){
+                reward.rewardBuff.add( (BuffAction) rewardBuff.get(i).clone());
+            }
 
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);

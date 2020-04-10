@@ -1,15 +1,11 @@
 package ECS.System;
 
 import ECS.ActionQueue.Item.ActionUseItem;
-import ECS.Classes.BuffAction;
-import ECS.Classes.ConditionFloatParam;
-import ECS.Classes.ItemInfo;
-import ECS.Classes.ItemSlot;
-import ECS.Classes.Type.ConditionType;
-import ECS.Classes.Type.ItemSlotState;
-import ECS.Classes.Type.ItemType;
-import ECS.Classes.Type.NotificationType;
+import ECS.Classes.*;
+import ECS.Classes.Type.*;
+import ECS.Entity.AttackTurretEntity;
 import ECS.Entity.CharacterEntity;
+import ECS.Factory.SkillFactory;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 import org.ietf.jgss.GSSManager;
@@ -31,9 +27,16 @@ public class ItemSlotSystem {
     /* 멤버 변수 */
     WorldMap worldMap;
 
+    /* 아이템 타입별 효과 목록 */
+    public static HashMap<Integer, HashMap<String, BuffInfo>> itemEffectInfoLIST;
+
     /* 생성자 */
     public ItemSlotSystem(WorldMap worldMap) {
+
         this.worldMap = worldMap;
+
+
+        itemEffectInfoLIST = GameDataManager.effectInfoList.get(EffectCauseType.ITEM);
     }
 
     /* 매서드 */
@@ -237,15 +240,15 @@ public class ItemSlotSystem {
 
                 System.out.println("체력회복 포션의 효과를 적용합니다.");
 
-                // 이렇게 하는게 맞을라나 모르겠네..
-                // 5초동안 체력 100 회복이니까. 총 5초에 걸쳐서, 1초마다 20씩 회복되도록 하고싶은데
-                // 쿨타임을 1로 주는게 맞나? 아니면, 틱레이트 고려해서 0.9f 이렇게 줘야하는건지..
-                // .. 는 테스트 해봐야 알 듯?
-                itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 1f);
+                /*itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 1f);
                 itemBuff.itemType = ItemType.HP_POTION;
 
                 ConditionFloatParam hpBuff = new ConditionFloatParam(ConditionType.hpRecoveryAmount, 20);
                 itemBuff.floatParam.add(hpBuff);
+                */
+
+                itemBuff = createItemEffect(itemType, "체력회복", user.entityID);
+
 
                 break;
 
@@ -253,11 +256,13 @@ public class ItemSlotSystem {
 
                 System.out.println("마력회복 포션의 효과를 적용합니다.");
 
-                itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 1f);
+                /*itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 1f);
                 itemBuff.itemType = ItemType.MP_POTION;
 
                 ConditionFloatParam mpBuff = new ConditionFloatParam(ConditionType.mpRecoveryAmount, 20);
-                itemBuff.floatParam.add(mpBuff);
+                itemBuff.floatParam.add(mpBuff);*/
+
+                itemBuff = createItemEffect(itemType, "마력회복", user.entityID);
 
                 break;
 
@@ -265,11 +270,13 @@ public class ItemSlotSystem {
 
                 System.out.println("이동속도 증가 포션의 효과를 적용합니다.");
 
-                itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 0f);
+                /*itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 0f);
                 itemBuff.itemType = ItemType.SPEED_POTION;
 
                 ConditionFloatParam speedBuff = new ConditionFloatParam(ConditionType.moveSpeedRate, 250f);
-                itemBuff.floatParam.add(speedBuff);
+                itemBuff.floatParam.add(speedBuff);*/
+
+                itemBuff = createItemEffect(itemType, "이동속도증가", user.entityID);
 
                 break;
 
@@ -277,11 +284,13 @@ public class ItemSlotSystem {
 
                 System.out.println("방어력 증가 포션의 효과를 적용합니다.");
 
-                itemBuff = new BuffAction(user.entityID, user.entityID, 10f, 0f, 0f);
+                /*itemBuff = new BuffAction(user.entityID, user.entityID, 10f, 0f, 0f);
                 itemBuff.itemType = ItemType.DEFENSE_POTION;
 
                 ConditionFloatParam defenseBuff = new ConditionFloatParam(ConditionType.defenseRate, 10f);
-                itemBuff.floatParam.add(defenseBuff);
+                itemBuff.floatParam.add(defenseBuff);*/
+
+                itemBuff = createItemEffect(itemType, "방어력증가", user.entityID);
 
                 break;
 
@@ -289,11 +298,13 @@ public class ItemSlotSystem {
 
                 System.out.println("공격력 증가 포션의 효과를 적용합니다.");
 
-                itemBuff = new BuffAction(user.entityID, user.entityID, 10f, 0f, 0f);
+                /*itemBuff = new BuffAction(user.entityID, user.entityID, 10f, 0f, 0f);
                 itemBuff.itemType = ItemType.ATTACK_POTION;
 
                 ConditionFloatParam attackBuff = new ConditionFloatParam(ConditionType.attackDamageRate, 20f);
-                itemBuff.floatParam.add(attackBuff);
+                itemBuff.floatParam.add(attackBuff);*/
+
+                itemBuff = createItemEffect(itemType, "공격속도증가", user.entityID);
 
                 break;
         }
@@ -302,4 +313,192 @@ public class ItemSlotSystem {
         user.buffActionHistoryComponent.conditionHistory.add(itemBuff);
 
     }
+
+
+
+
+
+    /**
+     *      Aim : 스킬에서 적용하고자 하는 효과를 생성할 때 호출하면 된다!
+     *    Input :
+     *   Output :
+     *  Process :
+     *
+     */
+    public static BuffAction createItemEffect(int itemType, String effectName, int effectEntityID){
+
+        /** 템 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
+        BuffInfo effectInfo = itemEffectInfoLIST.get(itemType).get(effectName);
+
+        /** 효과의 지속시간을 구한다 (필요하다면) */
+        /*
+         * 조건 : 효과의 적중 타입이 '지속'이면서 효과정보 객체에 들어있는 지속시간 값이 0 이하인 경우
+         *
+         */
+        float effectDurationTime;
+        boolean needToGetDurationTime =
+                (( effectInfo.effectAppicationType == EffectApplicationType.지속)
+                        && ( effectInfo.effectDurationTime <= 0f)) ? true : false;
+        if(needToGetDurationTime){
+
+            effectDurationTime = effectInfo.effectDurationTime;
+        }
+        else{
+
+            /* 지속시간 값을 별도로 구해 줄 필요가 없다면, 기존에 들어있는 값을 가져와 그대로 적용하면 된다. */
+            effectDurationTime = effectInfo.effectDurationTime;
+        }
+
+
+        /* 별도 예외처리가 필요하다면?? */
+
+
+        /** 효과 객체를 생성한다 (틀) */
+        // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
+        BuffAction newEffect = new BuffAction(itemType, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
+        newEffect.itemType = itemType;
+
+        /** 효과 내용을 채운다 */
+        // BuffAction 객체에, 실제 효과를 부여하기 위한 처리를 한다. 경우에 따라, 스킬 시전자 정보 혹은 스킬레벨 정보를 참조해야 한다.
+
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectName);
+        boolean isConditionEffect = checkIsConditionEffect(effectType);
+        if(isConditionEffect){
+
+            /* 상태이상을 결정하는 효과 타입인 경우, boolParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionBoolParam conditionEffect = new ConditionBoolParam(effectType, true);
+            newEffect.addEffect(conditionEffect);
+        }
+        else{
+
+            /* 기존 스탯 등에 영향을 미치는 버프 OR 디버프 효과 타입인 경우, floatParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionFloatParam valueEffect = createEffectParam(itemType, effectInfo);
+            newEffect.addEffect(valueEffect);
+
+        }
+
+        // 나중에.. 근거리 공격용? 매서드도 하나 만들자..
+        newEffect.unitID = effectEntityID;
+        newEffect.skillUserID = newEffect.unitID;
+
+        /* Output */
+        return newEffect;
+
+    }
+
+
+    /**
+     * 넘겨받은 효과가 상태 이상 타입의 효과인지 여부를 판단하는 매서드
+     * @return
+     */
+    public static boolean checkIsConditionEffect(int effectType){
+
+        boolean isConditionEffect = false;
+
+        switch (effectType){
+
+            case ConditionType.isDisableMove :
+            case ConditionType.isDisableAttack :
+            case ConditionType.isDisableSkill :
+            case ConditionType.isDisableItem :
+            case ConditionType.isDamageImmunity :
+            case ConditionType.isUnTargetable :
+
+            case ConditionType.isAirborneImmunity :
+            case ConditionType.isAirborne :
+            case ConditionType.isGarrenQApplied :
+            case ConditionType.isTargetingInvincible :
+            case ConditionType.isArcherFireActivated :
+            case ConditionType.isStunned :
+            case ConditionType.isArcherHeadShotActivated :
+            case ConditionType.isFreezing :
+            case ConditionType.isSlow :
+            case ConditionType.isSilence :
+            case ConditionType.isBlind :
+            case ConditionType.isSightBlocked :
+            case ConditionType.isGrounding :
+            case ConditionType.isPolymorph :
+            case ConditionType.isDisarmed :
+            case ConditionType.isSnare :
+            case ConditionType.isKnockedAirborne :
+            case ConditionType.isKnockback :
+            case ConditionType.isSuspension :
+            case ConditionType.isTaunt :
+            case ConditionType.isCharm :
+            case ConditionType.isFlee :
+            case ConditionType.isSuppressed :
+            case ConditionType.isSleep :
+            case ConditionType.isReturning :
+
+                isConditionEffect = true;
+                break;
+
+            default:
+                isConditionEffect = false;
+        }
+
+        return isConditionEffect;
+    }
+
+    /**
+     * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
+     *
+     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
+     */
+    public static ConditionFloatParam createEffectParam(int itemType, BuffInfo effectInfo){
+
+        /* Input */
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectInfo.effectTypeName);
+        String effectValueStr = effectInfo.effectValue;
+
+        /* Output */
+        float effectValue = 0f;
+        ConditionFloatParam valueEffect;
+
+        /* 효과값을 결정한다 */
+        switch (effectValueStr){
+
+            default :
+
+                effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
+
+                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                break;
+
+        }
+
+        /* 예외처리
+            ; 일반 '데미지' 타입인 경우, 해당 공격이 평탄지, 크리티컬인지 판정도 거처야 한다. */
+
+        switch (effectType){    // 효과타입Name == "데미지"로 하는게 의미상 더 정확하긴 할텐데..
+
+            default:
+
+                valueEffect = new ConditionFloatParam(effectType, effectValue);
+                break;
+        }
+
+
+        return valueEffect;
+
+    }
+
+
+
+
+
+
+    /*******************************************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
 }

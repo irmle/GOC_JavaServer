@@ -9,12 +9,14 @@ import ECS.Components.ConditionComponent;
 import ECS.Components.DefenseComponent;
 import ECS.Components.HpHistoryComponent;
 import ECS.Entity.*;
+import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 작 성 자 : 권령희
@@ -79,13 +81,16 @@ public class DamageHistorySystem {
     static final float BALNENCE_VALUE = 30f;
 
     /* 상성 처리를 위한 */
-    HashMap<Integer, Float> damageRatePerSynastry = new HashMap<>();
-    HashMap<Integer, HashMap<Integer, Integer>> attrTablePerAttacker = new HashMap<>();
+    HashMap<Integer, Float> damageRatePerSynastry;
+    HashMap<Integer, HashMap<Integer, Integer>> attrTablePerAttacker;
 
     public DamageHistorySystem(WorldMap worldMap) {
         this.worldMap = worldMap;
 
-        readAttributeInfo();
+        damageRatePerSynastry = GameDataManager.synastryEffectValueList;
+        attrTablePerAttacker = GameDataManager.elementalSynastryInfoList;
+
+        // readAttributeInfo();
     }
 
     public void onUpdate(float deltaTime){
@@ -107,6 +112,8 @@ public class DamageHistorySystem {
      * 캐릭터 엔티티들의 데미지 보정처리를 함.
      */
     public void updateCharacterDamage() {
+
+        System.out.println("캐릭터 뎀 처리");
 
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
@@ -211,6 +218,9 @@ public class DamageHistorySystem {
     }
 
     public void updateMonsterDamage(){
+
+        System.out.println("몹뎀 처리");
+
 
         for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : worldMap.monsterEntity.entrySet()) {
 
@@ -660,7 +670,20 @@ public class DamageHistorySystem {
     /*******************************************************************************************************************/
 
     /**
-     * 평타 데미지를 계산한다
+     * 추가
+     * 오전 5:09 2020-04-07
+     *
+     * 밸런스가 적용된 평타 데미지를 계산한다
+     * 처리 :
+     *      -- 맥댐 : 기존 공격력
+     *      -- 민댐 : 맥댐 / 2
+     *      -- 대미지 평균(?) : 민댐 + (최대댐-최소댐) * 밸런스
+     *      -- 최종 평타 대미지 : N( 대미지 평균, 28.9*28.9 ) 표준편차 : 28.9
+     *
+     *      위에서 구해진 최종(..) 평타 대미지에, 캐릭터 상태값에 따른 보너스 & 데미지 비율을 적용한다.
+     *      ㄴ 이거 순서가 바뀔지도.. 보너스 및 비율을 적용한 맥댐을 대상으로 정규분포를 구하는 걸지도??
+     *
+     *
      * input : 넘어온 데미지값 - 일반 공격이라면 공격컴포넌트 사용하면 상관없는데, 스킬 등 특수 값의 경우를 위해 필요..
      *          공격자의 공격 컴포넌트 - 공격대미지, 상태 컴포넌트 - 보너스데미지, 데미지 비율 등등
      *          방어자의 방어 컴포넌트 - 방어값
@@ -674,6 +697,67 @@ public class DamageHistorySystem {
      * @return
      */
     public float calculateFlatDamage(
+            float damage, AttackComponent attackerAttack, ConditionComponent attackerCondition,
+            DefenseComponent targetDefense, ConditionComponent targetCondition){
+
+        float STANDARD_DEVIATION = 28.9f;    // 표준편차... 확정되면 파일로 처리할 것.
+        Random random = new Random();
+
+        float finalFlatDamage = 0f;
+
+        /** 밸런스 처리 작성 */
+        // 공격자의 공격대미지 & 밸런스 수치에 맞추어 평타 대미지를 생성한다
+        float maxDam = damage;
+        float minDam = ( maxDam / 2f );
+
+        float flatDamageExp = minDam + (maxDam - minDam) * (attackerAttack.balance * 0.01f) ;
+        float flatDamage = flatDamageExp + (float)(random.nextGaussian() * STANDARD_DEVIATION);
+        if(flatDamage < minDam){
+            flatDamage = minDam;
+        } else if(flatDamage > maxDam){
+            flatDamage = maxDam;
+        }
+
+        System.out.println("최대 데미지 : " + maxDam);
+        System.out.println("최소 데미지 : " + minDam);
+        System.out.println("기대 데미지 : " + flatDamageExp);
+        System.out.println("평뎀뽑 & 보정 : " + flatDamage);
+
+        flatDamage = ( flatDamage + attackerCondition.attackDamageBonus ) * attackerCondition.attackDamageRate;
+
+        System.out.println("공격자 공격보너스 : " + attackerCondition.attackDamageBonus);
+        System.out.println("공격자 데미지비율 : " + attackerCondition.attackDamageRate);
+        System.out.println("상태적용 평뎀 : " + flatDamage);
+
+
+        /** 공식에 따라 평타 데미지값을 도출 */
+        float TARGET_DEFENSE = (targetDefense.defense + targetCondition.defenseBonus) * targetCondition.defenseRate;
+        finalFlatDamage = (int)( flatDamage * 100 / (100 + TARGET_DEFENSE) );
+
+
+        System.out.println("타겟 방어력 : " + TARGET_DEFENSE);
+        System.out.println("최종 평댐 : " + finalFlatDamage);
+
+        System.out.println("");
+
+        return finalFlatDamage;
+    }
+
+    /**
+     * 평타 데미지를 계산한다
+     * input : 넘어온 데미지값 - 일반 공격이라면 공격컴포넌트 사용하면 상관없는데, 스킬 등 특수 값의 경우를 위해 필요..
+     *          공격자의 공격 컴포넌트 - 공격대미지, 상태 컴포넌트 - 보너스데미지, 데미지 비율 등등
+     *          방어자의 방어 컴포넌트 - 방어값
+     *
+     * 공식 :
+     *      공격력 * 100 / (100 + 방어력)
+     *
+     *      여기서 공격력은, 공격자의 기본 공격력에 밸런스 개념을 도입하여 도출한다.
+     *      일단은 데미지시스템에 정의된 고정 수치만큼 ± 하여 만든 최소, 최대 값 중 하나를 선택하는 식으로 함.
+     *
+     * @return
+     */
+    public float calculateFlatDamageNotBalanced(
             float damage, AttackComponent attackerAttack, ConditionComponent attackerCondition, DefenseComponent targetDefense, ConditionComponent targetCondition){
 
         float finalFlatDamage = 0f;
@@ -686,12 +770,7 @@ public class DamageHistorySystem {
 
         float flatDamage = (int)( (Math.random() * (maxDam - minDam) + 1) + minDam );
 
-        // 오.. 추가 데미지랑 데미지 비율 적용 안했네...
-        // 이건 언제 적용해줘야하지
-        // 최소한 아래 공식 적용하기 전이나 후.. 크게 의미 없나??
-        // 내일 이야기해보고 진행하자.
-        // 위에 밸런싱된 값에다가 적용하는게 더 적절해 보이기도 하고..
-        // 비율은 그러한데, 추가데미지는 모르겟다 흠..
+
         flatDamage = ( flatDamage + attackerCondition.attackDamageBonus ) * attackerCondition.attackDamageRate;
 
         /** 공식에 따라 평타 데미지값을 도출 */
@@ -725,6 +804,10 @@ public class DamageHistorySystem {
         criticalDamage = flatDamage * (100 + attackerAttack.criticalDamage) * 0.01f;
         finalCriticalDamage = (int) ( criticalDamage * attackerCondiiton.criticalDamageRate );
 
+        System.out.println("크리티컬 뎀 데미지 적용 : " + criticalDamage);
+        System.out.println("최종 크리뎀 : " + finalCriticalDamage);
+        System.out.println("");
+
         return finalCriticalDamage;
     }
 
@@ -737,13 +820,18 @@ public class DamageHistorySystem {
 
         float attributedDamage = 0f;
 
-        System.out.println(attackerAttrType);
-        System.out.println(targetAttrType);
+        System.out.println("공격자 속성 : " + attackerAttrType);
+        System.out.println("타겟 속성 : " + targetAttrType);
 
         int synastry = attrTablePerAttacker.get(attackerAttrType).get(targetAttrType);
         float synastryRate = ( 100f + damageRatePerSynastry.get(synastry) ) ;
 
         attributedDamage = damage * synastryRate * 0.01f;
+
+        System.out.println("속성간 상성 적용 비율 : " + synastryRate);
+        System.out.println("최종 속성뎀 : " + attributedDamage);
+
+        System.out.println("=============================");
 
         return attributedDamage;
     }

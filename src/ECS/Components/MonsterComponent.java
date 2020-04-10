@@ -3,7 +3,19 @@ package ECS.Components;
 import ECS.Classes.Type.PathType;
 
 /**
- * 2019 12 26 권령희 추가 ; 이동 포인트 관련
+ * 업뎃날짜 : 오후 11:31 2020-04-03
+ *
+ * -- 오후 11:31 2020-04-03
+ *
+ *      1. "몬스터 레벨" 멤버 변수 추가.
+ *
+ *          # 추후 캐릭터의 전투력을 기반으로 몬스터의 레벨을 결정하고,
+ *            잡은 몬스터의 레벨에 따라 보상 경험치 및 골드가 달라지게 할 것임.
+ * --
+ * --
+ * --
+ * --
+ *
  */
 public class MonsterComponent implements Cloneable {
 
@@ -14,6 +26,8 @@ public class MonsterComponent implements Cloneable {
     public int movePathType;
     public int movePointIndex;
 
+    public int monsterLevel;
+
 
     public MonsterComponent(int monsterType, String monsterName) {
         this.monsterType = monsterType;
@@ -23,6 +37,14 @@ public class MonsterComponent implements Cloneable {
 
         movePathType = PathType.NONE;
         movePointIndex = 0;
+
+        monsterLevel = 1;
+    }
+
+    public MonsterComponent(int monsterType, String monsterName, int monsterLevel) {
+        this.monsterType = monsterType;
+        this.monsterName = monsterName;
+        this.monsterLevel = monsterLevel;
     }
 
     public MonsterComponent(int targetID, int monsterType, String monsterName) {
@@ -32,6 +54,8 @@ public class MonsterComponent implements Cloneable {
 
         movePathType = 0;
         movePointIndex = 0;
+
+        monsterLevel = 1;
     }
 
     @Override

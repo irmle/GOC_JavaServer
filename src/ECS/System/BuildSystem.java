@@ -4,6 +4,7 @@ import ECS.ActionQueue.Build.ActionInstallBuilding;
 import ECS.ActionQueue.Build.ActionUpgradeBarricade;
 import ECS.ActionQueue.Build.ActionUpgradeBuilding;
 import ECS.Classes.*;
+import ECS.Classes.Type.BalanceData.BalanceDataType;
 import ECS.Classes.Type.Build.BuildSlotState;
 import ECS.Classes.Type.Build.BuildType;
 import ECS.Classes.Type.ConditionType;
@@ -14,6 +15,7 @@ import ECS.Entity.*;
 import ECS.Factory.AttackTurretFactory;
 import ECS.Factory.BarricadeFactory;
 import ECS.Factory.BuffTurretFactory;
+import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 
 import java.io.LineNumberReader;
@@ -272,41 +274,53 @@ public class BuildSystem {
 
     public void readInstallPriceInfo(){
 
-        installPriceTable.put(BuildType.BARRIER, 250);
-        installPriceTable.put(BuildType.TURRET_ATTACK, 250);
-        installPriceTable.put(BuildType.TURRET_BUFF, 250);
+        installPriceTable.put(BuildType.BARRIER, GameDataManager.barricadeInfoList.get(1).costGold);    // 바리케이드는.. 타입이 하나밖에 없어서.
+        installPriceTable.put(BuildType.TURRET_ATTACK, GameDataManager.turretList.get(TurretType.ATTACK_TURRET_DEFAULT));
+        installPriceTable.put(BuildType.TURRET_BUFF, GameDataManager.turretList.get(TurretType.ATTACK_TURRET_DEFAULT));
 
     }
 
     public void readUpgradePriceInfo(){
 
-        /* 공격 */
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE1_UPGRADE1, 500);
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE1_UPGRADE2, 1000);
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE1_UPGRADE3, 2000);
+        /* 공격 터렛 */
+        for(AttackTurretInfo attackTurretInfo : GameDataManager.attackTurretInfoList.values()){
 
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE2_UPGRADE1, 500);
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE2_UPGRADE2, 1000);
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE2_UPGRADE3, 2000);
+            switch (attackTurretInfo.turretType){
 
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE3_UPGRADE1, 500);
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE3_UPGRADE2, 1000);
-        upgradePriceTable.put(TurretType.ATTACK_TURRET_TYPE3_UPGRADE3, 2000);
+                case TurretType.ATTACK_TURRET_DEFAULT :
 
-        /* 버프 */
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE1_UPGRADE1, 500);
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE1_UPGRADE2, 1000);
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE1_UPGRADE3, 2000);
+                    installPriceTable.put(BuildType.TURRET_ATTACK, attackTurretInfo.costGold);
+                    break;
 
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE2_UPGRADE1, 500);
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE2_UPGRADE2, 1000);
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE2_UPGRADE3, 2000);
+                default:
 
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE3_UPGRADE1, 500);
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE3_UPGRADE2, 1000);
-        upgradePriceTable.put(TurretType.BUFF_TURRET_TYPE3_UPGRADE3, 2000);
+                    upgradePriceTable.put(attackTurretInfo.turretType, attackTurretInfo.costGold);
+                    break;
+            }
 
+        }
+
+        /* 버프 터렛 */
+        for(BuffTurretInfo buffTurretInfo : GameDataManager.buffTurretInfoList.values()){
+
+            switch (buffTurretInfo.turretType){
+
+                case TurretType.BUFF_TURRET_DEFAULT :
+
+                    installPriceTable.put(BuildType.TURRET_BUFF, buffTurretInfo.costGold);
+                    break;
+
+                default:
+
+                    upgradePriceTable.put(buffTurretInfo.turretType, buffTurretInfo.costGold);
+                    break;
+            }
+
+        }
     }
+
+
+
 
     /**
      * 건설 가능한 지점 목록을 받아와서, 그 갯수만큼 빌드 슬롯을 만들고 각각에 지점을 집어넣은 리스트를 반환한다
@@ -1080,8 +1094,10 @@ public class BuildSystem {
      */
     public int getBarricadeUpgradeCost(int barricadeLevel){
 
-        int WEIGHT_VALUE = 500;
-        int COMPLEMENT_VALUE = 500;
+        BalanceData upgradeCostData = GameDataManager.balanceDataInfoList.get(BalanceDataType.BARRICADE_UPGRADE_COST_COLD);
+
+        int WEIGHT_VALUE = (int) upgradeCostData.weightValue;
+        int COMPLEMENT_VALUE = (int) upgradeCostData.adjustmentValue;
 
         int cost = WEIGHT_VALUE * (int)Math.pow(barricadeLevel, 2) + COMPLEMENT_VALUE;
 
@@ -1090,8 +1106,10 @@ public class BuildSystem {
 
     public float getBarricadeUpgradeHpValue(int barricadeLevel){
 
-        int WEIGHT_VALUE = 100;
-        int COMPLEMENT_VALUE = 50;
+        BalanceData upgradeHpData = GameDataManager.balanceDataInfoList.get(BalanceDataType.BARRICADE_UPGRADE_HP);
+
+        int WEIGHT_VALUE = (int) upgradeHpData.weightValue;
+        int COMPLEMENT_VALUE = (int) upgradeHpData.adjustmentValue;
 
         float hp = WEIGHT_VALUE * (int)Math.pow(barricadeLevel, 2) + COMPLEMENT_VALUE;
 
@@ -1101,8 +1119,10 @@ public class BuildSystem {
 
     public float getBarricadeUpgradeDefenseValue(int barricadeLevel){
 
-        int WEIGHT_VALUE = 1;
-        int COMPLEMENT_VALUE = 1;
+        BalanceData upgradeDefenseData = GameDataManager.balanceDataInfoList.get(BalanceDataType.BARRICADE_UPGRADE_DEFENSE);
+
+        int WEIGHT_VALUE = (int) upgradeDefenseData.weightValue;
+        int COMPLEMENT_VALUE = (int) upgradeDefenseData.adjustmentValue;
 
         int defense = WEIGHT_VALUE * (int)Math.pow(barricadeLevel, 2) + COMPLEMENT_VALUE;
 

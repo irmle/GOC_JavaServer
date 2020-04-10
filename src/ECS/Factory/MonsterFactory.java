@@ -5,8 +5,12 @@ import ECS.Classes.Type.*;
 import ECS.Classes.Type.Jungle.JungleMobType;
 import ECS.Components.*;
 import ECS.Entity.*;
+import ECS.Game.GameDataManager;
+import ECS.Game.WorldMap;
+import com.sun.org.apache.xerces.internal.dom.DeferredCDATASectionImpl;
 
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * 생성 : 2019년 11월 15일
@@ -45,6 +49,11 @@ public class MonsterFactory {
     public static HashMap<Integer, MonsterInfo> jungleMonsterInfoTable;
     public static HashMap<Integer, MonsterEntity> jungleMonsterEntityTable;
 
+    // 2020 04 03 금
+    /* 몬스터 공격 종류에 따른 효과 목록 */
+    public static HashMap<Integer, HashMap<String, BuffInfo>> monsterAttackEffectInfoLIST;
+
+
 
     public static void initFactory() {
         System.out.println("MonsterFactory 초기화중...");
@@ -59,16 +68,17 @@ public class MonsterFactory {
         readMonsterInfoFromFile();
 
         /** 읽어온 정보를 Entity로 변환하기 */
-        convertMonsterInfoToEntity();
+        createMonsterEntityFromInfo();
 
 
         /* 2020 02 28 권령희 추가, 정글 몬스터 */
         jungleMonsterInfoTable = new HashMap<>();
         jungleMonsterEntityTable = new HashMap<>();
 
-        readJungleMonsterInfoFrom();
-        convertJungleMonsterInfoToEntity();
+        readJungleMonsterInfoFromFile();
+        createJungleMonsterEntityFromInfo();
 
+        monsterAttackEffectInfoLIST = GameDataManager.effectInfoList.get(EffectCauseType.MONSTER);
 
         System.out.println("MonsterFactory 초기화 완료");
     }
@@ -81,7 +91,7 @@ public class MonsterFactory {
      * 일단 하드코딩으로 값 채움.
      * 파일 구조 및 파일 읽어들이는 방법 결정되면 수정할 것.
      */
-    public static void readMonsterInfoFromFile(){
+    public static void readMonsterInfo(){
 
         MonsterInfo monsterInfo;
         // int monIDCount = 1;
@@ -257,6 +267,27 @@ public class MonsterFactory {
 
     }
 
+    /**
+     * 2020 04 01 작성
+     * GDM가 파일로부터 읽어들인 정보를 가져와 목록을 구성한다
+     */
+    public static void readMonsterInfoFromFile(){
+
+        MonsterInfo monsterInfo;
+
+        for ( HashMap.Entry<Integer, MonsterInfo> monsterInfoEntry
+                : GameDataManager.monsterInfoList.entrySet()){
+
+            monsterInfo = monsterInfoEntry.getValue();
+
+            monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
+
+        }
+
+        monsterInfoTable = GameDataManager.monsterInfoList;
+
+    }
+
 
     /**
      * <MonsterID, MonsterInfo> 맵의 info를 하나씩 읽어, MonsterEntity 객체로 만들어준다.
@@ -335,18 +366,96 @@ public class MonsterFactory {
 
     }
 
+    public static void createMonsterEntityFromInfo(){
+
+        for( HashMap.Entry<Integer, MonsterInfo> monsterInfoEntry : monsterInfoTable.entrySet() ){
+
+            MonsterInfo monsterInfo = monsterInfoEntry.getValue();
+
+            /** 몬스터 생성에 필요한 각 컴포넌트들 생성한다 */
+
+            /* Monster Component */
+            MonsterComponent monsterComponent
+                    = new MonsterComponent(monsterInfo.monsterType, monsterInfo.monsterName);
+
+            /* Position Component */
+            // 여기에 몬스터 (생성) 위치를 지정해줄 Vector3 클래스를 만들어서 넣어줄 수도 있을듯
+            PositionComponent positionComponent
+                    = new PositionComponent(new Vector3(0f, 0f, 0f));
+
+            /* HP Component */
+            HPComponent hpComponent
+                    = new HPComponent(monsterInfo.maxHP, monsterInfo.recoveryRateHP);
+
+            /* Attack Component */
+            AttackComponent attackComponent
+                    = new AttackComponent( monsterInfo.attackDamage, monsterInfo.attackSpeed, monsterInfo.attackRange);
+
+            /* Defense Component */
+            DefenseComponent defenseComponent
+                    = new DefenseComponent(monsterInfo.defense);
+
+            /* Sight Component */
+            SightComponent sightComponent
+                    = new SightComponent(monsterInfo.lookRadius);
+
+            /* Rotation Component */
+            // 하드코딩. Info에는 들어있지 않음
+            RotationComponent rotationComponent
+                    = new RotationComponent(0f, 0f);
+
+            /* Velocity Component */
+            VelocityComponent velocityComponent
+                    = new VelocityComponent(monsterInfo.moveSpeed);
+
+            /* BuffActionHistory Component */
+            BuffActionHistoryComponent buffActionHistoryComponent = new BuffActionHistoryComponent();
+
+            /* HpHistory Component */
+            HpHistoryComponent hpHistoryComponent = new HpHistoryComponent();
+
+            /* Condition Component */
+            ConditionComponent conditionComponent = new ConditionComponent();
+
+            /** 생성된 컴포넌트들을 가지고, 몬스터 Entity 객체를 만든다 */
+
+            /* Monster Entity */
+            int entityID = 0;   // ?? 어케 지정해주지.. 어디서 지정해주지
+            MonsterEntity monsterEntity
+                    = new MonsterEntity(positionComponent, monsterComponent, hpComponent,
+                    attackComponent, defenseComponent, sightComponent,
+                    rotationComponent, velocityComponent,
+                    buffActionHistoryComponent, hpHistoryComponent, conditionComponent);
+
+            monsterEntity.attribute = monsterInfo.monsterElemental;
+
+            System.out.println("몬스터 속성 : " + monsterInfo.monsterElemental);
+
+            /** 목록에 추가 */
+
+            monsterEntityTable.put(monsterInfo.monsterType, monsterEntity);
+
+        }
+
+    }
+
     /**
-     * [2019 11 15 금요일 오후 12시 ~ ]
+     * 업뎃
+     * 오전 1:49 2020-04-08
      *
-     * @param requestedMonsterID
-     * @return
      */
-    public static MonsterEntity createMonster(int requestedMonsterID){
+    public static MonsterEntity createMonster(int requestedMonsterID, WorldMap worldMap){
 
         MonsterEntity newMonster;
 
-        /* 생성하는 처리 : */
+        /* 생성 */
         newMonster = (MonsterEntity) ( monsterEntityTable.get(requestedMonsterID) ).clone();
+
+        /* 몬스터의 레벨을 결정한다 */
+        int level = decideMonsterLevel(worldMap);
+
+        /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
+        resetMonsterStatByLevel(newMonster, level);
 
         return newMonster;
     }
@@ -354,7 +463,7 @@ public class MonsterFactory {
 
     /** 2020 02 28 권령희 추가, 정글몬스터 관련 매서드 */
 
-    public static void readJungleMonsterInfoFrom(){
+    public static void readJungleMonsterInfo(){
 
         MonsterInfo jungleMobInfo;
 
@@ -421,6 +530,26 @@ public class MonsterFactory {
                 300f, 0.625f, 3.0f,
                 30f, 10f, 5f);
         jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);
+
+    }
+
+    /**
+     * 2020 04 01 작성
+     *
+     */
+    public static void readJungleMonsterInfoFromFile(){
+
+        MonsterInfo monsterInfo;
+
+        for( HashMap.Entry<Integer, MonsterInfo> jungleMonsterInfoEntry
+                : GameDataManager.jungleMonsterInfoList.entrySet()){
+
+            monsterInfo = jungleMonsterInfoEntry.getValue();
+            jungleMonsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
+
+        }
+
+        jungleMonsterInfoTable = GameDataManager.jungleMonsterInfoList;
 
     }
 
@@ -496,12 +625,440 @@ public class MonsterFactory {
 
     }
 
-    public static MonsterEntity createJungleMonster(int requestedJungleMonsterType){
+    /**
+     * 2020 04 01 작성
+     */
+    public static void createJungleMonsterEntityFromInfo(){
+
+        for( HashMap.Entry<Integer, MonsterInfo> monsterInfoEntry : jungleMonsterInfoTable.entrySet() ){
+
+            MonsterInfo monsterInfo = monsterInfoEntry.getValue();
+
+            /** 몬스터 생성에 필요한 각 컴포넌트들 생성한다 */
+
+            /* Monster Component */
+            MonsterComponent monsterComponent
+                    = new MonsterComponent(monsterInfo.monsterType, monsterInfo.monsterName);
+
+            /* Position Component */
+            PositionComponent positionComponent
+                    = new PositionComponent(new Vector3(0f, 0f, 0f));
+
+            /* HP Component */
+            HPComponent hpComponent
+                    = new HPComponent(monsterInfo.maxHP, monsterInfo.recoveryRateHP);
+
+            /* Attack Component */
+            AttackComponent attackComponent
+                    = new AttackComponent( monsterInfo.attackDamage, monsterInfo.attackSpeed, monsterInfo.attackRange);
+
+            /* Defense Component */
+            DefenseComponent defenseComponent
+                    = new DefenseComponent(monsterInfo.defense);
+
+            /* Sight Component */
+            SightComponent sightComponent
+                    = new SightComponent(monsterInfo.lookRadius);
+
+            /* Rotation Component */
+            // 하드코딩. Info에는 들어있지 않음
+            RotationComponent rotationComponent
+                    = new RotationComponent(0f, 0f);
+
+            /* Velocity Component */
+            VelocityComponent velocityComponent
+                    = new VelocityComponent(monsterInfo.moveSpeed);
+
+            /* BuffActionHistory Component */
+            BuffActionHistoryComponent buffActionHistoryComponent = new BuffActionHistoryComponent();
+
+            /* HpHistory Component */
+            HpHistoryComponent hpHistoryComponent = new HpHistoryComponent();
+
+            /* Condition Component */
+            ConditionComponent conditionComponent = new ConditionComponent();
+
+            /** 생성된 컴포넌트들을 가지고, 몬스터 Entity 객체를 만든다 */
+
+            /* Monster Entity */
+            int entityID = 0;   // ?? 어케 지정해주지.. 어디서 지정해주지
+            MonsterEntity monsterEntity
+                    = new MonsterEntity(positionComponent, monsterComponent, hpComponent,
+                    attackComponent, defenseComponent, sightComponent,
+                    rotationComponent, velocityComponent,
+                    buffActionHistoryComponent, hpHistoryComponent, conditionComponent);
+
+            monsterEntity.attribute = monsterInfo.monsterElemental;
+
+            monsterEntity.team = Team.JUNGLE;
+
+            /** 목록에 추가 */
+
+            jungleMonsterEntityTable.put(monsterInfo.monsterType, monsterEntity);
+
+        }
+
+    }
+
+    public static MonsterEntity createJungleMonster(int requestedJungleMonsterType, WorldMap worldMap){
 
         MonsterEntity newJungleMob;
+
+        /* 생성 */
         newJungleMob = (MonsterEntity) (jungleMonsterEntityTable.get(requestedJungleMonsterType).clone() );
 
+        /* 몬스터의 레벨을 결정한다 */
+        int level = decideMonsterLevel(worldMap);
+
+        /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
+        resetJungleMonsterStatByLevel(newJungleMob, level);
+
+        System.out.println("정그르몹.. 생성된거 맞나??");
+
         return newJungleMob;
+
+    }
+
+    /**
+     *      Aim : 적용하고자 하는 효과를 생성할 때 호출하면 된다!
+     *    Input :
+     *   Output :
+     *  Process :
+     *
+     */
+    public static BuffAction createMonsterActionEffect(int attackType, String effectName, MonsterEntity monster, int effectEntityID){
+
+
+        /** 몬스터 앵ㄱ션 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
+        BuffInfo effectInfo = monsterAttackEffectInfoLIST.get(attackType).get(effectName);
+
+        /** 효과의 지속시간을 구한다 (필요하다면) */
+        /*
+         * 조건 : 효과의 적중 타입이 '지속'이면서 효과정보 객체에 들어있는 지속시간 값이 0 이하인 경우
+         *
+         * 참고)) 현재, 몬스터 공격에 의한 효과(사실상 그냥 데미지)의 경우, 데미지 한 종류밖에 존재하지 않음..
+         *          나중에, 몬스터 공격에 의한 다른 효과 타입 등이 추가될 수 있으므로,
+         *          캐릭터 스킬 효과 생성 처리에서 사용했던 틀은 남겨두도록 함.
+         */
+        float effectDurationTime;
+        boolean needToGetDurationTime =
+                (( effectInfo.effectAppicationType == EffectApplicationType.지속)
+                        && ( effectInfo.effectDurationTime <= 0f)) ? true : false;
+        if(needToGetDurationTime){
+
+            effectDurationTime = effectInfo.effectDurationTime;
+        }
+        else{
+
+            effectDurationTime = effectInfo.effectDurationTime;
+        }
+
+
+        /* 몬스터 공격 종류?? 등등.. 에 따른 예외처리가 필요하다면 이 단락에 작성 */
+        /*
+         *...
+         *
+         *
+         */
+
+
+        /** 효과 객체를 생성한다 (틀) */
+        // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
+        BuffAction newEffect = new BuffAction(attackType, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
+
+
+        /** 효과 내용을 채운다 */
+        // BuffAction 객체에, 실제 효과를 부여하기 위한 처리를 한다. 경우에 따라, 공격자 정보를 참조해야 한다.
+
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectName);
+        boolean isConditionEffect = checkIsConditionEffect(effectType);
+        if(isConditionEffect){
+
+            /* 상태이상을 결정하는 효과 타입인 경우, boolParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionBoolParam conditionEffect = new ConditionBoolParam(effectType, true);
+            newEffect.addEffect(conditionEffect);
+        }
+        else{
+
+            /* 기존 스탯 등에 영향을 미치는 버프 OR 디버프 효과 타입인 경우, floatParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionFloatParam valueEffect = createEffectParam(attackType, effectInfo, monster);
+            newEffect.addEffect(valueEffect);
+
+        }
+
+        // 나중에.. 근거리 공격용? 매서드도 하나 만들자..
+        newEffect.unitID = effectEntityID;
+        newEffect.skillUserID = newEffect.unitID;
+
+        /* Output */
+        return newEffect;
+
+    }
+
+
+    /**
+     * 넘겨받은 효과가 상태 이상 타입의 효과인지 여부를 판단하는 매서드
+     * @return
+     */
+    public static boolean checkIsConditionEffect(int effectType){
+
+        boolean isConditionEffect = false;
+
+        switch (effectType){
+
+            case ConditionType.isDisableMove :
+            case ConditionType.isDisableAttack :
+            case ConditionType.isDisableSkill :
+            case ConditionType.isDisableItem :
+            case ConditionType.isDamageImmunity :
+            case ConditionType.isUnTargetable :
+
+            case ConditionType.isAirborneImmunity :
+            case ConditionType.isAirborne :
+            case ConditionType.isGarrenQApplied :
+            case ConditionType.isTargetingInvincible :
+            case ConditionType.isArcherFireActivated :
+            case ConditionType.isStunned :
+            case ConditionType.isArcherHeadShotActivated :
+            case ConditionType.isFreezing :
+            case ConditionType.isSlow :
+            case ConditionType.isSilence :
+            case ConditionType.isBlind :
+            case ConditionType.isSightBlocked :
+            case ConditionType.isGrounding :
+            case ConditionType.isPolymorph :
+            case ConditionType.isDisarmed :
+            case ConditionType.isSnare :
+            case ConditionType.isKnockedAirborne :
+            case ConditionType.isKnockback :
+            case ConditionType.isSuspension :
+            case ConditionType.isTaunt :
+            case ConditionType.isCharm :
+            case ConditionType.isFlee :
+            case ConditionType.isSuppressed :
+            case ConditionType.isSleep :
+            case ConditionType.isReturning :
+
+                isConditionEffect = true;
+                break;
+
+            default:
+                isConditionEffect = false;
+        }
+
+        return isConditionEffect;
+    }
+
+    /**
+     * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
+     *
+     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
+     */
+    public static ConditionFloatParam createEffectParam(int attackType,  BuffInfo effectInfo, MonsterEntity monster){
+
+        /* Input */
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectInfo.effectTypeName);
+        String effectValueStr = effectInfo.effectValue;
+
+        /* Output */
+        float effectValue = 0f;
+        ConditionFloatParam valueEffect;
+
+        /* 효과값을 결정한다 */
+        switch (effectValueStr){
+
+            case "공격력" :
+
+                /* 공격자 몬스터의 공격력 값을 가져와 적용한다 */
+                effectValue = monster.attackComponent.attackDamage;
+
+                System.out.println("효과파람 생성 매서드 ; 공격력 타입 ");
+                break;
+
+            default :
+
+                effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
+
+                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                break;
+
+        }
+
+        /* 예외처리
+            ; 일반 '데미지' 타입인 경우, 해당 공격이 평탄지, 크리티컬인지 판정도 거처야 한다. */
+
+        switch (effectType){    // 효과타입Name == "데미지"로 하는게 의미상 더 정확하긴 할텐데..
+
+            case ConditionType.damageAmount :
+                valueEffect = SkillFactory.createDamageParam(effectValue, monster.attackComponent, monster.conditionComponent);
+                break;
+
+            default:
+
+                valueEffect = new ConditionFloatParam(effectType, effectValue);
+                break;
+        }
+
+
+        return valueEffect;
+
+    }
+
+
+    /**
+     * 일단 껍데기만 남겨둠.
+     * 몬스터의 경우, 아직까지는 데미지 이외에 별도 버프/디버프/상태이상을 주는 효과가 존재하지 않기 때문에.
+     */
+    public static float getProperEffectValue(int attackType, String effectName, int effectType){
+
+        return  0f;
+
+    }
+
+
+
+
+    /*******************************************************************************************************************/
+
+    /**
+     * 주석 작성
+     * 오전 1:35 2020-04-08
+     * 기    능 :
+     *      -- INPUT 으로 넘겨받은 MonsterEntity 에, 함께 넘겨받은 레벨에 맞도록 스탯값을 적용함
+     *      -- entity 에 넘겨받은 레벨값도 적용함.
+     *
+     * 메    모 :
+     *      -- 현재 기획? 기준으로, 레벨에 따라 달라지는 스탯은 총 4개이다.
+     *
+     *          * 체력, 체력회복, 공격력, 방어력
+     *
+     */
+    public static void resetMonsterStatByLevel(MonsterEntity monster, int level){
+
+        /** 몬스터 정보 참조 */
+        MonsterInfo monsterInfo = monsterInfoTable.get(monster.monsterComponent.monsterType);
+
+        HPComponent monsterHP = monster.hpComponent;
+        AttackComponent monsterAttack = monster.attackComponent;
+        DefenseComponent monsterDefense = monster.defenseComponent;
+
+        /** 레벨에 따른 스탯 값 적용하기 */
+
+        /* 체력 */
+        monsterHP.originalMaxHp += monsterInfo.hpIncrValue * (level-1);
+        monsterHP.maxHP = monsterHP.originalMaxHp;
+        monsterHP.currentHP = monsterHP.originalMaxHp;
+
+        /* 체력 회복 */
+        monsterHP.recoveryRateHP += monsterInfo.hpRecoveryIncrValue * (level-1);
+
+        /* 공격력 */
+        monsterAttack.attackDamage += monsterInfo.attackDamageIncrValue * (level-1);
+
+        /* 방어력 */
+        monsterDefense.defense += monsterInfo.defenseIncrValue * (level-1);
+
+        System.out.println("몬스터 레벨 : " + level);
+        System.out.println("몬스터 체력 : " + monsterHP.originalMaxHp);
+        System.out.println("몬스터 공격력 : " + monsterAttack.attackDamage);
+        System.out.println("몬스터 방어력 : " + monsterDefense.defense);
+
+
+
+        return;
+    }
+
+    /**
+     * 주석 작성
+     * 오후 4:55 2020-04-08
+     * 기능 :
+     *  -- INPUT 으로 넘겨받은 MonsterEntity 에, 함께 넘겨받은 레벨에 맞도록 스탯값을 적용함
+     *  -- entity 에 넘겨받은 레벨값도 적용함.
+     *
+     */
+    public static void resetJungleMonsterStatByLevel(MonsterEntity monster, int level){
+
+        /** 몬스터 정보 참조 */
+        MonsterInfo monsterInfo = jungleMonsterInfoTable.get(monster.monsterComponent.monsterType);
+
+        HPComponent monsterHP = monster.hpComponent;
+        AttackComponent monsterAttack = monster.attackComponent;
+        DefenseComponent monsterDefense = monster.defenseComponent;
+
+        /** 레벨에 따른 스탯 값 적용하기 */
+
+        /* 체력 */
+        monsterHP.originalMaxHp += monsterInfo.hpIncrValue * (level-1);
+        monsterHP.maxHP = monsterHP.originalMaxHp;
+        monsterHP.currentHP = monsterHP.originalMaxHp;
+
+        /* 체력 회복 */
+        monsterHP.recoveryRateHP += monsterInfo.hpRecoveryIncrValue * (level-1);
+
+        /* 공격력 */
+        monsterAttack.attackDamage += monsterInfo.attackDamageIncrValue * (level-1);
+
+        /* 방어력 */
+        monsterDefense.defense += monsterInfo.defenseIncrValue * (level-1);
+
+
+        return;
+
+
+
+    }
+
+    /**
+     * 주석 작성
+     * 오전 1:39 2020-04-08
+     * 기능 :
+     *  -- 몬스터의 레벨을 랜덤으로 결정하여 넘겨준다.
+     *  -- 매번 몬스터를 생성할 때 마다 해당 함수를 호출하여, 생성될 몬스터의 레벨을 정한다
+     *  INPUT
+     *      -- WorldMap worldMap ; 몹을 생성하려는 월드맵, 해당 월드맵의 게임 난이도 및 기대레벨 값을 참조한다
+     *  OUTPUT
+     *      -- int level ; 랜덤으로 결정된 레벨 값.
+     *
+     *  PROCESS
+     *      -- 넘겨받은 월드맵을 참조하여, 기대레벨과 표준편차 값을 얻는다.
+     *      -- 월드맵에 지정된 게임 난이도값을 얻는다.
+     *      -- GDM 의 난이도 정보를 참조하여, 해당 난이도의 최소, 최대 레벨을 얻는다.
+     *      -- 정규분포 N(기대레벨, 표준편차)를 활용하여 랜덤값을 하나 생성한다.
+     *      -- 생성된 값이 최소,최대 레벨 값의 범위를 벗어날 경우, 값 보정 처리를 한다.
+     *          ㄴ 최소값 이하라면 최소값으로, 최대값 이상이라면 최대값으로 설정한다
+     *      -- 최종 레벨 값을 리턴한다
+     *
+     */
+    public static int decideMonsterLevel(WorldMap worldMap){
+
+        int level = 0;
+
+        /** 월드로부터, 게임 등급을 참조 */
+        int grade = worldMap.gameGrade;
+        int expLevel = worldMap.monsterExpLevel;
+        float standardDeviation = worldMap.standardDeviation;
+
+        /** GDM 으로부터 난이도 등급 정보를 참조 */
+        GameDifficultyGradeInfo gradeInfo = GameDataManager.gameDifficultyGradeInfoList.get(grade);
+        int minLevel = gradeInfo.minMonsterLevel;
+        int maxLevel = gradeInfo.maxMonsterLevel;
+
+
+        /** 랜덤 레벨 계산 */
+        Random random = new Random();
+        level = Math.round( expLevel + (float)(random.nextGaussian() * standardDeviation));
+
+
+        /** 범위를 벗어낫다면 보정 처리를 한다 */
+        if(level < minLevel){
+            level = minLevel;
+        }
+        else if(level > maxLevel){
+            level = maxLevel;
+        }
+
+
+        return level;
 
     }
 

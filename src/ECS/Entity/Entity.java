@@ -68,6 +68,19 @@ public class Entity implements Cloneable {
         positionComponent = new PositionComponent(new Vector3(0, 0, 0));
     }
 
+
+    /**
+     * 오후 5:06 2020-04-07
+     * 목적 : 팀 타임을 세팅하기 위한 매서드
+     */
+    public void setTeamElementalType(int teamType){
+
+        this.team = teamType;
+        System.out.println("앤티티 " + this.entityID + "의 팀 속성이 " + this.team + "으로 세팅되었습니다");
+    }
+
+
+
     @Override
     public Entity clone() {
         Entity entity = null;

@@ -196,9 +196,14 @@ public class BuffActionSystem {
 
                                         case ConditionType.isSlow :
                                             newCondition.isSlow = true;
+                                            break;
 
                                         case ConditionType.isFreezing :
                                             newCondition.isFreezing = true;
+                                            newCondition.isDisableAttack = true;
+                                            newCondition.isDisableMove = true;
+                                            newCondition.isDisableSkill = true;
+                                            break;
 
 
                                         default:
@@ -401,10 +406,16 @@ public class BuffActionSystem {
 
                                     case ConditionType.isFreezing :
                                         newCondition.isFreezing = true;
+                                        newCondition.isDisableAttack = true;
+                                        newCondition.isDisableMove = true;
+                                        newCondition.isDisableSkill = true;
+                                        break;
 
                                         /** 2020 03 20 권령희 추가, 귀환 */
                                     case ConditionType.isReturning :
                                         newCondition.isReturning = true;
+                                        break;
+
 
                                     default:
                                         break;
@@ -421,11 +432,11 @@ public class BuffActionSystem {
 
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
-                                    System.out.println("이동속도 증가 : " + condition.value);
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
+                                    newCondition.isSlow = true;
+
                                     break;
                                 case ConditionType.attackSpeedRate:
-                                    System.out.println("공격속도 증가 : " + condition.value);
                                     newCondition.attackSpeedRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.hpRecoveryRate:
@@ -707,13 +718,17 @@ public class BuffActionSystem {
                                             newCondition.isDisableAttack = true;
                                             newCondition.isDisableMove = true;
                                             newCondition.isDisableSkill = true;
-
+                                            break;
 
                                         case ConditionType.isSlow :
                                             newCondition.isSlow = true;
 
                                         case ConditionType.isFreezing :
                                             newCondition.isFreezing = true;
+                                            newCondition.isDisableAttack = true;
+                                            newCondition.isDisableMove = true;
+                                            newCondition.isDisableSkill = true;
+                                            break;
 
                                         default:
                                             break;
@@ -889,13 +904,18 @@ public class BuffActionSystem {
                                         newCondition.isDisableAttack = true;
                                         newCondition.isDisableMove = true;
                                         newCondition.isDisableSkill = true;
-
+                                        break;
 
                                     case ConditionType.isSlow :
                                         newCondition.isSlow = true;
+                                        break;
 
                                     case ConditionType.isFreezing :
                                         newCondition.isFreezing = true;
+                                        newCondition.isDisableAttack = true;
+                                        newCondition.isDisableMove = true;
+                                        newCondition.isDisableSkill = true;
+                                        break;
 
                                     default:
                                         break;

@@ -3,10 +3,7 @@ package ECS.Game;
 import ECS.ActionQueue.Item.ActionBuyItem;
 import ECS.ActionQueue.Item.ActionSellItem;
 import ECS.ActionQueue.Upgrade.ActionStoreUpgrade;
-import ECS.Classes.BuffAction;
-import ECS.Classes.ItemInfo;
-import ECS.Classes.ItemSlot;
-import ECS.Classes.StoreUpgradeSlot;
+import ECS.Classes.*;
 import ECS.Classes.Type.ItemSlotState;
 import ECS.Classes.Type.ItemType;
 import ECS.Classes.Type.NotificationType;
@@ -65,8 +62,8 @@ public class Store {
      */
     public void initStore(){
 
-        readItemsInfo();
-        readUpgradeInfo();
+        readItemsInfoFromGDM();
+        readUpgradeInfoFromGDM();
 
     }
 
@@ -81,6 +78,26 @@ public class Store {
         itemList.put(ItemType.DEFENSE_POTION, 100);
         itemList.put(ItemType.ATTACK_POTION, 100);
 
+    }
+
+    /**
+     * 2020 04 01 작성
+     * 위의 하드코딩 readInfo 함수를 대체하여
+     * GameDataManager 의 값을 참조하여 아이템 가격 테이블을 구성.
+     *
+     */
+    public void readItemsInfoFromGDM(){
+
+        ItemInfo itemInfo;
+
+        for( HashMap.Entry<Integer, ItemInfo> entry : GameDataManager.itemInfoList.entrySet()){
+
+            itemInfo = entry.getValue();
+            itemList.put(itemInfo.itemType, itemInfo.itemCost);
+
+            System.out.println(itemInfo.itemName + "가격 : " + itemInfo.itemCost);
+
+        }
     }
 
     /**
@@ -118,6 +135,41 @@ public class Store {
         upgradeInfoTable.put(StoreUpgradeType.GOLD_UPGRADE, upgradePriceTable);
 
     }
+
+
+    /**
+     * 2020 04 01 작성
+     * 위의 하드코딩 readInfo 함수를 대체하여
+     * GameDataManager 의 값을 참조하여 업그레이드 가격 테이블을 구성.
+     */
+    public void readUpgradeInfoFromGDM(){
+
+        HashMap<Integer, Integer> upgradePriceTable;
+
+        for (HashMap.Entry<Integer, HashMap<Integer, StoreUpgradeInfoPerLevel>> entry
+                : GameDataManager.storeUpgradeInfoPerLevelList.entrySet()){
+
+            HashMap<Integer, StoreUpgradeInfoPerLevel> upgradeInfoList = entry.getValue();
+
+            upgradePriceTable = new HashMap<>();
+            for (HashMap.Entry<Integer, StoreUpgradeInfoPerLevel> e : upgradeInfoList.entrySet()){
+
+                StoreUpgradeInfoPerLevel upgradeInfo = e.getValue();
+                upgradePriceTable.put(upgradeInfo.upgradeLevel, upgradeInfo.upgradeCost);
+
+                System.out.println(upgradeInfo.upgradeName + ", 레벨 " + upgradeInfo.upgradeLevel + " : " + upgradeInfo.upgradeCost);
+            }
+
+            upgradeInfoTable.put(entry.getKey(), upgradePriceTable);
+
+        }
+
+    }
+
+
+
+
+
 
     /**
      * 특정 업그레이드의 비용 정보를 리턴한다
@@ -246,12 +298,16 @@ public class Store {
 
                 slot = buyer.itemSlotComponent.findEmptySlot();
 
+                /** 2020 04 01 추가 */
+                slot.itemInfo = GameDataManager.itemInfoList.get(itemType).clone();
+
+
                 // 아 아이템팩토리 아직 안만들었는데. 일단은 수동으로 넣어주는 걸로?? 아이템 효과도 케이스문으로 처리.
                 // 팩토리 자체는 비워두더라도. 나중을 위해서 만들어두긴 해야할듯? 틀이라도.
                 // 팩토리 채워지고 나면. 그리고 버프액션쪽.. 실제 효과를 부여하는 처리에 대한 시스템이 잘 정립되고 나면
                 // 아래 각 내용들을.. 그것들을 활용하는 방향으로 대체할 것.
 
-                switch (itemType){
+                /*switch (itemType){
 
                     case ItemType.HP_POTION :
                         slot.itemInfo = new ItemInfo(itemType, "체력 회복 포션", new BuffAction());
@@ -272,7 +328,8 @@ public class Store {
                     case ItemType.ATTACK_POTION :
                         slot.itemInfo = new ItemInfo(itemType, "공격력 증가 포션", new BuffAction());
                         break;
-                }
+                }*/
+
 
                 slot.itemCount = itemCount;
                 slot.setSlotState(ItemSlotState.IDLE);
@@ -335,7 +392,7 @@ public class Store {
     }
 
     /**
-     * 아 맘에안들어...
+     *
      */
     public void sellItem(ActionSellItem event){
 
@@ -452,14 +509,30 @@ public class Store {
 
                 System.out.println("크리스탈을 업그레이드합니다. 업그레이드 레벨 : " + slot.upgradeLevel);
 
-                /* 크리스탈 기존 체력의 2배만큼 올려준다*/
+                StoreUpgradeInfoPerLevel crystalUpgradeInfo
+                        = GameDataManager.storeUpgradeInfoPerLevelList.get(StoreUpgradeType.CRYSTAL_UPGRADE).get(slot.upgradeLevel);
+
+                /**
+                 * 오전 1:34 2020-04-04 권령희
+                 * '최초 체력'을 기준으로 값이 올라가는 거겟지?
+                 *  설마.. 이전에 강화된 값을 대상으로 퍼센트가 올라가진 않겠지?;
+                 *
+                 */
                 CrystalEntity crystal = worldMap.crystalEntity.get(worldMap.crystalID);
 
-                crystal.hpComponent.currentHP += crystal.hpComponent.maxHP;
-                crystal.hpComponent.maxHP += crystal.hpComponent.maxHP;
+                float maxHpBeforeUpgrade = crystal.hpComponent.maxHP;
 
-                System.out.println("업그레이드된 크리스탈 최대체력  : " + crystal.hpComponent.maxHP);
-                System.out.println("현재 크리스탈 체력 : " + crystal.hpComponent.currentHP);
+                crystal.hpComponent.maxHP = crystal.hpComponent.originalMaxHp * (crystalUpgradeInfo.effectValue * 0.01f);
+                crystal.hpComponent.currentHP += (crystal.hpComponent.maxHP - maxHpBeforeUpgrade);
+
+                /**
+                 * 오전 1:34 2020-04-04 권령희
+                 * 아 문제 안되겠지...??
+                 *  현재로서는, 크리스탈의 최대 체력에 영향을 미치는 요소가
+                 *  요 상점 업그레이드밖에 없으니까 ? ;;
+                 *  -- 기획상 업그레이드 수치의 의미를.. '기존 레벨 대비 값'으로 변경하자고 하는게 좋을 듯.
+                 */
+                //crystal.hpComponent.originalMaxHp = crystal.hpComponent.maxHP;
 
                 break;
             case StoreUpgradeType.EXP_UPGRADE :

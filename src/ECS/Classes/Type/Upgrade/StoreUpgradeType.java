@@ -16,5 +16,5 @@ public class StoreUpgradeType {
     public static final int GOLD_UPGRADE = 3;
 
     /* 이후 타워, 바리케이드 체력/방어력/공격력 등등이 추가될 수 있음 */
-
+    
 }

@@ -67,7 +67,8 @@ public class LevelUpSystem {
                     /** 3. 스탯 증감 처리를 한다 */  // 아 이거 별도 매서드 두기 좀 애매하네..
                     CharacterLevelUpInfo levelUpInfo = GameDataManager.getLevelUpInfo(characterComponent.characterType);
 
-                    character.hpComponent.maxHP += levelUpInfo.maxHP;
+                    character.hpComponent.originalMaxHp += levelUpInfo.maxHP;
+                    character.hpComponent.maxHP = character.hpComponent.originalMaxHp;
                     //character.hpComponent.currentHP = character.hpComponent.maxHP;
                     character.hpComponent.recoveryRateHP += levelUpInfo.recoveryRateHP;
 
@@ -76,7 +77,8 @@ public class LevelUpSystem {
                         character.hpComponent.currentHP = character.hpComponent.maxHP;
                     }
 
-                    character.mpComponent.maxMP += levelUpInfo.maxMP;
+                    character.mpComponent.originalMaxMP += levelUpInfo.maxMP;
+                    character.mpComponent.maxMP = character.mpComponent.originalMaxMP;
                     //character.mpComponent.currentMP = character.mpComponent.maxMP;
                     character.mpComponent.recoveryRateMP += levelUpInfo.recoveryRateMP;
 
@@ -87,7 +89,7 @@ public class LevelUpSystem {
 
                     character.attackComponent.attackDamage += levelUpInfo.attackDamage;
                     character.attackComponent.attackSpeed
-                            += ( character.attackComponent.attackSpeed * levelUpInfo.attackSpeed );
+                            += ( character.attackComponent.attackSpeed * levelUpInfo.attackSpeed * 0.01f );
 
                     character.defenseComponent.defense += levelUpInfo.defense;
 

@@ -36,15 +36,32 @@ public class SkillObjectSystem {
     {
         //System.out.println("처리 할 스킬 오브젝트의 갯수 : " + worldMap.skillObjectEntity.size());
 
+        boolean doOldVersion = false;
+
         /* 스킬 오브젝트 갯수만큼 반복한다 */
         for ( HashMap.Entry<Integer, SkillObjectEntity> skillObject : worldMap.skillObjectEntity.entrySet()){
 
             /* 스킬 오브젝트 정보 */
+
+            SkillObjectEntity skillObjectEntity = skillObject.getValue();
+
             SkillObjectComponent skillObjectComponent = skillObject.getValue().skillObjectComponent;
 
             if(skillObjectComponent.skillObjectDurationTime <= 0){
                 //continue;
             }
+
+
+            /** 2020 04 02 */
+            // 스킬 시전자 및 스킬 레벨 정보를 구한다
+            CharacterEntity skillUser = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
+            SkillSlot skillSlot = SkillFactory.findSkillSlotBySkillType(worldMap, skillUser, skillObjectComponent.createdSkillType);
+
+            int skillLevel = skillSlot.skillLevel;
+            int skillType = skillObjectComponent.createdSkillType;
+
+            /************************************************************************************************************/
+
 
             /* 스킬 오브젝트의 버프 정보 */
             BuffAction buffInfo = skillObjectComponent.buffAction;
@@ -86,6 +103,11 @@ public class SkillObjectSystem {
 
                 }
 
+                /** 효과들.. 삭제해주는 처리가 있어야 할 듯 ?? */
+
+
+
+
                 continue;
 
             }
@@ -102,29 +124,15 @@ public class SkillObjectSystem {
 
                     System.out.println("메테오의 지속시간이 남았습니다! ");
 
-                    /* 시전자 찾기 */
-                    CharacterEntity skillUser = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
-
-                    /* 시전자의 스킬정보 및 스킬 레벨 찾기 */
-                    SkillSlot slot;
-                    int skillLevel = 0;
-                    for (int i = 0; i < skillUser.skillSlotComponent.skillSlotList.size(); i++) {
-
-                        slot = skillUser.skillSlotComponent.skillSlotList.get(i);
-                        if (slot.skillinfo.skillType == SkillType.MAGICIAN_METEOR) {
-                            skillLevel = slot.skillLevel;
-                            break;
-                        }
-                    }
 
                     /* 스킬레벨테이블에서, 스킬의 지속시간을 얻는다 */
-                    float skillDuration = SkillFactory.skillLevelTable.get(SkillType.MAGICIAN_METEOR).get(skillLevel).durationTime; // tq..
+                    float skillDuration = SkillFactory.skillInfoPerLevelLIST.get(SkillType.MAGICIAN_METEOR).get(skillLevel).durationTime;
 
                     /* 판정,, (?) */
                     float elapsedTime = skillObjectComponent.skillObjectDurationTime - skillDuration;
 
                     System.out.println("메테오 사용 후 경과 시간 : " + elapsedTime);
-                    if (elapsedTime > 0f) {
+                    if (elapsedTime >= 0f) {
 
                         System.out.println("아직 1초가 지나지 않아, 다음 오브젝트 처리로 넘어갑니다.");
                         continue;   // 아래 범위판정을 진행하지 않고, 다음 오브젝트로 건너뛴다.
@@ -138,8 +146,8 @@ public class SkillObjectSystem {
                     System.out.println("가렌E ; 장판(?)의 위치를 시전자의 위치로 변경합니다 ");
                     // 어 설마... 그냥 장판의 positionComponent를 시전자의 것과 공유해도 될라나?? 굳이 복사처리 안해주고..
 
-                    /* 시전자 찾기 */
-                    CharacterEntity skillUser = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
+                    /* 시전자 찾기 위치 */
+
                     Vector3 newPos = skillUser.positionComponent.position;
 
                     /* 변경 */
@@ -170,6 +178,7 @@ public class SkillObjectSystem {
 
             } else {    /* 스킬 시전자가 캐릭터, 포탑 등인 경우 */
 
+                // 힐은.. 껍데기용이므로.
                 if(skillObjectComponent.createdSkillType == SkillType.MAGICIAN_HEAL)
                     continue;
 
@@ -291,8 +300,8 @@ public class SkillObjectSystem {
                     if(skillObject.getValue().entityID == buffActionList.get(k).unitID){
 
                         targetsBuffAction = buffActionList.get(k);
-
                         targetHasBuffAlready = true;
+
                         break;
                     }
                 }
@@ -302,62 +311,6 @@ public class SkillObjectSystem {
                     // targetsBuffAction.remainTime = deltaTime;    // 버프 지속 남은 시간을 초기화해준다
                     //targetsBuffAction.remainTime -= deltaTime;
 
-                    /** 메테오 */
-                    if(skillObjectComponent.createdSkillType == SkillType.MAGICIAN_METEOR){
-
-                        /* 우선 데미지를 한 번 주고, 그 후에, 데미지값을 검사했더니! 레벨테이블에 있는 값과 같다면 1/10 해준다. 아니라면 패스 */
-
-                        /* 시전자 찾기 */
-                        CharacterEntity skillUser = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
-
-                        /* 시전자의 스킬정보 및 스킬 레벨 찾기 */
-                        SkillSlot slot;
-                        int skillLevel = 0;
-                        for(int i=0; i<skillUser.skillSlotComponent.skillSlotList.size(); i++){
-
-                            slot = skillUser.skillSlotComponent.skillSlotList.get(i);
-                            if(slot.skillinfo.skillType == SkillType.MAGICIAN_METEOR){
-                                skillLevel = slot.skillLevel;
-                                break;
-                            }
-                        }
-
-                        /* 스킬레벨테이블에서, 스킬의 데미지값을 얻는다 */
-                        float skillDamage = SkillFactory.skillLevelTable.get(SkillType.MAGICIAN_METEOR).get(skillLevel).attackDamage; // tq..
-
-                        // 반드시 ConditionType.damageAmount가 첫 번째로 들어있을 것이라,,,, 굳이 타입이 damage~인 애를 찾아주기 포문을 돌려줘야??
-                        /*float currentBuffDamage = skillObjectComponent.buffAction.floatParam.get(0).value;
-
-                        if(currentBuffDamage == skillDamage){
-
-                            *//* 위에서 첫딜을 주었다고 가정, 첫딜이라면 데미지값이 기존데미지 그대로일 것이다. *//*
-                            //skillObjectComponent.buffAction.floatParam.get(0).value = skillDamage * 0.1f;
-
-                            System.out.println("스킬오브젝트의 버프의 값 (전): " + buffInfo.floatParam.get(0).value);
-
-                            targetsBuffAction.floatParam.get(0).value = skillDamage * 0.1f;
-
-                            //buffInfo.floatParam.get(0).value *=  0.1f;
-
-                            System.out.println("스킬오브젝트의 버프의 값 (후): " + buffInfo.floatParam.get(0).value);
-                        }*/
-                        float currentBuffDamage = targetsBuffAction.floatParam.get(0).value;
-
-                        if(currentBuffDamage == skillDamage){
-
-                            /* 위에서 첫딜을 주었다고 가정, 첫딜이라면 데미지값이 기존데미지 그대로일 것이다. */
-                            //skillObjectComponent.buffAction.floatParam.get(0).value = skillDamage * 0.1f;
-
-                            System.out.println("스킬오브젝트의 버프의 값 (전): " + buffInfo.floatParam.get(0).value);
-
-                            targetsBuffAction.floatParam.get(0).value = skillDamage * 0.1f;
-
-                            buffInfo.floatParam.get(0).value =  skillDamage * 0.1f;
-
-                            System.out.println("스킬오브젝트의 버프의 값 (후): " + buffInfo.floatParam.get(0).value);
-                        }
-
-                    }
 
                     /** 회오리 */ // 2020 01 18
                     if(skillObjectComponent.createdSkillType == SkillType.KNIGHT_TORNADO){
@@ -385,6 +338,87 @@ public class SkillObjectSystem {
 
                     }
 
+                    /**
+                     * 아이스필드 류를 위한..zz
+                     */
+
+                    else if(targetsBuffAction.skillType == SkillType.MAGICIAN_ICE_FIELD){
+
+                        if(targetsBuffAction.floatParam.get(0).type == ConditionType.moveSpeedRate){
+
+                            boolean haveDamage = false;
+                            for(int q=0; q<buffActionList.size(); q++){
+
+                                BuffAction buff = buffActionList.get(q);
+                                if(buff.unitID == buffActionList.get(q).unitID){
+
+                                    if(buff.floatParam.get(0).type == ConditionType.damageAmount){
+
+                                        haveDamage = true;
+                                        break;
+
+                                    }
+                                }
+                            }
+
+                            if(!haveDamage){
+
+                                // 데미지
+                                target.buffActionHistoryComponent.conditionHistory.add(
+                                        SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+
+                            }
+                        }
+
+
+                    }
+
+
+
+
+                    /**
+                     * 썬더 류를 위한..zz
+                     */
+
+                    else if(targetsBuffAction.skillType == SkillType.MAGICIAN_THUNDER) {
+
+                        if(targetsBuffAction.boolParam.size() > 0){
+
+                            if (targetsBuffAction.boolParam.get(0).type == ConditionType.isStunned) {
+
+                                boolean haveDamage = false;
+                                for (int q = 0; q < buffActionList.size(); q++) {
+
+                                    BuffAction buff = buffActionList.get(q);
+                                    if (buff.unitID == buffActionList.get(q).unitID) {
+
+                                        if(buff.floatParam.size() > 0){
+                                            if (buff.floatParam.get(0).type == ConditionType.damageAmount) {
+
+                                                haveDamage = true;
+                                                break;
+
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (!haveDamage) {
+
+                                    // 데미지
+                                    target.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+
+                                }
+                            }
+                        }
+
+                    }
+
+
+
                 }
                 else{   /* 기존에 효과를 받고있지 않다면 */
 
@@ -402,46 +436,55 @@ public class SkillObjectSystem {
 
                         targetPos.set(targetPos.x(), 2f, targetPos.z());
 
+                        if(doOldVersion){
+
+                            /**
+                             * 2020 02 06
+                             */
+                            BuffAction skillObjBuff = (BuffAction) skillObjectComponent.buffAction.clone();
+
+                            /* 데미지 */
+                            ConditionFloatParam damageParam = (ConditionFloatParam) skillObjBuff.floatParam.get(0).clone();
+                            BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, skillObjBuff.unitID, skillObjBuff.skillUserID);
+
+                            damageBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
+                            damageBuff.coolTime = 1f;
+                            damageBuff.remainCoolTime = 0f;
+                            damageBuff.skillType = SkillType.KNIGHT_TORNADO;
+                            target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
 
 
-                        //target.attackComponent.remainCoolTime = targetsBuffAction.remainTime;
+                            /* 상태 */
+                            skillObjBuff.floatParam.clear();
+                            skillObjBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
+                            skillObjBuff.coolTime = -1f;
+                            skillObjBuff.remainCoolTime = -1f;
+                            damageBuff.skillType = SkillType.KNIGHT_TORNADO;
+                            skillObjBuff.boolParam.clear();
+                            skillObjBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
+                            skillObjBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));
+                            target.buffActionHistoryComponent.conditionHistory.add(skillObjBuff);
 
+                            BuffAction airBorneBuff = new BuffAction();
+                            airBorneBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
+                            skillObjBuff.coolTime = 0.5f;
+                            skillObjBuff.remainCoolTime = 0f;
+                            skillObjBuff.boolParam.add(new ConditionBoolParam(ConditionType.isAirborne, true));
+                            damageBuff.skillType = SkillType.KNIGHT_TORNADO;
+                            target.buffActionHistoryComponent.conditionHistory.add(airBorneBuff);
 
+                        }
+                        else{
 
-                        /**
-                         * 2020 02 06
-                         */
-                        BuffAction skillObjBuff = (BuffAction) skillObjectComponent.buffAction.clone();
+                            // 데미지
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
 
-                        /* 데미지 */
-                        ConditionFloatParam damageParam = (ConditionFloatParam) skillObjBuff.floatParam.get(0).clone();
-                        BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, skillObjBuff.unitID, skillObjBuff.skillUserID);
+                            // 에어본
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "에어본", skillLevel, skillUser, skillObjectEntity.entityID));
 
-                        damageBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
-                        damageBuff.coolTime = 1f;
-                        damageBuff.remainCoolTime = 0f;
-                        damageBuff.skillType = SkillType.KNIGHT_TORNADO;
-                        target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
-
-
-                        /* 상태 */
-                        skillObjBuff.floatParam.clear();
-                        skillObjBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
-                        skillObjBuff.coolTime = -1f;
-                        skillObjBuff.remainCoolTime = -1f;
-                        damageBuff.skillType = SkillType.KNIGHT_TORNADO;
-                        skillObjBuff.boolParam.clear();
-                        skillObjBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
-                        skillObjBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));
-                        target.buffActionHistoryComponent.conditionHistory.add(skillObjBuff);
-
-                        BuffAction airBorneBuff = new BuffAction();
-                        airBorneBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
-                        skillObjBuff.coolTime = 0.5f;
-                        skillObjBuff.remainCoolTime = 0f;
-                        skillObjBuff.boolParam.add(new ConditionBoolParam(ConditionType.isAirborne, true));
-                        damageBuff.skillType = SkillType.KNIGHT_TORNADO;
-                        target.buffActionHistoryComponent.conditionHistory.add(airBorneBuff);
+                        }
 
 
                     }
@@ -459,33 +502,41 @@ public class SkillObjectSystem {
                      */
                     else if(skillObjectComponent.createdSkillType == SkillType.MAGICIAN_ICE_FIELD){
 
-                        BuffAction newBuff = (BuffAction) buffInfo.clone();
+                        if(doOldVersion){
 
-                        /* 대미지 처리 */
-/*
-                        float damage = newBuff.floatParam.get(0).value;
-                        DamageHistory iceFiledDam = new DamageHistory(newBuff.skillUserID, true, damage);
-
-                        newBuff.floatParam.remove(0);
-*/
+                            BuffAction newBuff = (BuffAction) buffInfo.clone();
 
 
-                        /** 2020 01 31 추가, 수정 */
-                        /* 데미지 처리 */
-                        BuffAction damage = new BuffAction();
-                        damage.unitID = skillObject.getValue().entityID;
-                        damage.skillUserID = skillObjectComponent.userEntityID;
-                        damage.remainTime = 0.15f;
-                        damage.coolTime = -1f;
-                        damage.remainCoolTime = -1f;
-                        damage.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(0).clone() );
+                            /** 2020 01 31 추가, 수정 */
+                            /* 데미지 처리 */
+                            BuffAction damage = new BuffAction();
+                            damage.unitID = skillObject.getValue().entityID;
+                            damage.skillUserID = skillObjectComponent.userEntityID;
+                            damage.remainTime = 0.15f;
+                            damage.coolTime = -1f;
+                            damage.remainCoolTime = -1f;
+                            damage.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(0).clone() );
 
-                        target.buffActionHistoryComponent.conditionHistory.add(damage);
+                            target.buffActionHistoryComponent.conditionHistory.add(damage);
 
 
-                        /* 슬로우 처리 */
-                        newBuff.floatParam.clear();
-                        buffActionList.add(newBuff);
+                            /* 슬로우 처리 */
+                            newBuff.floatParam.clear();
+                            buffActionList.add(newBuff);
+
+
+                        }
+                        else{
+
+                            // 데미지
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                            // 슬로우
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "슬로우", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                        }
 
                     }
                     /**
@@ -493,37 +544,54 @@ public class SkillObjectSystem {
                      */
                     else if(skillObjectComponent.createdSkillType == SkillType.MAGICIAN_THUNDER){
 
-                        BuffAction newBuff = (BuffAction) buffInfo.clone();
+                        if(doOldVersion){
 
-                        /** 대미지 및 스턴 */
+                            BuffAction newBuff = (BuffAction) buffInfo.clone();
 
-                        /* 대미지 */
-                        BuffAction damageBuff = new BuffAction();
-                        damageBuff.unitID = newBuff.unitID;
-                        damageBuff.skillUserID = newBuff.skillUserID;
-                        damageBuff.remainCoolTime = 0.15f;
-                        damageBuff.remainTime = 1f;
-                        damageBuff.coolTime = 1f;    // 스킬효과가 한 번만 적용되도록
-                        damageBuff.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(0).clone() );// 대미지 들어있음
+                            /** 대미지 및 스턴 */
 
-
-                        /* 스턴 */
-                        BuffAction stunBuff = new BuffAction();
-                        stunBuff.unitID = newBuff.unitID;
-                        stunBuff.skillUserID = newBuff.skillUserID;
-                        stunBuff.remainCoolTime = newBuff.remainCoolTime;
-                        stunBuff.remainTime = newBuff.remainTime;
-                        stunBuff.coolTime = newBuff.coolTime;
-                        stunBuff.boolParam.add( (ConditionBoolParam) newBuff.boolParam.get(0).clone() );// 스턴 들어있음
+                            /* 대미지 */
+                            BuffAction damageBuff = new BuffAction();
+                            damageBuff.unitID = newBuff.unitID;
+                            damageBuff.skillUserID = newBuff.skillUserID;
+                            damageBuff.remainCoolTime = 0.15f;
+                            damageBuff.remainTime = 1f;
+                            damageBuff.coolTime = 1f;    // 스킬효과가 한 번만 적용되도록
+                            damageBuff.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(0).clone() );// 대미지 들어있음
 
 
-                        /** 2020 03 12 */
-                        stunBuff.skillType = SkillType.MAGICIAN_THUNDER;
+                            /* 스턴 */
+                            BuffAction stunBuff = new BuffAction();
+                            stunBuff.unitID = newBuff.unitID;
+                            stunBuff.skillUserID = newBuff.skillUserID;
+                            stunBuff.remainCoolTime = newBuff.remainCoolTime;
+                            stunBuff.remainTime = newBuff.remainTime;
+                            stunBuff.coolTime = newBuff.coolTime;
+                            stunBuff.boolParam.add( (ConditionBoolParam) newBuff.boolParam.get(0).clone() );// 스턴 들어있음
 
 
-                        // 적용
-                        target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
-                        target.buffActionHistoryComponent.conditionHistory.add(stunBuff);
+                            /** 2020 03 12 */
+                            stunBuff.skillType = SkillType.MAGICIAN_THUNDER;
+
+
+                            // 적용
+                            target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                            target.buffActionHistoryComponent.conditionHistory.add(stunBuff);
+
+                        }
+                        else{
+
+                            // 데미지
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                            // 스턴
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "스턴", skillLevel, skillUser, skillObjectEntity.entityID));
+
+
+                        }
+
 
                     }
 
@@ -534,88 +602,140 @@ public class SkillObjectSystem {
                      */
                     else if(skillObjectComponent.createdSkillType == SkillType.MAGICIAN_FROZEN_BEAM){
 
-                        BuffAction newBuff = (BuffAction) buffInfo.clone();
+                        if(doOldVersion){
 
-                        /** 대미지 및 슬로우 ; 냉각이 풀린 후 적용됨 */
+                            BuffAction newBuff = (BuffAction) buffInfo.clone();
 
-                        /* 대미지 */
-                        BuffAction damageBuff = new BuffAction();
-                        damageBuff.unitID = newBuff.unitID;
-                        damageBuff.skillUserID = newBuff.skillUserID;
-                        damageBuff.remainCoolTime = newBuff.remainTime; // 냉각 효과가 지속된 이후에 적용되도록
-                        damageBuff.remainTime = newBuff.remainTime + skillObjectComponent.skillObjectDurationTime;
-                        damageBuff.coolTime = newBuff.remainTime + skillObjectComponent.skillObjectDurationTime;    // 스킬효과가 한 번만 적용되도록
-                        damageBuff.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(0).clone() );// 대미지 들어있음
+                            /** 대미지 및 슬로우 ; 냉각이 풀린 후 적용됨 */
 
-
-                        /* 슬로우 */
-                        BuffAction slowBuff = new BuffAction();
-                        slowBuff.unitID = newBuff.unitID;
-                        slowBuff.skillUserID = newBuff.skillUserID;
-                        slowBuff.remainCoolTime = newBuff.remainTime; // 냉각 효과가 지속된 이후에 적용되도록
-                        slowBuff.remainTime = newBuff.remainTime + skillObjectComponent.skillObjectDurationTime;
-                        //slowBuff.coolTime = 0.1f;   // 0.1로 준 이유.........
-                        slowBuff.coolTime = worldMap.tickRate * 0.001f;   // 0.1로 준 이유.........
-                        slowBuff.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(1).clone() );// 슬로우 들어있음
-                        slowBuff.boolParam.add( new ConditionBoolParam(ConditionType.isSlow, true));
+                            /* 대미지 */
+                            BuffAction damageBuff = new BuffAction();
+                            damageBuff.unitID = newBuff.unitID;
+                            damageBuff.skillUserID = newBuff.skillUserID;
+                            damageBuff.remainCoolTime = newBuff.remainTime; // 냉각 효과가 지속된 이후에 적용되도록
+                            damageBuff.remainTime = newBuff.remainTime + skillObjectComponent.skillObjectDurationTime;
+                            damageBuff.coolTime = newBuff.remainTime + skillObjectComponent.skillObjectDurationTime;    // 스킬효과가 한 번만 적용되도록
+                            damageBuff.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(0).clone() );// 대미지 들어있음
 
 
-                        /** 2020 03 12 */
-                        slowBuff.skillType = SkillType.MAGICIAN_FROZEN_BEAM;
+                            /* 슬로우 */
+                            BuffAction slowBuff = new BuffAction();
+                            slowBuff.unitID = newBuff.unitID;
+                            slowBuff.skillUserID = newBuff.skillUserID;
+                            slowBuff.remainCoolTime = newBuff.remainTime; // 냉각 효과가 지속된 이후에 적용되도록
+                            slowBuff.remainTime = newBuff.remainTime + skillObjectComponent.skillObjectDurationTime;
+                            //slowBuff.coolTime = 0.1f;   // 0.1로 준 이유.........
+                            slowBuff.coolTime = worldMap.tickRate * 0.001f;   // 0.1로 준 이유.........
+                            slowBuff.floatParam.add( (ConditionFloatParam) newBuff.floatParam.get(1).clone() );// 슬로우 들어있음
+                            slowBuff.boolParam.add( new ConditionBoolParam(ConditionType.isSlow, true));
 
 
-                        /** 냉각 ; 스킬적중 시 바로 적용됨 */
-                        newBuff.floatParam.clear(); // 위에서 적용한 후 버프들 지워버리고나면 냉각 효과만 남음. ( 냉각은 boolParam )
+                            /** 2020 03 12 */
+                            slowBuff.skillType = SkillType.MAGICIAN_FROZEN_BEAM;
 
 
-                        // 적용
-                        target.buffActionHistoryComponent.conditionHistory.add(newBuff);
-                        target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
-                        target.buffActionHistoryComponent.conditionHistory.add(slowBuff);
+                            /** 냉각 ; 스킬적중 시 바로 적용됨 */
+                            newBuff.floatParam.clear(); // 위에서 적용한 후 버프들 지워버리고나면 냉각 효과만 남음. ( 냉각은 boolParam )
 
+
+                            // 적용
+                            target.buffActionHistoryComponent.conditionHistory.add(newBuff);
+                            target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                            target.buffActionHistoryComponent.conditionHistory.add(slowBuff);
+
+                        }
+                        else{
+
+                            /** 2020 04 02 ver */
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "빙결", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "슬로우", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+                        }
 
                     }
                     else if(skillObjectComponent.createdSkillType == SkillType.MAGICIAN_METEOR){
 
-                        /* 대상의 버프 목록에 추가해준다. */
-                        BuffAction newBuff = (BuffAction) buffInfo.clone();
+                        if(doOldVersion){
 
-                        /**
-                         * 2020 02 06
-                         */
-                        /* 데미지 */
-                        ConditionFloatParam damageParam = (ConditionFloatParam) newBuff.floatParam.get(0).clone();
-                        BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, newBuff.unitID, newBuff.skillUserID);
-                        target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                            /* 대상의 버프 목록에 추가해준다. */
+                            BuffAction newBuff = (BuffAction) buffInfo.clone();
 
-                        /* 상태 */
-                        target.buffActionHistoryComponent.conditionHistory.add(newBuff);
+                            /**
+                             * 2020 02 06
+                             */
+                            /* 데미지 */
+                            ConditionFloatParam damageParam = (ConditionFloatParam) newBuff.floatParam.get(0).clone();
+                            BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, newBuff.unitID, newBuff.skillUserID);
+                            target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
 
-                        newBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
-                        buffActionList.add(newBuff);
+                            /* 상태 */
+                            target.buffActionHistoryComponent.conditionHistory.add(newBuff);
+
+                            newBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
+                            buffActionList.add(newBuff);
+
+
+                        }
+                        else{
+
+                            /* 스킬레벨테이블에서, 스킬의 지속시간을 얻는다 */
+                            float skillDuration = SkillFactory.skillInfoPerLevelLIST.get(SkillType.MAGICIAN_METEOR).get(skillLevel).durationTime;
+
+
+                            if((skillObjectComponent.skillObjectDurationTime + 0.1f) >= skillDuration){
+
+                                target.buffActionHistoryComponent.conditionHistory.add(
+                                        SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                            }
+                            else{
+
+                                target.buffActionHistoryComponent.conditionHistory.add(
+                                        SkillFactory.createSkillEffect(skillType, "장판 데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                            }
+
+                        }
 
 
                     }
                     else {
 
-                        /* 대상의 버프 목록에 추가해준다. */
-                        BuffAction newBuff = (BuffAction) buffInfo.clone();
+                        System.out.println("스킬 오브젝트, 대상에게 버프를 새로 추가해 줌");
 
+                        if (doOldVersion){
 
-                        /**
-                         * 2020 02 06
-                         */
-                        /* 데미지 */
-                        ConditionFloatParam damageParam = (ConditionFloatParam) newBuff.floatParam.get(0).clone();
-                        BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, newBuff.unitID, newBuff.skillUserID);
-                        target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                            /* 대상의 버프 목록에 추가해준다. */
+                            BuffAction newBuff = (BuffAction) buffInfo.clone();
 
-                        /* 상태 */
-                        newBuff.floatParam.clear();
-                        target.buffActionHistoryComponent.conditionHistory.add(newBuff);
+                            /**
+                             * 2020 02 06
+                             */
+                            /* 데미지 */
+                            ConditionFloatParam damageParam = (ConditionFloatParam) newBuff.floatParam.get(0).clone();
+                            BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, newBuff.unitID, newBuff.skillUserID);
+                            target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
 
-                        newBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
-                        //buffActionList.add(newBuff);
+                            /* 상태 */
+                            newBuff.floatParam.clear();
+                            target.buffActionHistoryComponent.conditionHistory.add(newBuff);
+
+                            //newBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
+                            //buffActionList.add(newBuff);
+
+                        }
+                        else{
+
+                            target.buffActionHistoryComponent.conditionHistory.add(
+                                    SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+                        }
+
 
                     }
 

@@ -1,7 +1,7 @@
 package ECS.Classes;
 
-import ECS.Classes.Type.*;
 
+import ECS.Classes.Type.SkillType;
 
 //스킬에 대한 데이터를 저장하는 부분.
 public class SkillInfo implements Cloneable {
@@ -53,6 +53,22 @@ public class SkillInfo implements Cloneable {
     public SkillInfo(int skillType) {
         this.skillType = skillType;
         this.skillName = "빈 슬롯";
+    }
+
+    public void printSkillInfo(){
+
+        System.out.println(this.skillType);
+        System.out.println(this.skillName);
+        System.out.println(this.skillCoolTime);
+        System.out.println(this.reqHP);
+        System.out.println(this.reqMP);
+        System.out.println(this.skillRange);
+        if(skillObjectInfo != null){
+            System.out.println(skillObjectInfo.skillAreaType);
+            System.out.println(skillObjectInfo.skillObjectAngle);
+        }
+
+
     }
 
     @Override

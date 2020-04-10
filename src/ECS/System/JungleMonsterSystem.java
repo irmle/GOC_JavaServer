@@ -1,17 +1,13 @@
 package ECS.System;
 
 import ECS.Classes.*;
-import ECS.Classes.Type.ConditionType;
-import ECS.Components.AttackComponent;
-import ECS.Components.ConditionComponent;
-import ECS.Components.HPComponent;
-import ECS.Components.PositionComponent;
+import ECS.Classes.Type.MonsterActionType_ForEffect;
+import ECS.Components.*;
 import ECS.Entity.CharacterEntity;
-import ECS.Entity.Entity;
 import ECS.Entity.MonsterEntity;
 import ECS.Factory.MapFactory;
 import ECS.Factory.MonsterFactory;
-import ECS.Factory.SkillFactory;
+import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 import ECS.Classes.Type.Jungle.*;
 import RMI.RMI_Classes.RMI_Context;
@@ -25,7 +21,7 @@ import java.util.HashMap;
 /**
  * 작 성 자 : 권령희
  * 작성날짜 : 2020 02 27
- * 업뎃날짜 :
+ * 업뎃날짜 : 오후 9:51 2020-04-08
  * 목    적 :
  * 업뎃내용 :
  */
@@ -57,6 +53,8 @@ public class JungleMonsterSystem {
             }
             System.out.println("몹 슬롯 : " + slot.slotNum);
 
+            boolean isReturnCondition;
+
             int slotState = slot.monsterState;
             switch (slotState) {
 
@@ -65,6 +63,7 @@ public class JungleMonsterSystem {
 
                     /* 슬롯에 지정된 타입의 몬스터를 생성한다 */
                     createNewMonster(slot);
+                    slot.resetPatience();
 
                     /* 상태 변환 : EMPTY >> IDLE */
                     slot.setMonsterState(JungleMobState.IDLE);
@@ -75,9 +74,10 @@ public class JungleMonsterSystem {
 
                     System.out.println("IDLE 상태 ");
                     /*
-                     * 아무것도 하지 않음.
+                     * 체력이 MAX 이하라면 체력을 회복한다 // 나중에 변경될지도 오후 9:51 2020-04-08
                      * 만약 IDLE 상태에 있다가 캐릭터로부터 데미지를 입는다면, 상태가 IDLE >> TARGET_INDICATE로 변하게 됨.
                      */
+                    recoverHpIfNeed(slot);
 
                     break;
 
@@ -93,11 +93,17 @@ public class JungleMonsterSystem {
                      *  몹의 타겟을 위에서 찾은 대상으로 지정해준다
                      * 상태변환 : INDICATE >> TRACE;
                      */
-
-                    System.out.println("몬스터ID : " + slot.monsterID);
                     MonsterEntity mob = worldMap.monsterEntity.get(slot.monsterID);
-                    if(mob == null){
-                        System.out.println("널이다");
+
+
+                    /** 귀환 조건을 먼저 체크 후, 조건을 만족한다면 상태를 변경한다 */
+                    isReturnCondition = ckeckMonsterReturningCondition(slot);
+                    if(isReturnCondition){
+
+                        System.out.println("귀환 조건을 만족하여 상태를 변경합니다. ");
+
+                        slot.setMonsterState(JungleMobState.RETURN_TO_SP);
+                        break;
                     }
 
 
@@ -143,8 +149,23 @@ public class JungleMonsterSystem {
                      *
                      */
 
+                    /** 귀환 조건을 먼저 체크 후, 조건을 만족한다면 상태를 변경한다 */
+                    isReturnCondition = ckeckMonsterReturningCondition(slot);
+                    if(isReturnCondition){
+
+                        System.out.println("귀환 조건을 만족하여 상태를 변경합니다. ");
+
+                        slot.setMonsterState(JungleMobState.RETURN_TO_SP);
+                        break;
+                    }
+
+
                     boolean isAbleToTrace = checkIsAbleToTraceTarget(slot);
                     if( !isAbleToTrace ){
+
+                        /* 인내심 */
+                        slot.reducePatience();
+
                         slot.setMonsterState(JungleMobState.TARGET_INDICATE);
                         System.out.println("타겟 추적이 불가능하므로 INDICATE로 상태변환함");
                         break;
@@ -185,6 +206,16 @@ public class JungleMonsterSystem {
                      *      공격 쿨타임 감소 처리를 한다
                      *  break;
                      */
+
+                    /** 귀환 조건을 먼저 체크 후, 조건을 만족한다면 상태를 변경한다 */
+                    isReturnCondition = ckeckMonsterReturningCondition(slot);
+                    if(isReturnCondition){
+
+                        System.out.println("귀환 조건을 만족하여 상태를 변경합니다. ");
+
+                        slot.setMonsterState(JungleMobState.RETURN_TO_SP);
+                        break;
+                    }
 
                     boolean isTargetAlive = targetIsAlive(slot);
                     if(!isTargetAlive){
@@ -229,9 +260,12 @@ public class JungleMonsterSystem {
                      * break;
                      */
 
+                    recoverHpIfNeed(slot);
+
                     boolean isArrived = checkIfArrivedSpawnPoint(slot);
                     if(isArrived){
                         slot.setMonsterState(JungleMobState.IDLE);
+                        slot.resetPatience();
                         break;
                     }
 
@@ -270,7 +304,12 @@ public class JungleMonsterSystem {
 
                     if(slot.remainedRegenTime <= 0){
 
-                        createNewMonster(slot);
+                        /**
+                         * 수정
+                         * 오후 6:59 2020-04-08
+                         * 몹 리젠 처리를 담당하는, 껍데기 매서드 하나 호출하도록 하기.
+                         */
+                        regenMonster(slot);
                         slot.setMonsterState(JungleMobState.IDLE);
                     }
                     else {
@@ -281,9 +320,6 @@ public class JungleMonsterSystem {
                     break;
 
             }
-
-
-
 
 
         }
@@ -299,8 +335,10 @@ public class JungleMonsterSystem {
      */
     public void createNewMonster(JungleMonsterSlot slot){
 
+        System.out.println("정글몹을 생성합니다");
+
         /** 몹을 생성함 */
-        MonsterEntity newJungleMob = MonsterFactory.createJungleMonster(slot.jungleMobType);
+        MonsterEntity newJungleMob = MonsterFactory.createJungleMonster(slot.jungleMobType, worldMap);
 
         /** 새로 ID 할당받음 */
         int newEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
@@ -309,6 +347,7 @@ public class JungleMonsterSystem {
         /** 슬롯이랑도 매핑해줌 */
         slot.monsterID = newEntityID;
         System.out.println("새 몬스터 ID : " + slot.monsterID);
+
 
         /** 몹 위치를, 슬롯 위치랑 매칭시켜주고 */
         Vector3 spawnPos = slot.slotPoint.getPixelPosition();
@@ -319,7 +358,8 @@ public class JungleMonsterSystem {
         System.out.println("몹 위치 : " + newJungleMob.positionComponent.position.x() + ", " + newJungleMob.positionComponent.position.z());
 
         /** 월드에도 매핑해주고 */
-        worldMap.jungleMonsterSlotList.put(newEntityID, slot);
+        worldMap.jungleMonsterSlotHashMap.put(newEntityID, slot);
+        worldMap.jungleMonsterSlotMonsterEntityHashMap.put(slot, newJungleMob);
         worldMap.requestCreateQueue.add(newJungleMob);
 
     }
@@ -439,6 +479,10 @@ public class JungleMonsterSystem {
         PositionComponent monsterPos = monster.positionComponent;
         Vector3 currentPos = monsterPos.position;
 
+        if(monster.conditionComponent.isStunned || monster.conditionComponent.isDisableMove){
+            return;
+        }
+
         /* 현재 위치가 속한 타일을 구하기 */
         MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
         System.out.println("몬스터 위치 : " + currentPos.x() + ", " + currentPos.z());
@@ -517,6 +561,11 @@ public class JungleMonsterSystem {
         PositionComponent monsterPos = monster.positionComponent;
         Vector3 currentPos = monsterPos.position;
 
+        if(monster.conditionComponent.isDisableMove || monster.conditionComponent.isStunned){
+            return;
+        }
+
+
         /* 현재 위치가 속한 타일을 구하기 */
         MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
 
@@ -591,9 +640,14 @@ public class JungleMonsterSystem {
                 monster.entityID, (short)EntityType.CharacterEntity, target.entityID);
 
         /* 대상에게 데미지 버프를 넣어줌 */
-        ConditionFloatParam damageParam = new ConditionFloatParam(ConditionType.damageAmount, monsterAttack.attackDamage);
+        /*ConditionFloatParam damageParam = new ConditionFloatParam(ConditionType.damageAmount, monsterAttack.attackDamage);
         BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, monster.entityID, monster.entityID);
         target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+*/
+        target.buffActionHistoryComponent.conditionHistory.add(
+                MonsterFactory.createMonsterActionEffect(
+                        MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monster, monster.entityID));
+
 
         /* 공격 쿨타임을 초기화한다 */
         monster.attackComponent.remainCoolTime = 1 / monster.attackComponent.attackSpeed;
@@ -648,5 +702,132 @@ public class JungleMonsterSystem {
 
     }
 
+    /**
+     * 주석 작성
+     * 오전 1:58 2020-04-07
+     * 목적 : 몹 리젠 시 처리를 수행하기위한 틀 매서드
+     * 처리 :
+     *      다음에 생성될 정글몹을 지정하는 처리를 한다.
+     *      ( 현재 월드맵에 있는..) decidedJungleMob() 매서드를 호출하여 랜덤으로 결정한다
+     *      결정된 몹의 타입을 슬롯에 지정해준다
+     */
+    public void regenMonster(JungleMonsterSlot slot){
+
+        System.out.println("몸 리벤 처리 함 ");
+
+        /** GDM 데이터 참조 */
+        HashMap<Integer, MonsterInfo> jungleMonsterInfoList = GameDataManager.jungleMonsterInfoList;
+        MonsterInfo jungleInfo;
+
+        /** 다음에 생성될 정글 몬스터를 랜덤으로 결정한다 */
+        int newType = worldMap.decideJungleMonsterToBeSpawned();
+        System.out.println("기존 타입 : " + slot.jungleMobType);
+        System.out.println("결정된 타입 : " + newType);
+
+        /** 생성될 몹 타입을 슬롯에 지정한다 */
+        jungleInfo = jungleMonsterInfoList.get(newType);
+        slot.setJungleMonsterInfo(newType, jungleInfo.regenTime * 60f);
+
+
+        /** 지정된 몹을 생성한다 */
+        // onUpdate - regenWaiting 케이스의 create~() 매서드를 지우고, 여기서 호출하도록 함.
+        createNewMonster(slot);
+
+        slot.resetPatience();
+
+    }
+
+    /**
+     * 주석 작성
+     * 오전 2:09 2020-04-07
+     * 목적 : 몬스터가(IDLE 상태가 아닐 경우, ) 귀환 조건을 만족하는지 검사하는 매서드
+     *      이 매서드의 caller 가 true 값을 반환받을 때 마다, 슬롯의 상태를 RETURN으로 변경해주도록 한다
+     *
+     * 검사 목록 :
+     *      1) currentHP가 maxHP의 30% 이하로 남음
+     *      2) 몹의 인내심 게이지가 0 이하로 떨어짐
+     *      3) 몹이 스폰 지점으로부터 시야 이상으로 멀어짐
+     *
+     *      위 조건을 하나라도 만족 시, true값을 리턴한다
+     *
+     * 추가 작성해야 할 것 :
+     *      -- 정글몹 슬롯 클래스에, "인내심" 추가 // 일단 디폴트로 5 값을 갖도록 한다. 이거는 기획이 확정되어야 파일에 넣어 불러오든 할 듯. 몹별로 인내심이 다르다던가..
+     *      -- ㄴ 인내심을 1씩 깎는 매서드를 하나 추가
+     *      -- 정글몹의 target 이 변경되는 시점마다, 위 매서드를 호출하도록 함.
+     *
+     *      -- 몹이 IDLE, RETURN 상태일 때
+     *              체력이 max 이하라면 체력 값을 회복하는 버프를 넣어준다.
+     *
+     *
+     */
+    public boolean ckeckMonsterReturningCondition(JungleMonsterSlot slot){
+
+        boolean isReturnCondition = false;
+
+        /** 참조 데이터 */
+        MonsterEntity monster = worldMap.monsterEntity.get(slot.monsterID);
+        HPComponent monsterHP = monster.hpComponent;
+        Vector3 monsterPos = monster.positionComponent.position;
+        Vector3 spawnPoint = slot.slotPoint.getPixelPosition();
+
+        float monsterLookRadius = monster.sightComponent.lookRadius;
+
+        /** 체력 검사 */
+        float HP_RATE_FOR_RETURNING = 30f;
+        boolean isHPLow = ( monsterHP.checkCurrentHpPercentage() < HP_RATE_FOR_RETURNING ) ? true : false;
+        System.out.println("남은 체력 : " + monsterHP.checkCurrentHpPercentage());
+
+        /** 인내심 테스트 */
+        boolean isNoPatience = slot.checkMonsterIsNotPatient();
+        System.out.println("인내심 : " + slot.patience);
+
+        /** 너무 멀리왔나? */
+        float distnaceFromSP =  Vector3.distance(spawnPoint, monsterPos);
+        boolean isFarFromHome = (distnaceFromSP > monsterLookRadius) ? true : false;
+        System.out.println("거리 : " + distnaceFromSP + ", 시야 : " + monsterLookRadius);
+
+
+        /** 결과 판단 */
+        isReturnCondition = ( isHPLow || isNoPatience || isFarFromHome );
+
+
+        return isReturnCondition;
+
+    }
+
+    /**
+     * -- 업뎃날짜 :
+     *      # 오후 9:33 2020-04-08
+     *
+     * -- 기    능 :
+     *
+     *      # 정글 몹의 체력 회복 조건을 검사한 후( MAX 이하라면), 체력을 회복시킨다.
+
+     *
+     */
+    public void recoverHpIfNeed(JungleMonsterSlot slot){
+
+        /** 몬스터 검색 */
+        MonsterEntity monster = worldMap.monsterEntity.get(slot.monsterID);
+        BuffActionHistoryComponent monsterBuffList = monster.buffActionHistoryComponent;
+        HPComponent monsterHp = monster.hpComponent;
+
+        /** 회복 효과를 받아야 하는 조건인지 검사 */
+        boolean needRecovery = monsterHp.checkIfNeedHpRecovery();
+        if(needRecovery){
+
+            System.out.println("정글 회복 효과를 적용합니다 ");
+
+            /** 회복효과 생성 및 적용 */
+            monsterBuffList.conditionHistory.add(
+                    MonsterFactory.createMonsterActionEffect(
+                            MonsterActionType_ForEffect.JUNGLE_MOB_RETURN, "체력회복", monster, monster.entityID));
+
+        }
+
+
+        return;
+
+    }
 
 }

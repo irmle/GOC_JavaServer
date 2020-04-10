@@ -64,13 +64,13 @@ public class TCP_InBoundHandler extends ChannelInboundHandlerAdapter
         short rmi_ctx = receive_data.getShortLE(8);
         //rmi packet type (short)
         short packet_type = receive_data.getShortLE(10);
-
-        //받아온  byte[] 데이터
+        //받아온 데이터.
         byte[] packet_data = new byte[packet_size];
         receive_data.getBytes(12, packet_data);
 
         //사용한 버퍼를 반환한다!
-        receive_data.release();
+        if(receive_data.refCnt()>0)
+            ReferenceCountUtil.release(receive_data, receive_data.refCnt());
 
         //RMI 수신로직 처리 부분.
         RMI_.recvByte(rmi_id, rmi_ctx, packet_type, packet_data, null, ctx); //TCP데이터이므로 UDP Data는 null값!

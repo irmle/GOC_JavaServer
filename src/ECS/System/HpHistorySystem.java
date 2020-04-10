@@ -4,7 +4,6 @@ import ECS.ActionQueue.ActionStopUsingSkill;
 import ECS.Classes.*;
 import ECS.Classes.Type.Build.BuildSlotState;
 import ECS.Classes.Type.ConditionType;
-import ECS.Classes.Type.DamageType;
 import ECS.Classes.Type.DeathType;
 import ECS.Classes.Type.Jungle.JungleMobState;
 import ECS.Classes.Type.SkillType;
@@ -225,7 +224,7 @@ public class HpHistorySystem {
                     System.out.println(monster.monsterComponent.monsterName + monster.entityID + "가 데미지" + damageHistory.amount + "를 받습니다.");
 
                     /* 2020 01 24 추가 ; 흡혈 처리 */
-                    blooldSuck(lastDamagedEntity, damageHistory.amount);
+                    //blooldSuck(lastDamagedEntity, damageHistory.amount);
 
                     /** 2020 02 12 수 추가 */
                     // 몹에게 데미지를 준 앤티티가 캐릭터일 경우, 해당 캐릭터의 스코어에 반영한다
@@ -234,13 +233,17 @@ public class HpHistorySystem {
                     int attackerType = worldMap.entityMappingList.get(damageHistory.unitID);
                     if(attackerType == EntityType.CharacterEntity){
                         worldMap.playerGameScoreList.get(damageHistory.unitID).givenDamageAmount += damageHistory.amount;
+
+                        /* 2020 01 24 추가 ; 흡혈 처리 */
+                        blooldSuck(lastDamagedEntity, damageHistory.amount);
+
                     }
 
                     /** 2020 02 28 추가 */
                     /**
                      * 정글몬스터에 대해..
                      */
-                    if(worldMap.jungleMonsterSlotList.containsKey(monster.entityID)){
+                    if(worldMap.jungleMonsterSlotHashMap.containsKey(monster.entityID)){
 
                         System.out.println("정글몹이다 ");
 
@@ -298,6 +301,15 @@ public class HpHistorySystem {
                     System.out.println("사망자를 추가하는 과정에서 오류가 발생");
                 }*/
                 worldMap.deathQueue.add(monsterDeath);
+
+                if(worldMap.jungleMonsterSlotHashMap.containsKey(monster.entityID)){
+
+                    System.out.println("정글몹이다 죽음 hp시스템 ");
+
+                    JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, monster.entityID);
+                    slot.setMonsterState(JungleMobState.DIED);
+
+                }
 
             }
 

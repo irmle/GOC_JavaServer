@@ -5,18 +5,15 @@ import ECS.Classes.Type.Jungle.JungleMobState;
 /**
  * 작 성 자 : 권령희
  * 작성날짜 : 2020 02 27
- * 업뎃날짜 :
+ * 업뎃날짜 : 오후 8:46 2020-04-08
  * 목    적 :
  * 업뎃내용 :
  *
- * 작성할 매서드 목록? :
- *  상태 설정하기
- *  리젠타임 초기화하기
- *  리젠타임 다됐는지 체크하기
- *  리젠타임 세팅(시간의 경과 처리..)
- *  ...
+ *
  */
 public class JungleMonsterSlot {
+
+    public static final int PATIENCE_VALUE = 5;
 
     public int slotNum;
     public MapInfo slotPoint; // 맵상 지점
@@ -29,6 +26,9 @@ public class JungleMonsterSlot {
     public float regenTime;    // 현 슬롯의 몹이 재생성하는 데 걸리는 시간 (고정값)
     public float remainedRegenTime;    // 몹 리젠까지 남은 시간
 
+    /** 오후 8:46 2020-04-08 추가 */
+    public int patience;
+
 
     /**
      * 맵에 있는 정글몹 스폰 포인트 목록을 찾아 정글몹슬롯을 생성하고 할당할 때에 쓰일 생성자.
@@ -40,6 +40,7 @@ public class JungleMonsterSlot {
         this.slotPoint = slotPoint;
 
         monsterState = JungleMobState.EMPTY;
+        patience = PATIENCE_VALUE;
     }
 
 
@@ -54,6 +55,7 @@ public class JungleMonsterSlot {
         this.regenTime = regenTime;
 
         remainedRegenTime = 0f;
+        patience = PATIENCE_VALUE;
     }
 
     /**
@@ -65,6 +67,7 @@ public class JungleMonsterSlot {
     public void setJungleMonster(int monsterID){
 
         this.monsterID = monsterID;
+        patience = PATIENCE_VALUE;
     }
 
     public void setJungleMonsterInfo(int jungleMobType, float regenTime){
@@ -73,6 +76,7 @@ public class JungleMonsterSlot {
         this.regenTime = regenTime;
 
         remainedRegenTime = 0f;
+        patience = PATIENCE_VALUE;
     }
 
     public void setMonsterState(int state){
@@ -89,6 +93,22 @@ public class JungleMonsterSlot {
         this.remainedRegenTime -= deltaTime;
     }
 
+    public void reducePatience(){
+
+        this.patience--;
+    }
+
+    public void resetPatience(){
+
+        this.patience = PATIENCE_VALUE;
+    }
+
+    public boolean checkMonsterIsNotPatient(){
+
+        boolean isNotPatinet = (this.patience <= 0) ? true : false;
+
+        return isNotPatinet;
+    }
 
 
 

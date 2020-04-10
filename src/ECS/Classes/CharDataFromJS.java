@@ -6,8 +6,16 @@ import com.google.gson.JsonObject;
 /**
  * 작 성 자 : 권령희
  * 작성날짜 : 2020 02 10
+ * 업뎃날짜 : 오전 4:57 2020-04-07
  * 목    적 :
  *      웹서버로부터 얻은 JSON 형태의 플레이어 캐릭터 정보를 옮겨담는 용도
+ *
+ * 작업이력 :
+ * 메    모 :
+ *
+ *
+ *
+ *
  */
 public class CharDataFromJS {
 
@@ -35,6 +43,8 @@ public class CharDataFromJS {
     public float criticalBonus;
 
     public int elemental;
+
+    public float balance;
 
 
     /* 생성자 */
@@ -69,10 +79,21 @@ public class CharDataFromJS {
         this.criticalRate = playerInfo.get("criticalRate").getAsFloat();
         this.criticalBonus = playerInfo.get("criticalBonus").getAsFloat();
 
-        // this.attackRange = 10f;
         this.attackRange = playerInfo.get("attackRange").getAsFloat();
 
         this.elemental = playerInfo.get("guardianCrystal").getAsInt();
+
+        /**
+         * 오전 4:56 2020-04-07
+         * 밸런스값 추가
+         * 일단은 80 고정하기로 했으니까 이렇게 하고..
+         * 성준씨랑 이야기 해 보고? 웹서버에서 보내준다고 하면
+         * 그때 풀지 머.
+         * 근데.. 아마 DB도 새로 짜야할텐데, 밸런스 필드 추가하고 그래야할듯
+         */
+        this.balance = 80f;
+        //this.balance = playerInfo.get("balance").getAsFloat();
+
 
         System.out.println("공격데미지 : " + this.attackDamage);
         System.out.println("방어력 : " + this.defense);

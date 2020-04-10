@@ -3,10 +3,12 @@ package ECS.System;
 import ECS.Classes.*;
 import ECS.Classes.Type.ConditionType;
 import ECS.Classes.Type.MonsterActionType;
+import ECS.Classes.Type.MonsterActionType_ForEffect;
 import ECS.Classes.Type.PathType;
 import ECS.Components.*;
 import ECS.Entity.*;
 import ECS.Factory.MapFactory;
+import ECS.Factory.MonsterFactory;
 import ECS.Game.WorldMap;
 import RMI.RMI_Classes.RMI_Context;
 import RMI.RMI_Classes.RMI_ID;
@@ -42,6 +44,7 @@ public class MonsterSystem3 {
     public void onUpdate(float deltaTime){
 
         boolean testMode = true;
+        boolean doOldVersion = false;
 
         /* 모든 몬스터에 대해 반복한다 */
         for(HashMap.Entry<Integer, MonsterEntity> monsterEntity : worldMap.monsterEntity.entrySet()){
@@ -52,7 +55,7 @@ public class MonsterSystem3 {
             MonsterEntity monster = monsterEntity.getValue();
 
             /* 2020 02 28 정글 몬스터 넘어가고 */
-            if(worldMap.jungleMonsterSlotList.containsKey(monster.entityID)){
+            if(worldMap.jungleMonsterSlotMonsterEntityHashMap.containsKey(monster.entityID)){
                 continue;
             }
 
@@ -309,30 +312,44 @@ public class MonsterSystem3 {
                             RMI_ID.getArray(worldMap.worldMapRMI_IDList.values()), RMI_Context.Reliable_Public_AES128,
                             monster.entityID, (short)finalTargetType, finalTargetID);
 
-                    /* 타겟에게 입힐 데미지를 계산한다 */
-                    float damageAmount = 0f;
 
-                    AttackComponent mobAttack = monster.attackComponent;
-                    ConditionComponent mobCondition = monster.conditionComponent;
-                    damageAmount
-                            = ( mobAttack.attackDamage + mobCondition.attackDamageBonus ) * mobCondition.attackDamageRate;
+                    if (doOldVersion){
+
+                        /* 타겟에게 입힐 데미지를 계산한다 */
+                        float damageAmount = 0f;
+
+                        AttackComponent mobAttack = monster.attackComponent;
+                        ConditionComponent mobCondition = monster.conditionComponent;
+                        damageAmount
+                                = ( mobAttack.attackDamage + mobCondition.attackDamageBonus ) * mobCondition.attackDamageRate;
 
 
-                    /** 2020 01 30 수정 ; 데미지가 아니라, 버프로 처리하게끔 */
-                    /* 타겟을 찾고, 타겟의 데미지 목록에 넣어준다 */
+                        /** 2020 01 30 수정 ; 데미지가 아니라, 버프로 처리하게끔 */
+                        /* 타겟을 찾고, 타겟의 데미지 목록에 넣어준다 */
 
-                    BuffAction dmgBuff = new BuffAction();
-                    dmgBuff.unitID = monster.entityID;
-                    dmgBuff.skillUserID = monster.entityID;
-                    dmgBuff.remainCoolTime = -1f;
-                    dmgBuff.coolTime = -1f;
-                    dmgBuff.remainTime = 0.15f;
+                        BuffAction dmgBuff = new BuffAction();
+                        dmgBuff.unitID = monster.entityID;
+                        dmgBuff.skillUserID = monster.entityID;
+                        dmgBuff.remainCoolTime = -1f;
+                        dmgBuff.coolTime = -1f;
+                        dmgBuff.remainTime = 0.15f;
 
-                    dmgBuff.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, damageAmount));
+                        dmgBuff.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, damageAmount));
 
-                    // 버프 목록에 추가!!
-                    finalTargetBuffComponent.conditionHistory.add(dmgBuff);
+                        // 버프 목록에 추가!!
+                        finalTargetBuffComponent.conditionHistory.add(dmgBuff);
 
+                    }
+                    else {
+
+                        /** 2020 04 03 작성 */
+
+                        finalTargetBuffComponent.conditionHistory.add(
+                                MonsterFactory.createMonsterActionEffect(
+                                        MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monster, monster.entityID));
+
+
+                    }
 
 
                     /* 공격 쿨타임을 초기화한다 */

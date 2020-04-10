@@ -247,11 +247,11 @@ public class RMI_NettyServer {
 
                             //채널의 파이프라인을 가져와서 처리할 이벤트 핸들러를 할당한다!
                             ChannelPipeline p = ch.pipeline();
-                            //p.addLast(new LoggingHandler(LogLevel.DEBUG));
+                            p.addLast(new LoggingHandler(LogLevel.DEBUG));
                             p.addLast("HeartBeatDetecter", new ReadTimeoutHandler(60, TimeUnit.SECONDS));
                             p.addLast("ByteSizeFilterHandler", new ByteSizeFilterHandler());
                             p.addLast("PacketProcess_Recv", new TCP_InBoundHandler());
-                            //p.addLast("PacketProcess_Send", new TCP_OutBoundHandler());
+                            p.addLast("PacketProcess_Send", new TCP_OutBoundHandler());
                         }
                     });
 
@@ -279,9 +279,9 @@ public class RMI_NettyServer {
                         public void initChannel(DatagramChannel ch)
                         {
                             ChannelPipeline p = ch.pipeline();
-                            //p.addLast(new LoggingHandler(LogLevel.DEBUG));
+                            p.addLast(new LoggingHandler(LogLevel.DEBUG));
                             p.addLast(new UDP_InBoundHandler());
-                            //p.addLast(new UDP_OutBoundHandler());
+                            p.addLast(new UDP_OutBoundHandler());
                         }
                     });
 
@@ -300,6 +300,7 @@ public class RMI_NettyServer {
 
             //게임 데이터 초기화.
             GameDataManager.initGameData();
+            //GameDataManager.initGameDataManager();
 
             //SkillFactory 초기화
             SkillFactory.initFactory();

@@ -4,9 +4,11 @@ import ECS.Classes.BuffAction;
 import ECS.Classes.ConditionFloatParam;
 import ECS.Classes.Type.ConditionType;
 import ECS.Classes.Type.SkillType;
+import ECS.Classes.Type.SystemEffectType;
 import ECS.Classes.Vector3;
 import ECS.Components.CharacterComponent;
 import ECS.Entity.CharacterEntity;
+import ECS.Factory.SkillFactory;
 import ECS.Game.WorldMap;
 
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import java.util.HashMap;
 public class CharacterSpawnPointWellSystem {
 
     WorldMap worldMap;
+    float remainCoolTime;
+    public static final float COOL_TIME = 1f;    // 자가회복 쿨타임 ; 1초
 
     public CharacterSpawnPointWellSystem(WorldMap worldMap) {
         this.worldMap = worldMap;
@@ -31,41 +35,62 @@ public class CharacterSpawnPointWellSystem {
         Vector3 wellPoint = new Vector3(3f, 0f, -3f);
         float buffAreaRange = 15f;
 
+        /** 회복효과 발동 가능 여부를 체크한다 */
+        boolean isCoolTimeRemained = (remainCoolTime > 0) ? true: false;
 
-        /** 캐릭터 */
-        for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
-
-            CharacterEntity character = characterEntity.getValue();
-
-            /* 캐릭터가 우물 범위 내에 있는지 검사한다 */
-
-            Vector3 charPos = character.positionComponent.position;
-
-            float currentDistance = 0f;
-            currentDistance = Vector3.distance(wellPoint, charPos);
-
-            System.out.println("우물과 캐릭터 간 거리 : " + currentDistance);
-
-            /** 대상이 범위에 있는지 판별한다 */
-            boolean isInTargetRange = false;
-
-            float targetHP = character.hpComponent.currentHP;
-            if( (currentDistance < buffAreaRange) && targetHP < character.hpComponent.maxHP) {
-                isInTargetRange = true;
-
-                System.out.println("우물에 의한 회복 버프를 받을 수 있음. ");
-
-            }
-
-            /** 대상이 버프 적용 범위에 위치한다면 */
-            if(isInTargetRange) {
-
-                character.buffActionHistoryComponent.conditionHistory.add( createRecoveryBuff(character.entityID) );
-
-                System.out.println("우물 버프를 넣음.");
-            }
-
+        if(isCoolTimeRemained){ /* 쿨타임이 아직 남아있다면 */
+            remainCoolTime -= deltaTime;
         }
+        else {   /* 쿨타임이 끝났다면 */
+
+            /** 캐릭터 */
+            for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
+
+                CharacterEntity character = characterEntity.getValue();
+
+                /* 캐릭터가 우물 범위 내에 있는지 검사한다 */
+
+                Vector3 charPos = character.positionComponent.position;
+
+                float currentDistance = 0f;
+                currentDistance = Vector3.distance(wellPoint, charPos);
+
+                System.out.println("우물과 캐릭터 간 거리 : " + currentDistance);
+
+                /** 대상이 범위에 있는지 판별한다 */
+                boolean isInTargetRange = false;
+
+                float targetHP = character.hpComponent.currentHP;
+                if( (currentDistance < buffAreaRange) && (targetHP < character.hpComponent.maxHP)) {
+                    isInTargetRange = true;
+
+                    if(isInTargetRange){
+
+                        System.out.println("우물에 의한 회복 버프를 받을 수 있음. ");
+                    }
+                }
+
+                /** 대상이 버프 적용 범위에 위치한다면 */
+                if(isInTargetRange) {
+
+                    //character.buffActionHistoryComponent.conditionHistory.add( createRecoveryBuff(character.entityID) );
+
+                    character.buffActionHistoryComponent.conditionHistory.add(
+                            SelfRecoverySystem.createSystemActionEffect(
+                                    SystemEffectType.WELL, "체력회복 속도증가", character, character.entityID));
+
+                    character.buffActionHistoryComponent.conditionHistory.add(
+                            SelfRecoverySystem.createSystemActionEffect(
+                                    SystemEffectType.WELL, "마력회복 속도증가", character, character.entityID));
+
+
+                    System.out.println("우물 버프를 넣음.");
+                }
+
+            }
+        }
+
+
 
     }
 
@@ -82,12 +107,12 @@ public class CharacterSpawnPointWellSystem {
         BuffAction buffAction = new BuffAction(characterID, characterID, 1f, 0f, 1f);
         buffAction.skillType = SkillType.WELL_RECOVERY;
 
-        ConditionFloatParam recoveryParamHP = new ConditionFloatParam(ConditionType.hpRecoveryRate, 400f);
-        buffAction.floatParam.add(recoveryParamHP);
+        ConditionFloatParam hpRecoveryParam = new ConditionFloatParam(ConditionType.hpRecoveryRate, 400f);
+        buffAction.floatParam.add(hpRecoveryParam);
 
-        ConditionFloatParam recoveryParamMP = new ConditionFloatParam(ConditionType.mpRecoveryRate, 400f);
-        buffAction.floatParam.add(recoveryParamMP);
-        
+        ConditionFloatParam mpRecoveryParam = new ConditionFloatParam(ConditionType.mpRecoveryRate, 400f);
+        buffAction.floatParam.add(mpRecoveryParam);
+
         return buffAction;
 
     }

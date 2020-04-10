@@ -1,9 +1,5 @@
 package ECS.Classes;
 
-import com.sun.jndi.ldap.LdapURL;
-
-import javax.swing.text.html.HTMLDocument;
-
 /**
  * 업뎃날짜 : 2020 01 28 화요일 권령희
  * 업뎃 내용 :
@@ -38,6 +34,25 @@ public class SkillInfoPerLevel {
     public float criticalBonusDamageRate;   // 치명타 추가 대미지 비율, 궁수 헤드샷 스킬의 경우 & 궁수 저격 스킬의 경우
 
     public float requireMP;
+
+
+    public SkillInfoPerLevel(int level, float durationTime, float coolTime, float attackDamage, float range, float attackRange, float flyingObjectSpeed, float moveSpeedRate, float attackSpeedRate, float bloodSuckingRate, float maxHpRate, float freezingTime, float criticalChanceRate, float criticalDamageRate, float criticalBonusDamageRate) {
+        this.level = level;
+        this.durationTime = durationTime;
+        this.coolTime = coolTime;
+        this.attackDamage = attackDamage;
+        this.range = range;
+        this.attackRange = attackRange;
+        this.flyingObjectSpeed = flyingObjectSpeed;
+        this.moveSpeedRate = moveSpeedRate;
+        this.attackSpeedRate = attackSpeedRate;
+        this.bloodSuckingRate = bloodSuckingRate;
+        this.maxHpRate = maxHpRate;
+        this.freezingTime = freezingTime;
+        this.criticalChanceRate = criticalChanceRate;
+        this.criticalDamageRate = criticalDamageRate;
+        this.criticalBonusDamageRate = criticalBonusDamageRate;
+    }
 
     // 기존 스킬 &  새로 추가된 변수들을 사용하지 않는 경우에 사용하는 생성자. >> 이것도.. 나중에 좀 더 정교하게 바뀔 것.
     // 이 생성자 내에서 대입받는 변수들 중에서도 안쓰는 것이 있는 스킬들도 분명 있을 것이라..

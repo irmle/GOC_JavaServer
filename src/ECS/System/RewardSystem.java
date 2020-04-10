@@ -1,10 +1,13 @@
 package ECS.System;
 
 import ECS.Classes.Reward;
+import ECS.Classes.StoreUpgradeInfoPerLevel;
 import ECS.Classes.Type.RewardType;
 import ECS.Classes.Type.Upgrade.StoreUpgradeType;
+import ECS.Components.ConditionComponent;
 import ECS.Components.RewardHistoryComponent;
 import ECS.Entity.CharacterEntity;
+import ECS.Game.GameDataManager;
 import ECS.Game.Store;
 import ECS.Game.WorldMap;
 
@@ -29,29 +32,71 @@ public class RewardSystem {
 
     WorldMap worldMap;
 
+    HashMap<Integer, HashMap<Integer, StoreUpgradeInfoPerLevel>> storeUpgradeInfoList;
+
     public RewardSystem(WorldMap worldMap) {
+
         this.worldMap = worldMap;
+        storeUpgradeInfoList = GameDataManager.storeUpgradeInfoPerLevelList;
     }
 
     public void onUpdate(float deltaTime){
 
-        /* 모든 캐릭터에 대해 반복 */
+        /** 상점 업그레이드에 따른 보상 비율을 결정한다 */
+
+        /* 경험치 */
+        int expUpgradeLevel = Store.findUpgradeSlotByType(StoreUpgradeType.EXP_UPGRADE, worldMap).upgradeLevel;
+        StoreUpgradeInfoPerLevel expUpgradeInfo
+                = storeUpgradeInfoList.get(StoreUpgradeType.EXP_UPGRADE).get(expUpgradeLevel);
+
+        /* 골드 */
+        int goldUpgradeLevel = Store.findUpgradeSlotByType(StoreUpgradeType.GOLD_UPGRADE, worldMap).upgradeLevel;
+        StoreUpgradeInfoPerLevel goldUpgradeInfo
+                = storeUpgradeInfoList.get(StoreUpgradeType.GOLD_UPGRADE).get(goldUpgradeLevel);
+
+
+        /** 모든 캐릭터에 대해 반복 */
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
             CharacterEntity character = characterEntity.getValue();
             List<Reward> rewardList = character.rewardHistoryComponent.rewardHistory;
 
-            // 보상 비율
-            int expUpgradeLevel = Store.findUpgradeSlotByType(StoreUpgradeType.EXP_UPGRADE, worldMap).upgradeLevel;
-            float expRate = 1 + (expUpgradeLevel * 0.1f);
+            ConditionComponent charCondition = character.conditionComponent;
+
+            /* 경험치 보상 비율 결정 */
+            /**
+             * 아 고민되는게
+             * 이.. 상점 업그레이드로 인한 겸치량 증가 효과를
+             *  여기서 계산해서 적용해주는게 적절한지,
+             *  아니면 이번 턴의 캐릭터의 최종 상태를 결정하는 'BuffActionSystem'에서 적용해주는 게 좋은지..
+             * 최종상태 결정 시점에 들어가야 할 것도 같긴 한데, 문제는 버프시스템은 최종상태 결정 처리가 메인이라기보다는
+             *  현재 받고 있는 버프들을 캐릭의 상태에 반영해주는 게 목적인시스템이라..
+             *  한번에 두 가지 일을 맡기는 꼴이 될수도 있고.
+             * 또, 현재는 상점 업그레이드를 제외하고는, 캐릭터의 겸치/골드 획득 보상 비율에 영향을 미치는 요인이 전혀 없는 상태이지만,
+             *  만약 추가된다고 할 경우, 버프를 받아 추가된 '최종 직전 상태'에 대해, 상점업글 효과를 어떤 식으로 적용 해 줄 것이냐?? 가
+             *  최소한 나한테는 명확하지 않기 때문임. 나중에 바뀔 수도 있고.
+             *      최종 상태에 대해 곱연산 퍼센테이지로 적용할 수도 있고,
+             *      '추가'되는 개념으로 적용될 수도 있고 그래서 말임..
+             * 일단은, '최종 상태' 비율에 대해 상점 업그레이드 효과 퍼센테이지를 적용하는 걸로 생각하겠음.
+             * ㄴ 이 결과 구해진 '진짜 최종 비율'을, 현재 처리하려는 보상에 적용하는 식.
+             *
+             */
+            //float expRate = 1 + (expUpgradeLevel * 0.1f);
+            float expRate = charCondition.expGainRate;
+            if(expUpgradeLevel >= 1){
+                expRate *= ( 1 +  expUpgradeInfo.effectValue * 0.01f );
+            }
+
             System.out.println("경험치 보상 비율 : " + expRate + ", 경험치 업글 레벨 : " + expUpgradeLevel);
 
-            int goldUpgradeLevel = Store.findUpgradeSlotByType(StoreUpgradeType.GOLD_UPGRADE, worldMap).upgradeLevel;
-            float goldRate = 1 + (goldUpgradeLevel * 0.1f);
+            float goldRate = charCondition.goldGainRate;
+            if(goldUpgradeLevel >= 1){
+                goldRate *= ( 1 +  goldUpgradeInfo.effectValue * 0.01f );
+            }
             System.out.println("골드 보상 비율 : " + goldRate + ", 골드 업글 레벨 : " + goldUpgradeLevel);
 
 
-            /* 현 캐릭터의 보상 목록을 처리 */
+            /** 현 캐릭터의 보상 목록을 처리한다  */
             Reward currentReward = null;
 
             // 중계를 위한.. 이번 틱 누적 보상
@@ -90,9 +135,15 @@ public class RewardSystem {
 
                     case RewardType.KILL_MONSTER_BY_TURRET :
 
-                        // 몬스터를 죽이고 얻는 보상의 경우, 경험치와 골드를 둘 다 얻는다.
-                        /*character.characterComponent.getExpReward(currentReward.rewardExp * 0.5f); // 경험치
-                        character.characterComponent.getGoldReward(currentReward.rewardGold / 2);   // 골드*/
+                        /**
+                         * [ 오전 1:13 2020-04-04 권령희 ]
+                         * 터렛에 의한 몹 KIll 보상을 처리하는 방식에 대해서는,
+                         *  나중에 확실해지면 수정하거나 할 것.
+                         *  보상 적용 비율을 파일로부터 읽어 처리하도록 하거나, 아니면 아예 주지 않거나.
+                         * 현재는, 터렛을 건축한 캐릭터에게 그 보상을 주도록 하고 있음.
+                         *  ㄴ 아 또 이런경우에는.. 상점 보상 비율을 적용해야 하는가??
+                         *  이게. 게임 월드 전체에 걸쳐 적용되는 개념으로 봐야할지,아니면 캐릭터에만 한정해야 할지..
+                         */
 
                         // 경험치
                         finalRewardExp = currentReward.rewardExp * expRate * 0.5f;
@@ -115,10 +166,10 @@ public class RewardSystem {
                         System.out.println("정글몬스터 보상 처리 ");
 
                         // 경험치
-                        finalRewardExp = currentReward.rewardExp * expRate * 0.5f;
+                        finalRewardExp = currentReward.rewardExp * expRate;
                         character.characterComponent.getExpReward((float)finalRewardExp); // 경험치
                         // 골드
-                        finalRewardGold = currentReward.rewardGold * goldRate * 0.5f;
+                        finalRewardGold = currentReward.rewardGold * goldRate;
                         character.characterComponent.getGoldReward((int)finalRewardGold);   // 골드
 
                         System.out.println("받은 경험치 : " + currentReward.rewardExp + ", 현재 경험치 : " + character.characterComponent.exp);
@@ -129,9 +180,17 @@ public class RewardSystem {
                         goldSum += (int)finalRewardGold;
 
                         /** 2020 02 28 */
-                        character.buffActionHistoryComponent.conditionHistory.add(currentReward.rewardBuff);
+                        //character.buffActionHistoryComponent.conditionHistory.add(currentReward.rewardBuff);
 
-                        System.out.println("정글몹 버프 보상 받았음 :" );
+                        /** 2020 04 03 */
+                        System.out.println("버프보상 갯수 : " + currentReward.rewardBuff);
+                        for (int j=0; j<currentReward.rewardBuff.size(); j++){
+
+                            character.buffActionHistoryComponent.conditionHistory.add(
+                                    currentReward.rewardBuff.get(j));
+                        }
+
+                        System.out.println("정글몹 버프 보상 받았음 " );
 
                         break;
 

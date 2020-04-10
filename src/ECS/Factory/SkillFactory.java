@@ -24,55 +24,52 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 생성 : 2019년 11월 14일
  *
- * 업뎃날짜 : 2020 03 20 금요일 새벽 권령희
+ * 작성날짜 : 2019년 11월 14일
+ * 업뎃날짜 : 2020 04 01 수요일 오후
+ * 업뎃내용 :
+ * --
+ * --
+ * --
+ * --
+ * --
  *
- * 업뎃 내용 :
- *
- *      스킬사용, 스킬 중단 - 귀환 케이스 추가
- *      ㄴ 귀한 취소를 위한 스킬 중단 매서드의 경우, hp시스템 처리 도중에 호출될 수 있음.
- *
- *      귀한(recall) 매서드 ; 귀환자에게 5초간 지속되는 '귀환' 타입의 상태버프를 넣어줌.
- *                              ㄴ 5초간 방해받지 않고 상태가 지속될 시, 귀환 지점으로 이동하게 된다.
- *
- * ================================================================================================
- *
- * 직업별 스킬이 각각 6개씩 추가됨에 따라, 스킬 습득 가능 검사 조건이 추가되었음.
- * 전사 완료(디버깅은 아직)
- * 마법사 - 썬더 빼고 완료 (디버깅 아직)
- * 궁수 작성중..
- *
- * 궁수 폭풍의 시 같은 경우, 별도 요청 혹은 조건을 만족할 때 까지 스킬 처리를 계속 지속해야 한다
- *  ㄴ 중단 될 때의 처리가 별도로 필요, stopUsingSkill 매서드 만들었음
- *
- *
- *
- * <p>
- * <p>
- * 스킬(정확히는 SkillInfo) 객체 생성을 위한 클래스다.
- * 월드맵매니저 초기화 작업 시 생성해줘야 할듯?
- * <p>
- * 스킬정보를 담고있는 CSV파일을 읽어들여, SkillID와 SKillInfo 쌍으로 구성된 리스트를 갖는다.
- * <p>
- * 유저로부터 스킬습득 요청을 받으면, SkillID를 건네받아
- * 해당하는 스킬을 생성해 돌려준다.
- *
- *
- *
- *  [ 2019년 12월 05일 목요일 메모 ]
- *
- *  - 스킬 시스템 재설계 필요. '시전 시간' 개념이 들어가야 한다. 스킬 방동 시 효과 적용이랑 장판 등 오브젝트 및 애니메이션 등 동기화를 맞추기 위해서.
  *
  */
 public class SkillFactory {
 
-    /**
-     * 멤버 변수
-     */
+    /** 멤버 변수 */
     public static HashMap<Integer, SkillInfo> skillInfoTable;
     public static HashMap<Integer, HashMap<Integer, SkillInfoPerLevel>> skillLevelTable;  // 스킬의 각 레벨별 스탯값을 가지고 있다.
 
+    /*******************************************************************************************************************/
+    /**
+     * [2020 04 01 수요일]
+     * GDM 클래스가 CSV 파일로부터 읽은 데이터를 직접 참조하도록 함.
+     * -- 가져온 데이터를 적용하도록 완전히 대체하고 나면,
+     *      위의 기존 변수와 그 관련된 처리 매서드들은 지울 것.
+     */
+
+    /* 스킬 타입 목록 */
+    public static HashMap<String, Integer> skillTypeLIST;
+
+    /* 스킬 타입별 정보 목록 */
+    public static HashMap<Integer, SkillInfo> skillInfoLIST;
+
+    /* 스킬 레벨별 정보 목록 */
+    public static HashMap<Integer, HashMap<Integer, SkillInfoPerLevel>> skillInfoPerLevelLIST;
+
+    /* 스킬 타입별 효과 목록 */
+    public static HashMap<Integer, HashMap<String, BuffInfo>> skillEffectInfoLIST;
+
+    /*******************************************************************************************************************/
+
+    /**  매서드 */
+
+    /**
+     * 2020 04 01 수정
+     * 위 변수들이, GDM의 변수들을 참조하도록 세팅
+     */
     public static void initFactory() {
 
         System.out.println("SkillFactory 초기화중...");
@@ -85,19 +82,21 @@ public class SkillFactory {
         /* 위 처리 로직이 완성되기 전까지는, 필요한 스킬을 하드코딩해서 테이블에 넣어줄 것 */
         readSkillInfoFromFile();
 
+
+        /** 2020 04 01 작성 */
+
+        skillTypeLIST = GameDataManager.skillTypeList;
+        skillInfoLIST = GameDataManager.skillInfoList;
+        skillInfoPerLevelLIST = GameDataManager.skillInfoPerLevelList;
+        skillEffectInfoLIST = GameDataManager.effectInfoList.get(EffectCauseType.SKILL);
+
+        /********************************************************************************/
+
+
         System.out.println("SkillFactory 초기화 완료");
     }
 
-    /**  매서드 */
 
-    /**
-     * [2019 11 14 목요일 오후 3시 ~ ]
-     * SkillInfo 클래스의 clone() 함수 재정의 필요. 틀만 만들어둔 상태임
-     * static으로 선언한 매서드는 static으로 선언된 외부 변수만을 참조할 수 있다??
-     *
-     * @param requestedSkillID
-     * @return
-     */
     public static SkillInfo createSkill(int requestedSkillID) {
 
         SkillInfo newSkill;
@@ -115,6 +114,19 @@ public class SkillFactory {
         newSkill.skillRange = skillInfoTable.get(newSkill.skillType).skillRange;
 
         return newSkill;
+    }
+
+    /**
+     * 2020 04 01 수요일 작성
+     * skillInfoLIST 에서, 넘겨받은 skillType 에 해당하는 스킬정보를 찾아 리턴해준다.
+     * @param skillType
+     * @return
+     */
+    public static SkillInfo createSkillInfo(int skillType){
+
+        SkillInfo newSkillInfo = skillInfoLIST.get(skillType).clone();
+
+        return newSkillInfo;
     }
 
     /**
@@ -230,8 +242,6 @@ public class SkillFactory {
         }
 
         /**************************************************************************************************/
-
-        System.out.println("dddddddddd");
 
         //공격모션 중계
         server_to_client.motionCharacterDoAttack(TARGET, RMI_Context.Reliable_Public_AES256,
@@ -364,7 +374,7 @@ public class SkillFactory {
                         return;
 
                     }
-                    else {  /* 2020 02 06 new version. 데미지 시스템 적용 */
+                    else if(false){  /* 2020 02 06 new version. 데미지 시스템 적용 */
 
                         float attackerDefaultDamage = attackerAttack.attackDamage;
 
@@ -378,6 +388,13 @@ public class SkillFactory {
 
                         return;
                     }
+                    else{   /* 2020 04 02 버전 */
+
+                        BuffAction normalAttackDamage = createSkillEffect(SkillType.KNIGHT_NORMAL_ATTACK, "데미지", 1, attacker, attacker.entityID);
+
+                        targetEntity.buffActionHistoryComponent.conditionHistory.add(normalAttackDamage);
+
+                    }
 
                 }   // 근거리 공격처리 끝, 끝나면 리턴하게 되어 아래 처리는 실행하지 않는다.
 
@@ -387,6 +404,9 @@ public class SkillFactory {
                 //투사체를 생성하는 원거리 캐릭터의 경우.
 
                 System.out.println("투사체를 생성함. ");
+
+                SkillInfoPerLevel skillInfo;
+                int skillType;
 
                 //임시 값 생성.
                 FlyingObjectEntity flyingObject = new FlyingObjectEntity();
@@ -407,19 +427,37 @@ public class SkillFactory {
                     case CharacterType.MAGICIAN: {
                         //flyingObject.flyingObjectComponent.createdSkillType = 1020005;
                         flyingObject.flyingObjectComponent.createdSkillType = SkillType.MAGICIAN_NORMAL_ATTACK;
+
+                        skillType = SkillType.MAGICIAN_NORMAL_ATTACK;
+                        skillInfo = skillInfoPerLevelLIST.get(SkillType.MAGICIAN_NORMAL_ATTACK).get(1);
                         break;
                     }
                     case CharacterType.ARCHER: {
                         //flyingObject.flyingObjectComponent.createdSkillType = 1030009;
                         flyingObject.flyingObjectComponent.createdSkillType = SkillType.ARCHER_NORMAL_ATTACK;
+
+                        skillType = SkillType.ARCHER_NORMAL_ATTACK;
+                        skillInfo = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1);
                         break;
                     }
+                    default:
+                        skillType = SkillType.NONE;
+                        skillInfo = null;
+                        break;
+
                 }
 
                 flyingObject.flyingObjectComponent.flyingSpeed = 20f;
                 flyingObject.flyingObjectComponent.flyingObjectRadius = 10f;
 
-                flyingObject.flyingObjectComponent.userEntityID = flyingObject.entityID;
+                /* 2020 04 02 */
+                flyingObject.flyingObjectComponent.flyingSpeed = skillInfo.flyingObjectSpeed;
+                flyingObject.flyingObjectComponent.flyingObjectRadius = skillInfo.attackRange;
+                /* *******************************************************************/
+
+
+
+                flyingObject.flyingObjectComponent.userEntityID = attacker.entityID;
                 flyingObject.flyingObjectComponent.targetEntityID = event.targetEntityID;
 
                 flyingObject.flyingObjectComponent.startPosition = flyingObject.positionComponent.position;
@@ -497,7 +535,7 @@ public class SkillFactory {
                     }
 
                 }
-                else{
+                else if(false){
                     /** 2002 02 06 ver, 데미지 시스템 적용*/
 
                     float attackerDefaultDamage = attackerAttack.attackDamage;
@@ -511,13 +549,22 @@ public class SkillFactory {
                     flyingObject.flyingObjectComponent.buffAction = damageBuff;
 
                 }
+                else{   /* 2020 04 02 버전 */
+
+                    /**
+                     * 와우 큰일날 뻔 했네.. 투사체 데미지 버프 생성 및 처리는, 투사체 시스템에서 해야되는데.
+                     */
+                    //BuffAction normalAttackDamage = createSkillEffect(skillType, "데미지", 1, attacker, attacker.entityID);
+
+                    // targetEntity.buffActionHistoryComponent.conditionHistory.add(normalAttackDamage);
+
+                }
 
                 /************************************************************************  */
 
                 //doAttack은 타게팅 투사체이므로 이 값은 0으로 한다.
                 //논 타게팅 투사체라면, 이 거리만큼 진행후 삭제처리 된다.
-                flyingObject.flyingObjectComponent.flyingObjectRemainDistance = 0f;
-
+                flyingObject.flyingObjectComponent.flyingObjectRemainDistance = 0f; // 이거는 절대 바뀔일이 없을거같아서 냅두는데...ㅋㅋㅋ
 
                 //Entity생성 Queue에 삽입.
                 targetWorldMap.requestCreateQueue.add(flyingObject);
@@ -528,490 +575,6 @@ public class SkillFactory {
         }
 
     } //doAttack 종료 부분.
-
-
-    /**
-     * 일단 안쓰는 함수. 지워버리고 싶네..
-     * 클라이언트(플레이어 캐릭터)의 스킬 사용 요청을 처리한다.
-     *
-     */
-    public static void processToUseSkill(WorldMap worldMap, ActionUseSkill event){
-
-        /* 스킬 시전자를 찾는다 */
-        CharacterEntity skillUser =  worldMap.characterEntity.get(event.userEntityID);
-        ConditionComponent userCondition = skillUser.conditionComponent;
-        SkillSlot skillToUse = skillUser.skillSlotComponent.skillSlotList.get(event.skillSlotNum);
-        SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
-
-        /** 시전자가 스킬을 사용할 수 있는 상태인지 판별한다 */
-
-        boolean isAbleToUseSkill = false;
-        boolean hasEnoughMp = false;
-        boolean isCoolTimeZero = false;
-
-        hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
-        isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        isAbleToUseSkill = ((!userCondition.isDisableSkill) && hasEnoughMp && isCoolTimeZero) ? true : false;  // 일단은 이거밖에 안떠오르네..
-
-        if(isAbleToUseSkill){
-
-            /** 스킬 타입을 판별한다 */
-
-            boolean isSingleTarget = false;
-            boolean isMultiTarget = false;
-            boolean isNotYetTargeted = false;
-
-            // 단일 아군 버프 대상이 있을수도 있지만.. 일단은 몬스터로 한정하긴 함.
-            // 투사체가 있다고 하면, 그 투사체가 버프를 가질 것이니까. 여기서 투사체가 있냐없냐를 판단하면 안될 듯.
-            isSingleTarget
-                    = ((event.targetEntityID > -1)
-                    && (worldMap.monsterEntity.containsKey(event.targetEntityID))) ? true : false;
-
-            // 단일타겟이 지정된 상태가 아니며, 사용할 스킬정보가 버프를 가지고 있다면.
-            isMultiTarget = ( (!isSingleTarget) && (skillToUse.skillinfo.buffAction != null)) ? true : false;
-
-            // 얘도 좀 불명확한데.. 일단은, 싱글타겟도 아닌데 멀티타겟도 아니라면. 투사체 또는 오브젝트가 범위를 지정하는 애 인걸로.
-            isNotYetTargeted = ( (!isSingleTarget) && (!isMultiTarget) ) ? true : false;
-
-
-            /** 스킬 타입에 따라, 스킬 적용 대상을 판별한다 */
-
-            ArrayList<Entity> targetList = new ArrayList<>();
-
-            Entity target = null;
-            short targetType = worldMap.entityMappingList.get(event.targetEntityID);
-
-            if(isSingleTarget){ /* 단일 타게팅 스킬인 경우 */
-                // 현재까지 나온 스킬목록 중 여기에 해당되는 스킬은 전사평타, 마법사평타, 마법사 파볼, 궁수 평타임.
-
-                /* 일단은 캐릭터랑 몬스터 두 개만 넣음. */
-                switch (targetType){
-                    case EntityType.CharacterEntity :
-                        target = worldMap.characterEntity.get(event.targetEntityID);
-                        break;
-                    case EntityType.MonsterEntity :
-                        target = worldMap.monsterEntity.get(event.targetEntityID);
-                        break;
-                }
-                targetList.add(target);
-
-            }
-            else if(isMultiTarget){  /* 멀티 타게팅 스킬인 경우 */
-                // 현재까지 나온 스킬목록 중 여기에 해당되는 스킬은 전사 베기, 마법사 힐링임.
-                // 멀티 타겟이 미리 정해져서 오는 경우가 아니더라도, 최소한 요 함수가 실행되는 시점에 스킬적용할 타겟을 결정할 수 있다면
-                // 요 타입에 해당된다고 판단. 아래 notYetTargeted와의 차이점이다. 쟤는 스킬적용할 멀티 대상이 요 매서드가 아니라, 여기서 생성, 결정된
-                // 투사체 또는 스킬 오브젝트가 각각 시스템을 도는 과정에서 대상이 정해진다. 현재 수준에서의 분류는 이러함...
-                // 근데.. 그저께 생각하다가 흘려보낸게 있는데. 이런 멀티 타겟? 애들도. 그냥 여기서는 스킬 오브젝트(사실은 없지만)를 생성 해주는 부분까지만 하고,
-                // 실제 범위판정 처리는 요 매서드가 아니라, 스킬 오브젝트 시스템, 플라잉 오브젝트 시스템이 하도록 하는 편이 더 깔끔할 수 있지 않을까 싶어서
-                // 스.오 없는 멀티타겟 애들도 스오를 만들어주자!라고 생각했었던거 같음.
-                // 요 매서드는 가능함 깔끔하게 유지하고 싶고.....
-                // 일단은 여기서도 범위판정 하도록 해두고, 이거에 대해서 좀 이따 사람들이랑 얘기해보고? 내 나름대로 로직 검증도 하고. 그 후에
-                // 바꿀지 말지 결정하자.
-
-                /* 스킬의 사거리 등을 고려하여, 타겟을 결정한다. */
-
-
-
-
-            }
-            else if(isNotYetTargeted){  /* 멀티 논타겟 스킬인 경우?? */
-
-                /* 할 게 있던가... 따로 없었던 듯 ?? */
-
-            }
-
-
-
-            //  일단. 투사체 생성은 생성이고, 아래 스킬이 가지고 있는 버프.. 대상에 버프 적용해주는거는.
-            // ㄴ 아 싱글타겟 투사체 있는 경우랑, 없는경우 두 개를 분리하는게 문제ㅔㄴ..
-            // 생성ㅈ요청에 넘겨주는 시점을 뒤로 빼면 문제가 안될것도 같긴한데.. 애매
-            // 투사체 있으면.. 걔한테 무조건 버프디버프 넣어주고, 각 타겟에 대해 적용하는 것도
-            // 투사체 생성 항목에서 하는걸로 치셈 찝찝한데 어쩔수없다
-            // 밑에 스킬.. 부분도, 바로 타겟어쩌구로 들어가지 말고, 스킬 있어없어부터 따지고 들어가고.
-
-
-            FlyingObjectEntity newFlyingObj = null;
-            SkillObjectEntity newSkillObj = null;
-
-
-            /** 스킬이 투사체를 가지고 있다면, 투사체를 생성한다 */
-            boolean skillHasFlyingObject = false;
-            skillHasFlyingObject = (skillToUse.skillinfo.flyingObjectInfo == null) ? false : true;
-            if(skillHasFlyingObject){
-
-                /* 스킬정보 및 유저 레벨에 따라 투사체 생성 */
-                // FlyingObjectEntity newFlyingObj = null;
-
-                PositionComponent positionComponent = null;
-                FlyingObjectComponent flyingObjectComponent = null;
-
-                Vector3 startPos = null;
-                Vector3 direction = null;
-                BuffAction buffAction = null;   // 투사체가 갖게될 버프액션
-
-                ArrayList<ConditionBoolParam> boolParams;
-                ArrayList<ConditionFloatParam> floatParams;
-
-                Vector3 tempVector= null;
-
-                int createdSkillType = skillToUse.skillinfo.skillType;
-                int userEntityID = skillUser.entityID;
-                float flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
-                float flyingObjectRadius = currentLevelSkillInfo.attackRange;
-
-                // 일단은.. 스위치로 하드코딩.
-                switch (skillToUse.skillinfo.skillType) {
-
-                    /* 전사 찌르기 */
-                    case SkillType.KNIGHT_PIERCE :
-
-                        break;
-
-                    /* 마법사 평타 */
-                    case SkillType.MAGICIAN_NORMAL_ATTACK :
-
-                        /* 투사체의 시작 지점 설정하기 ; 일단은 스킬시전자의 위치 그대로. 차후에 좀 변경해야할수도? */
-                        startPos = new Vector3(skillUser.positionComponent.position.x(),
-                                skillUser.positionComponent.position.y(), skillUser.positionComponent.position.z());
-
-                        positionComponent = new PositionComponent(new Vector3(startPos.x(), startPos.y(), startPos.z()));
-
-                        /* 투사체의 방향 구하기 */
-                        tempVector = new Vector3();
-                        tempVector = Vector3.normalizeVector(startPos, targetList.get(0).positionComponent.position);
-
-                        direction = new Vector3(tempVector.x(), tempVector.y(), tempVector.z());
-
-                        /* 투사체의 효과 (버프액션) */
-                        buffAction = (BuffAction) skillInfoTable.get(skillToUse.skillinfo.skillType).flyingObjectInfo.buffAction.clone();
-                        buffAction.unitID = skillUser.entityID;
-                        buffAction.skillUserID = skillUser.entityID;
-                        buffAction.floatParam = new ArrayList<>();
-                        buffAction.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, currentLevelSkillInfo.attackDamage));
-
-                        createdSkillType = skillToUse.skillinfo.skillType;
-                        userEntityID = skillUser.entityID;
-                        flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
-                        flyingObjectRadius = currentLevelSkillInfo.attackRange;
-
-                        flyingObjectComponent = new FlyingObjectComponent(createdSkillType, userEntityID, flyingSpeed, flyingObjectRadius,
-                                startPos, direction, -1, buffAction, -1);
-                        flyingObjectComponent.targetEntityID = targetList.get(0).entityID;
-
-                        newFlyingObj = new FlyingObjectEntity(positionComponent, flyingObjectComponent);
-                        newFlyingObj.entityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-
-                        worldMap.requestCreateQueue.add(newFlyingObj);
-
-                        break;
-
-                    /* 마법사 파볼 */
-                    case SkillType.MAGICIAN_FIREBALL :
-
-                        /* 투사체의 시작 지점 설정하기 ; 일단은 스킬시전자의 위치 그대로. 차후에 좀 변경해야할수도? */
-                        startPos = new Vector3(skillUser.positionComponent.position.x(),
-                                skillUser.positionComponent.position.y(), skillUser.positionComponent.position.z());
-
-                        positionComponent = new PositionComponent(new Vector3(startPos.x(), startPos.y(), startPos.z()));
-
-                        /* 투사체의 방향 구하기 */
-                        tempVector = new Vector3();
-                        tempVector = Vector3.normalizeVector(startPos, targetList.get(0).positionComponent.position);
-
-                        direction = new Vector3(tempVector.x(), tempVector.y(), tempVector.z());
-
-                        /* 투사체의 효과 (버프액션) */
-                        buffAction = (BuffAction) skillInfoTable.get(skillToUse.skillinfo.skillType).flyingObjectInfo.buffAction.clone();
-                        buffAction.unitID = skillUser.entityID;
-                        buffAction.skillUserID = skillUser.entityID;
-                        buffAction.floatParam = new ArrayList<>();
-                        buffAction.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, currentLevelSkillInfo.attackDamage));
-
-                        createdSkillType = skillToUse.skillinfo.skillType;
-                        userEntityID = skillUser.entityID;
-                        flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
-                        flyingObjectRadius = currentLevelSkillInfo.attackRange;
-
-                        flyingObjectComponent = new FlyingObjectComponent(createdSkillType, userEntityID, flyingSpeed, flyingObjectRadius,
-                                startPos, direction, -1, buffAction, -1);
-                        flyingObjectComponent.targetEntityID = targetList.get(0).entityID;
-
-                        newFlyingObj = new FlyingObjectEntity(positionComponent, flyingObjectComponent);
-                        newFlyingObj.entityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-
-                        worldMap.requestCreateQueue.add(newFlyingObj);
-
-                        break;
-
-                    /* 마법사 메테오 */
-                    case SkillType.MAGICIAN_METEOR :
-
-                        /* 투사체의 시작 지점 설정하기 ; 일단은 스킬시전자의 위치 그대로. 차후에 좀 변경해야할수도? */
-                        startPos = new Vector3(skillUser.positionComponent.position.x(),
-                                skillUser.positionComponent.position.y(), skillUser.positionComponent.position.z() + 100f);
-
-                        positionComponent = new PositionComponent(new Vector3(startPos.x(), startPos.y(), startPos.z()));
-
-                        /* 투사체의 방향 구하기 */
-                        tempVector = new Vector3();
-                        //tempVector = Vector3.normalizeVector(startPos, event.);
-
-                        direction = new Vector3(tempVector.x(), tempVector.y(), tempVector.z());
-
-                        /* 투사체의 효과 (버프액션) */
-                        buffAction = (BuffAction) skillInfoTable.get(skillToUse.skillinfo.skillType).flyingObjectInfo.buffAction.clone();
-                        buffAction.unitID = skillUser.entityID;
-                        buffAction.skillUserID = skillUser.entityID;
-                        buffAction.floatParam = new ArrayList<>();
-                        buffAction.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, currentLevelSkillInfo.attackDamage));
-
-                        createdSkillType = skillToUse.skillinfo.skillType;
-                        userEntityID = skillUser.entityID;
-                        flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
-                        flyingObjectRadius = currentLevelSkillInfo.attackRange;
-
-                        float remainDistance = event.skillDistanceRate * skillInfo.skillRange;
-
-                        flyingObjectComponent = new FlyingObjectComponent(createdSkillType, userEntityID, flyingSpeed, flyingObjectRadius,
-                                startPos, direction, remainDistance, buffAction, -1);
-                        flyingObjectComponent.targetEntityID = targetList.get(0).entityID;
-
-                        newFlyingObj = new FlyingObjectEntity(positionComponent, flyingObjectComponent);
-                        newFlyingObj.entityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-
-                        /* 투사체 자체에 넣어줄 버프 */
-                        BuffAction flyingBuff;
-                        // 이동 시작 제어 버프
-                        flyingBuff = new BuffAction(newFlyingObj.entityID, userEntityID, 1f, -1, -1, new ArrayList<>(), new ArrayList<>());
-                        flyingBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));
-
-
-                        worldMap.requestCreateQueue.add(newFlyingObj);
-
-
-                        break;
-
-                    /* 궁수 평타 */
-                    case SkillType.ARCHER_NORMAL_ATTACK :
-
-                        break;
-
-                    /* 궁수 파워샷 */
-                    case SkillType.ARCHER_POWER_SHOT :
-
-                        break;
-
-                    /* 궁수 멀티샷 */
-                    case  SkillType.ARCHER_MULTI_SHOT:
-
-                        break;
-
-                    /* 궁수 화살비 */
-                    case SkillType.ARCHER_ARROW_RAIN :
-
-                        break;
-
-                    default:
-
-                        break;
-
-
-                }
-
-                /* 투사체의 타겟이 지정돼 있는 경우 */
-                if(isSingleTarget){
-                    // 궁수 평타, 마법사 평타, 마법사 파볼..
-
-                    /*flyingObjectComponent.targetEntityID = targetList.get(0).entityID;*/
-
-
-                } else if(isMultiTarget){
-
-
-                }
-            }
-
-
-            /** 스킬이 스킬 오브젝트를 가지고 있다면, 스킬 오브젝트를 생성한다 */
-            boolean skillHasSkillObject = false;
-            skillHasSkillObject = (skillToUse.skillinfo.skillObjectInfo == null) ? false : true;
-            if(skillHasSkillObject){
-
-                /* 스킬정보 및 유저 레벨에 따라 스킬 오브젝트 생성 */
-                //
-
-                PositionComponent positionComponent = null;
-                SkillObjectComponent skillObjectComponent = null;
-
-                SkillObjectInfo skillObjectInfo = skillInfoTable.get(skillInfo.skillType).skillObjectInfo;
-
-                // 스킬 오브젝트에 들어가는 목록 // 당장 계산 안해도 될 것만.
-                int createdSkillType = skillInfo.skillType;
-                int skillAreaType = skillObjectInfo.skillAreaType;
-                int userEntityID = skillUser.entityID;
-
-                long tempDistance;  // 계산용.
-                float skillObjectDurationTime;
-                float skillObjectRadius = skillObjectInfo.skillObjectRadius;
-                float skillObjectAngle;
-                float skillObjectDistance = event.skillDistanceRate * skillInfo.skillRange;
-
-                Vector3 startPos;
-                Vector3 directionPos;
-
-                float distanceRate;
-                BuffAction buffAction;  //스킬 오브젝트 적중시 부여될 버프 효과 정보.
-
-                // 일단은.. 스위치로 하드코딩.
-                switch (skillToUse.skillinfo.skillType) {
-
-                    /* 전사 회오리*/
-                    case SkillType.KNIGHT_TORNADO:
-
-
-                        break;
-
-                    /* 마법사 메테오 */
-                    case SkillType.MAGICIAN_METEOR :
-
-                        /* 스킬 오브젝트 컴포넌트에 들어갈 값들 구하기 */
-
-                        // 스킬 오브젝트 위치
-                        Vector3 userPos = skillUser.positionComponent.position;
-                        Vector3 skillDirection = event.skillDirection;
-                        float skillDistanceRate = event.skillDistanceRate;
-
-                        float moveDistance = skillInfo.skillRange * skillDistanceRate;
-
-                        Vector3 moveVector = new Vector3(skillDirection.x(), skillDirection.y(), skillDirection.z());
-                        moveVector.set(moveVector.x() * moveDistance,
-                                moveVector.y() * moveDistance,
-                                moveVector.z() * moveDistance );
-
-                        Vector3 resultPos = new Vector3(userPos.x(), userPos.y(), userPos.z());
-                        resultPos.movePosition(resultPos, moveVector );
-
-
-                        // 지속시간도 계산해주고..
-                        float flyingObjectestryoTime
-                                = newFlyingObj.flyingObjectComponent.flyingObjectRemainDistance / newFlyingObj.flyingObjectComponent.flyingSpeed;
-
-
-                        // 버프액션 ; 메테오가 대상자들에게 줄 버프 목록들
-
-                        buffAction = (BuffAction) skillObjectInfo.buffAction.clone();
-                        buffAction.unitID = newFlyingObj.entityID;
-                        buffAction.skillUserID = skillUser.entityID;
-                        buffAction.remainTime = currentLevelSkillInfo.durationTime + currentLevelSkillInfo.coolTime;
-                        buffAction.coolTime = currentLevelSkillInfo.coolTime;
-                        buffAction.remainCoolTime = currentLevelSkillInfo.coolTime;
-                        buffAction.floatParam = new ArrayList<>();
-                        buffAction.floatParam.add(new ConditionFloatParam(ConditionType.hpRecoveryAmount, currentLevelSkillInfo.attackDamage));
-
-
-                        /* 스킬 오브젝트에 들어갈 컴포넌트들 생성하기 */
-
-                        positionComponent = new PositionComponent();    // 좌표 계산 해줘야함
-                        positionComponent.position.set(resultPos);
-
-                        skillObjectComponent
-                                = new SkillObjectComponent(createdSkillType, skillAreaType, userEntityID,
-                                10f, currentLevelSkillInfo.attackRange, -1f,
-                                0f, resultPos, event.skillDirection, event.skillDistanceRate, null);
-
-
-                        /* 스킬 오브젝트 생성하기 */
-                        newSkillObj = new SkillObjectEntity(positionComponent, skillObjectComponent);
-                        newSkillObj.entityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-
-                        /* 월드에 스킬 오브젝트 객체 생성 요청 */
-                        worldMap.requestCreateQueue.add(newSkillObj);
-
-                        break;
-
-
-                    /* 궁수 화살비 */
-                    case SkillType.ARCHER_ARROW_RAIN :
-
-                        break;
-
-                    default:
-
-                        break;
-
-
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-            }
-
-
-            /** 스킬이 버프를 가지고 있다면, 위에서 정해진 타겟들에 대해 그 효과를 적용한다  */
-            boolean skillHasSkillBuff = false;
-            skillHasSkillBuff = (skillToUse.skillinfo.buffAction == null) ? false : true;
-            if(skillHasSkillBuff){
-
-                if(isSingleTarget){
-                    // 전사 평타
-
-                } else if(isMultiTarget){
-                    // 전사 베기, 마법사 힐
-
-                }
-            }
-
-            /** 스킬 쿨타임 및 시전자쪽에 필요한 처리 */    // 뭔가 명확하게 정리가 잘 안되네
-
-
-            /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
-
-            /* 시전자 상태 */
-            // 아.. 공통적인거라고 해도, 스킬 시전자들이 시전 후 받는 제한이라던가 그런것도 따로 들어있으면 좋을거같은데.
-            // 단순히버프 이런게 아니라. 스킬처리 후 사용자들한테 처리해줄 전용 변수...
-            BuffAction userBuffAfterSkillUse = new BuffAction();
-            userBuffAfterSkillUse.unitID = skillUser.entityID;
-            userBuffAfterSkillUse.skillUserID = skillUser.entityID;
-            userBuffAfterSkillUse.remainTime = ( worldMap.tickRate * 1.5f );
-            userBuffAfterSkillUse.remainCoolTime = -1;
-            userBuffAfterSkillUse.coolTime = -1;
-            userBuffAfterSkillUse.boolParam = new ArrayList<>();
-            userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
-            userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));
-            userBuffAfterSkillUse.floatParam = new ArrayList<>();
-
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
-            // 이렇게 직접적으로 넣어주는거 말고도, 막 버프주기 이런 함수 만들어서 처리하게 하면 비효율적이려나??
-
-
-
-            // 중계가 필요하다면 중계처리를 하고.
-
-
-
-
-
-        }
-        else {  // 스킬을 사용할 수 있는 상태가 아니다... 뭔가 별도로 처리해줄 게 있나?? 아니면 걍 무시하면 되나.
-
-        }
-
-
-
-
-
-    }
 
 
     /**
@@ -1965,7 +1528,9 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        //SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        /* 2020 04 02 */
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
         /** 시전자가 스킬을 사용할 수 있는 상태인지 판별한다 */
 
@@ -2021,12 +1586,13 @@ public class SkillFactory {
 
             /* flyingObject component */
             createdSkillType = skillInfo.skillType;
-            flyingSpeed = skillInfo.flyingObjectInfo.flyingObjectSpeed;
+            //flyingSpeed = skillInfo.flyingObjectInfo.flyingObjectSpeed;
 
             /**  2019 12 27 */
             flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
 
-            flyingObjectRadius = skillInfo.flyingObjectInfo.flyingObjectRadius;
+            //flyingObjectRadius = skillInfo.flyingObjectInfo.flyingObjectRadius;
+            flyingObjectRadius = currentLevelSkillInfo.attackRange;
 
             startPosition = (Vector3) positionComponent.position.clone();
             direction = skillDirection;
@@ -2128,8 +1694,8 @@ public class SkillFactory {
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
-
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            // 2020 04 02 주석처리함..
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             // 중계가 필요하다면 중계처리를 하고.
             //공격모션 중계
@@ -2142,7 +1708,7 @@ public class SkillFactory {
     }
 
     /**
-     * 궁수가 멀티샷 스킬을 사용했을 때 처리를 담당한다. (안씀)
+     * 궁수가 멀티샷 스킬을 사용했을 때 처리를 담당한다. (안씀. 버전1)
      * @param worldMap
      * @param event
      */
@@ -2394,7 +1960,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
         System.out.println("클라가 보낸 슬롯 넘버 : " + event.skillSlotNum);
         System.out.println("스킬 슬롯 : " + skillToUse.slotNum);
@@ -2528,8 +2094,8 @@ public class SkillFactory {
             skillObjBuff.skillUserID = skillUser.entityID;
 
             skillObjBuff.remainTime = 1f;   // 기준 ;
-            skillObjBuff.coolTime = 1f;
-            skillObjBuff.remainCoolTime = 0f;
+            skillObjBuff.coolTime = -1f;
+            skillObjBuff.remainCoolTime = -1f;
 
             skillObjBuff.floatParam.add(damageParam);
             skillObjBuff.boolParam.add(moveDebuff);
@@ -2561,7 +2127,8 @@ public class SkillFactory {
             /** 스킬 쿨타임 및 시전자쪽에 필요한 처리 */    // 뭔가 명확하게 정리가 잘 안되네
 
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            //skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = currentLevelSkillInfo.coolTime;
 
             System.out.println("스킬 쿨타임 초기화: " + skillToUse.remainCoolTime);
 
@@ -2581,7 +2148,8 @@ public class SkillFactory {
 
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            // 2020 04 02
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             System.out.println("스킬 시전자 상태 업데이트 함. ");
 
@@ -2634,7 +2202,7 @@ public class SkillFactory {
         System.out.println("스킬 검색함.");
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
         System.out.println("스킬 정보 : " + skillInfo.skillName);
 
@@ -2671,12 +2239,9 @@ public class SkillFactory {
             /* FlyingObject Component */
             int createdSkillType = skillInfo.skillType;
             int userEintityID = skillUser.entityID;
-            float flyingSpeed = skillInfo.flyingObjectInfo.flyingObjectSpeed;
+            float flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
 
-            /** 2019 12 27 */
-            flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
-
-            float flyingObjectRadius = skillInfo.flyingObjectInfo.flyingObjectRadius;
+            float flyingObjectRadius = currentLevelSkillInfo.attackRange;
 
             Vector3 startPosition = (Vector3) positionComponent.position.clone();
             Vector3 direction = skillDirection;
@@ -2684,7 +2249,7 @@ public class SkillFactory {
             // float flyingObjectRemainDistance = -1f; // 일단, 파이어볼은 타게팅 스킬이라. 얘를 계산해 줄 필요가 없음.
 
             /* BuffAction */
-            BuffAction buffAction = (BuffAction) skillInfo.flyingObjectInfo.buffAction.clone();
+            BuffAction buffAction = new BuffAction();
             buffAction.floatParam = new ArrayList<>();
             buffAction.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, currentLevelSkillInfo.attackDamage));
 
@@ -2786,7 +2351,8 @@ public class SkillFactory {
 
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            // 2020 04 02
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             //공격모션 중계
             SkillInfoData skillInfoData = new SkillInfoData();
@@ -2827,7 +2393,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
 
         ArrayList<Integer> targetList = new ArrayList<>();
@@ -2858,17 +2424,12 @@ public class SkillFactory {
 
 
             /* SKillObject Component */
-            int createdSkillType = skillInfo.skillType;
+            int createdSkillType = skillType;
             int skillAreaType = skillInfo.skillObjectInfo.skillAreaType;
             int userEintityID = skillUser.entityID;
-            float skillObjectDurationTIme = skillInfo.skillObjectInfo.skillObjectDurationTime;
+            float skillObjectDurationTIme = currentLevelSkillInfo.durationTime;
 
-            skillObjectDurationTIme = 3f;
-
-            float skillObjectRadius = skillInfo.skillObjectInfo.skillObjectRadius;
-
-            /** 2019 12 27 */
-            skillObjectRadius = currentLevelSkillInfo.range;
+            float skillObjectRadius = skillObjectRadius = currentLevelSkillInfo.range;
 
             Vector3 startPosition = (Vector3) positionComponent.position.clone();
             Vector3 direction = skillDirection;
@@ -2879,7 +2440,7 @@ public class SkillFactory {
             buffAction.floatParam = new ArrayList<>();
             buffAction.floatParam.add(new ConditionFloatParam(ConditionType.hpRecoveryAmount, currentLevelSkillInfo.attackDamage));
             buffAction.unitID = publishedEntityID;*/
-            BuffAction buffAction = (BuffAction) skillInfo.buffAction.clone();
+            BuffAction buffAction = new BuffAction();
             buffAction.floatParam = new ArrayList<>();
             buffAction.floatParam.add(new ConditionFloatParam(ConditionType.hpRecoveryAmount, currentLevelSkillInfo.attackDamage));
             buffAction.unitID = publishedEntityID;
@@ -2941,18 +2502,6 @@ public class SkillFactory {
 
                 BuffAction targetsBuffAction = new BuffAction();    // 일단 안씀.
 
-                /* 대상의 버프액션 갯수만큼 반복한다 */
-                /*for(int k=0; k<buffActionList.size(); k++){
-
-                    if(buffTurret.entityID == buffActionList.get(k).unitID){
-
-                        targetsBuffAction = buffActionList.get(k);
-
-                        targetHasBuffAlready = true;
-                        break;
-                    }
-                }*/
-
                 if(targetHasBuffAlready) { /** 대상이 이미 효과를 받고 있다면 */
 
                     // buffInfo.remainTime = deltaTime;    // 버프 지속 남은 시간을 초기화해준다
@@ -2962,23 +2511,22 @@ public class SkillFactory {
                 else{   /** 기존에 효과를 받고있지 않다면 */
 
                     /* 대상의 버프 목록에 추가해준다. */
-                    BuffAction newBuff = (BuffAction) buffAction.clone();
-                    buffActionList.add(newBuff);
+                    //BuffAction newBuff = (BuffAction) buffAction.clone();
+                    //buffActionList.add(newBuff);
+
+                    /** 2020 04 02 */
+                    BuffAction healBuff
+                            = createSkillEffect(skillInfo.skillType, "체력회복", skillToUse.skillLevel, skillUser, skillUser.entityID);
+                    buffActionList.add(healBuff);
 
                 }
             }
 
 
             /**
-             * 2020 02 06 목
-             * 미치것네.. 즉발이라 위에서 버프처리해주고 끝날거면
-             * 뭐하러 오브젝트 생성하지??
-             * ㄴ 아.. 혹시. 클라에서 장판깔게 하려고 그러는건가.....................
-             *  .......그래도.. 그러면.. 아니 클라 모양이나 효과를 위해 껍데기 객체를 만든다는 게 좀 많이 이상한데..
-             *  이왕 만들어준거, 생성된 스킬 오브젝트가 효과 넣어주는 처리 하게 해야하는거 아녀?? ; ;
-             *  '스킬 처리'의 영역이 참 모호하네.....
-             *  일단 최대한 안건들고 싶으니까 ㅋㅋ 별 문제 일어나지 않는 이상
-             *  이쪽은 걍 놔두자.
+             * 2020 04 02 목
+             * 클라 장판생성용 스킬오브젝트.
+             * ㄴ 별도 효과 처리도 하지 않음.
              *
              */
             /** 오브젝트 생성 */
@@ -3020,7 +2568,7 @@ public class SkillFactory {
 
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             //공격모션 중계
             SkillInfoData skillInfoData = new SkillInfoData();
@@ -3061,7 +2609,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
 
         ArrayList<Integer> targetList = new ArrayList<>();
@@ -3198,7 +2746,7 @@ public class SkillFactory {
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             //공격모션 중계
             SkillInfoData skillInfoData = new SkillInfoData();
@@ -3244,23 +2792,26 @@ public class SkillFactory {
         SkillInfo skillInfo = skillToUse.skillinfo;
         SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
+        /** 2020 04 01 작성 */
+        currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
+
+        /***************************************************************************************************************/
+
 
         /** 스킬 시전 가능 여부를 판별한다 */
 
         boolean isAbleToUseSkill = false;
+
+        // 전사는 마력(mp)이 없어서 아래 처리가 의미가 없음. 나중에 바뀔지도 모르니까 일단 놔둠.
         boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
 
         isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
 
-        //System.out.println("");
-
 
 
         /** 판별 결과에 따른 처리 */
         if(isAbleToUseSkill){   /* 스킬 시전이 가능하다면 */
-
-            System.out.println("스킬을 시전합니다.");
 
             /* 타겟 목록 */
             ArrayList<Integer> targetListByDistance = new ArrayList<>();    // 1차로 공격 사거리 내 타겟들을 검색한 결과
@@ -3270,21 +2821,14 @@ public class SkillFactory {
             Vector3 skillDirection = event.skillDirection;  // 여기서도 필요한지 모르겠네.. 일단은 받는걸로?
             float skillDistanceRate = event.skillDistanceRate;
 
-            System.out.println("스킬 방향 받아온 값 : "
-                    + skillDirection.x() + ", "+ skillDirection.y() + ", "+ skillDirection.z());
-            System.out.println("스킬 거리비율 받아온 값 : "
-                    + skillDistanceRate);
-
             /* Entity ID */
             int publishedEntityID;  // 오브젝트 생성 후 부여받을 값을 담을 것임.
             publishedEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-            System.out.println("생성될 스킬 오브젝트의 ID : "
-                    + publishedEntityID);
+
 
             /******************************  타겟 판별 및 스킬 적용 ***************************************************/
-            /** 스킬 범위(거리 기준)에 들어가는 타겟을 찾는다 */   // 기존과 동일함
 
-            System.out.println("거리 타겟을 판별합니다.");
+            /** 스킬 범위(거리 기준)에 들어가는 타겟을 찾는다 */   // 기존과 동일함
 
             /* 몬스터 갯수만큼 반복한다 */
             for(HashMap.Entry<Integer, MonsterEntity> MonsterEntity : worldMap.monsterEntity.entrySet()){
@@ -3297,14 +2841,8 @@ public class SkillFactory {
                 Vector3 userPos = (Vector3) skillUser.positionComponent.position.clone();
                 Vector3 targetPos = (Vector3) monster.positionComponent.position.clone();
 
-                System.out.println("유저의 좌표 : "
-                        + userPos.x() + ", "+ userPos.y() + ", "+ userPos.z());
-                System.out.println("타겟의 좌표 : "
-                        + targetPos.x() + ", "+ targetPos.y() + ", "+ targetPos.z());
-
                 currentDistance = Vector3.distance(userPos, targetPos);
 
-                System.out.println("유저와 타겟의 거리 : " + currentDistance);
 
                 /** 대상이 스킬범위에 있는지 판별한다 */
                 boolean isTargetInRange = false;
@@ -3318,7 +2856,6 @@ public class SkillFactory {
                 /** 대상이 스킬 범위에 존재한다면, 타겟 목록에 추가한다*/
                 if(isTargetInRange){
 
-                    System.out.println("대상" + monster.entityID + "가 범위거리 내 존재합니다. ");
                     targetListByDistance.add(monster.entityID);
                 }
 
@@ -3344,17 +2881,15 @@ public class SkillFactory {
                 Vector3 monsterDirection = Vector3.getTargetDirection(skillUser.positionComponent.position , monster.positionComponent.position);
 
                 float betweenAngle = Vector3.getAngle(userDirection, monsterDirection);
-                System.out.println("유저와 대상의 사이각 : " + betweenAngle);
 
                 boolean isTargetInRange = false;
-                if((betweenAngle <= 90f)){
+                if((betweenAngle * 2f) <= skillInfo.skillObjectInfo.skillObjectAngle){
 
-                    System.out.println("대상" + monster.entityID + "가 범위각도 내에 존재합니다.");
                     isTargetInRange = true;
                 }
 
                 if(isTargetInRange){
-                    System.out.println("대상" + monster.entityID + "을 최종 타겟 목록에 추가합니다.");
+
                     targetList.add(monster.entityID);
                 }
             }
@@ -3398,9 +2933,16 @@ public class SkillFactory {
             for(int i=0; i<targetList.size(); i++){
 
                 MonsterEntity monster = worldMap.monsterEntity.get(targetList.get(i));
+                //monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) damageBuff.clone());
+                //monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) conditionDebuf.clone());
 
-                monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) damageBuff.clone());
-                monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) conditionDebuf.clone());
+                /* 2020 04 02 */
+                // 데미지
+                BuffAction damage
+                        = createSkillEffect(skillInfo.skillType, "데미지", skillToUse.skillLevel, skillUser, skillUser.entityID);
+                monster.buffActionHistoryComponent.conditionHistory.add(damage);
+
+                // 경직 >> 이거는.. 나중에 추가해.
 
             }
 
@@ -3428,7 +2970,7 @@ public class SkillFactory {
 
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             //공격모션 중계
             SkillInfoData skillInfoData = new SkillInfoData();
@@ -3472,7 +3014,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
 
         /** 스킬 시전 가능 여부를 판별한다 */
@@ -3526,10 +3068,11 @@ public class SkillFactory {
 
             /* flyingObject component */
             createdSkillType = skillInfo.skillType;
-            flyingObjectRadius = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel).attackRange;
+            flyingObjectRadius = currentLevelSkillInfo.attackRange;
 
             float userSpeed = skillUser.velocityComponent.moveSpeed;    // N단위값 들어있음.
-            flyingSpeed = userSpeed * 5f;
+            //flyingSpeed = userSpeed * 5f;
+            flyingSpeed = userSpeed * currentLevelSkillInfo.flyingObjectSpeed;
 
             startPosition = (Vector3) positionComponent.position.clone();
             direction = skillDirection;
@@ -3627,7 +3170,7 @@ public class SkillFactory {
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             SkillInfoData skillInfoData = new SkillInfoData();
             skillInfoData.skillType = SkillType.KNIGHT_PIERCE;
@@ -3672,7 +3215,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
 
         /** 스킬 시전 가능 여부를 판별한다 */
@@ -3824,7 +3367,7 @@ public class SkillFactory {
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             SkillInfoData skillInfoData = new SkillInfoData();
             skillInfoData.skillType = SkillType.KNIGHT_TORNADO;
@@ -3861,7 +3404,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
 
         /** 시전자가 스킬을 사용할 수 있는 상태인지 판별한다 */
@@ -3934,8 +3477,8 @@ public class SkillFactory {
 
                 /* flyingObject component */
                 createdSkillType = skillInfo.skillType;
-                flyingSpeed = skillInfo.flyingObjectInfo.flyingObjectSpeed;
-                flyingObjectRadius = skillInfo.flyingObjectInfo.flyingObjectRadius;
+                flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
+                flyingObjectRadius = currentLevelSkillInfo.attackRange;
 
                 startPosition = (Vector3) event.skillDirection.clone();
                 direction = Vector3.rotateVector3ByAngleAxis(startPosition, new Vector3(0,1,0), directions.get(i)).normalize();
@@ -3946,14 +3489,7 @@ public class SkillFactory {
 
                 int newEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
 
-                /* buffAction **/
-                buffAction = (BuffAction) skillInfo.flyingObjectInfo.buffAction.clone();
-                buffAction.floatParam = new ArrayList<>();
-                buffAction.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, currentLevelSkillInfo.attackDamage));
 
-
-                buffAction.unitID = newEntityID;
-                buffAction.skillUserID = skillUser.entityID;
                 /*==========================================================================================================*/
 
 
@@ -4028,7 +3564,7 @@ public class SkillFactory {
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
-            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             // 중계가 필요하다면 중계처리를 하고.
             //공격모션 중계
@@ -4897,7 +4433,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -4964,10 +4500,18 @@ public class SkillFactory {
 
             /** 대미지를 계산하여 타겟을 공격 */
 
-            float skillDefaultDamage = userAttack.attackDamage;  // 스킬레벨당 공격 데미지를 따른다.
-            ConditionFloatParam damageParam = createDamageParam(skillDefaultDamage, userAttack, skillUserCondition);
-            BuffAction damageBuff = createDamageBuff(damageParam, skillUser.entityID, skillUser.entityID);
-            targetMob.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+            //float skillDefaultDamage = userAttack.attackDamage;  // 스킬레벨당 공격 데미지를 따른다.
+            //ConditionFloatParam damageParam = createDamageParam(skillDefaultDamage, userAttack, skillUserCondition);
+            //BuffAction damageBuff = createDamageBuff(damageParam, skillUser.entityID, skillUser.entityID);
+            //targetMob.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+
+
+            /* 2020 04 02 */
+            BuffAction damage = createSkillEffect(skillType, "데미지", skillToUse.skillLevel, skillUser, skillUser.entityID);
+            targetMob.buffActionHistoryComponent.conditionHistory.add(damage);
+
+
+
 
             // doAttack()에 있는거 가져옴.
             skillUser.attackComponent.remainCoolTime = (1f / skillUser.attackComponent.attackSpeed);
@@ -5038,13 +4582,18 @@ public class SkillFactory {
 
         }
         // 스킬버프 넣어줌
-        skillUser.buffActionHistoryComponent.conditionHistory.add(moveSpeedRateBuff);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(moveSpeedRateBuff);
+
+        // 2020 04 02
+        BuffAction moveSpeedBuff = createSkillEffect(skillType, "이동속도", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        skillUser.buffActionHistoryComponent.conditionHistory.add(moveSpeedBuff);
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         BuffAction afterUsing = new BuffAction();
         afterUsing.unitID = skillUser.entityID;     // 스킬 시전자가 본인에게 거는 것.
@@ -5058,7 +4607,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
 
     }
@@ -5087,7 +4636,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5116,7 +4665,7 @@ public class SkillFactory {
         createdSkillType = skillToUse.skillinfo.skillType;
 
         int skillAreaType;
-        skillAreaType = SkillAreaType.CIRCLE;
+        skillAreaType = skillToUse.skillinfo.skillObjectInfo.skillAreaType;
 
         float skillObjectDurationTime;
         skillObjectDurationTime = skillInfo.durationTime;
@@ -5211,6 +4760,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         BuffAction afterUsing = new BuffAction();
         afterUsing.unitID = skillUser.entityID;     // 스킬 시전자가 본인에게 거는 것.
@@ -5224,7 +4774,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        // skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -5247,7 +4797,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5279,9 +4829,13 @@ public class SkillFactory {
 
         targetMob.hpHistoryComponent.hpHistory.add(damageHistory);*/
 
-        float skillDefaultDamage = skillInfo.attackDamage;  // 스킬레벨당 공격 데미지를 따른다.
-        ConditionFloatParam damageParam = createDamageParam(skillDefaultDamage, userAttack, skillUserCondition);
-        BuffAction firstDamage = createDamageBuff(damageParam, skillUser.entityID, skillUser.entityID);
+        //float skillDefaultDamage = skillInfo.attackDamage;  // 스킬레벨당 공격 데미지를 따른다.
+        //ConditionFloatParam damageParam = createDamageParam(skillDefaultDamage, userAttack, skillUserCondition);
+        //BuffAction firstDamage = createDamageBuff(damageParam, skillUser.entityID, skillUser.entityID);
+        //targetMob.buffActionHistoryComponent.conditionHistory.add(firstDamage);
+
+        /* 2020 04 02 */
+        BuffAction firstDamage = createSkillEffect(skillType, "데미지", skillToUse.skillLevel, skillUser, skillUser.entityID);
         targetMob.buffActionHistoryComponent.conditionHistory.add(firstDamage);
 
 
@@ -5306,15 +4860,20 @@ public class SkillFactory {
 
         /** 1차에서 준 대미지의 20% 만큼의 대미지로 2차 딜을 넣음 */    // >> 시간차 좀 주는 게 나으려나?? 버프로 해서.
 
-        float secondDamage = skillInfo.attackDamage * 0.2f;
-        ConditionFloatParam secondDamageParam = createDamageParam(secondDamage, userAttack, skillUserCondition);
-        BuffAction secondDamageBuff = createDamageBuff(secondDamageParam, skillUser.entityID, skillUser.entityID);
+        //float secondDamage = skillInfo.attackDamage * 0.2f;
+        //ConditionFloatParam secondDamageParam = createDamageParam(secondDamage, userAttack, skillUserCondition);
+        //BuffAction secondDamageBuff = createDamageBuff(secondDamageParam, skillUser.entityID, skillUser.entityID);
 
-        secondDamageBuff.remainCoolTime = 0.1f;   // 0.1초 뒤에 딜 처리가 되게끔.
-        secondDamageBuff.remainTime = 0.25f;   // 0.2 초 뒤에 사라지게끔
-        secondDamageBuff.coolTime = 0.3f;     // 대미지 처리를 한 번만 처리하게끔
+        //secondDamageBuff.remainCoolTime = 0.1f;   // 0.1초 뒤에 딜 처리가 되게끔.
+        //secondDamageBuff.remainTime = 0.25f;   // 0.2 초 뒤에 사라지게끔
+        //secondDamageBuff.coolTime = 0.3f;     // 대미지 처리를 한 번만 처리하게끔
 
-        targetMob.buffActionHistoryComponent.conditionHistory.add(secondDamageBuff);
+        //targetMob.buffActionHistoryComponent.conditionHistory.add(secondDamageBuff);
+
+        /* 2020 04 02 */
+
+        BuffAction secondDamage = createSkillEffect(skillType, "추가 데미지", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        targetMob.buffActionHistoryComponent.conditionHistory.add(secondDamage);
 
 
         /** 상태 버프 */
@@ -5332,7 +4891,7 @@ public class SkillFactory {
         condBuff.boolParam.add(moveDebuff);
         condBuff.boolParam.add(attackDebuff);
 
-        targetMob.buffActionHistoryComponent.conditionHistory.add(condBuff);
+        //targetMob.buffActionHistoryComponent.conditionHistory.add(condBuff);
 
 
 
@@ -5341,6 +4900,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         BuffAction afterUsing = new BuffAction();
@@ -5355,7 +4915,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
 
     }
@@ -5379,7 +4939,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5414,7 +4974,16 @@ public class SkillFactory {
         berserkerBuff.skillType = SkillType.KNIGHT_BERSERKER;
         berserkerBuff.buffDurationTime = berserkerBuff.remainTime;
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(berserkerBuff);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(berserkerBuff);
+
+
+        /* 2020 04 02 */
+
+        BuffAction bloodSucking = createSkillEffect(skillType, "흡혈", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        skillUser.buffActionHistoryComponent.conditionHistory.add(bloodSucking);
+
+        BuffAction attackSpeedIncr = createSkillEffect(skillType, "공격속도", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        skillUser.buffActionHistoryComponent.conditionHistory.add(attackSpeedIncr);
 
 
 
@@ -5431,6 +5000,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         BuffAction afterUsing = new BuffAction();
@@ -5445,7 +5015,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        // skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -5468,7 +5038,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5490,20 +5060,24 @@ public class SkillFactory {
 
         /** 시전자에게.. 체력증가 버프를 넣어준다. */
 
-        BuffAction hpIncBuff = new BuffAction();
+        /*BuffAction hpIncBuff = new BuffAction();
         hpIncBuff.unitID = skillUser.entityID;
         hpIncBuff.skillUserID = skillUser.entityID;
         hpIncBuff.remainTime = skillInfo.durationTime;
         hpIncBuff.coolTime = -1f;
         hpIncBuff.remainCoolTime = -1f;
-        hpIncBuff.floatParam.add(new ConditionFloatParam(ConditionType.maxHPRate, skillInfo.maxHpRate));
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(hpIncBuff);
+        hpIncBuff.floatParam.add(new ConditionFloatParam(ConditionType.maxHPRate, skillInfo.maxHpRate));*/
+        // skillUser.buffActionHistoryComponent.conditionHistory.add(hpIncBuff);
 
 
         /** 2020 03 12 */
-        hpIncBuff.skillType = SkillType.KNIGHT_INCR_HP;
-        hpIncBuff.buffDurationTime = hpIncBuff.remainTime;
+        //hpIncBuff.skillType = SkillType.KNIGHT_INCR_HP;
+        //hpIncBuff.buffDurationTime = hpIncBuff.remainTime;
+
+
+        /* 2020 04 02 */
+        BuffAction hpIncr = createSkillEffect(skillType, "최대체력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        skillUser.buffActionHistoryComponent.conditionHistory.add(hpIncr);
 
 
         /* 스킬 모션 중계 */
@@ -5519,6 +5093,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         BuffAction afterUsing = new BuffAction();
@@ -5533,7 +5108,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
 
     }
@@ -5557,7 +5132,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5587,10 +5162,12 @@ public class SkillFactory {
         /** 2020 03 12 */
         invincibleBuff.skillType = SkillType.KNIGHT_INVINCIBLE;
         invincibleBuff.buffDurationTime = invincibleBuff.remainTime;
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(invincibleBuff);
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(invincibleBuff);
+        /* 2020 04 02 */
+        BuffAction invincible = createSkillEffect(skillType, "무적", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        skillUser.buffActionHistoryComponent.conditionHistory.add(invincible);
 
-        System.out.println("???? 무적 처리 안함??? ");
 
 
         /* 스킬 모션 중계 */
@@ -5606,6 +5183,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         BuffAction afterUsing = new BuffAction();
         afterUsing.unitID = skillUser.entityID;     // 스킬 시전자가 본인에게 거는 것.
@@ -5620,7 +5198,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
         // 안해도..
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        // skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -5651,7 +5229,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5714,7 +5292,7 @@ public class SkillFactory {
             Vector3 monsterDirection = Vector3.getTargetDirection(skillUserPos , targetPos);
 
             float betweenAngle = Vector3.getAngle(skillDirection, monsterDirection);
-            if(betweenAngle > 90f){
+            if(betweenAngle > 90f){ // 앞쪽 방향 판단하려고...
                 continue;
             }
 
@@ -5764,8 +5342,11 @@ public class SkillFactory {
 
             MonsterEntity monster = targetList.get(i);
 
-            monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) damageBuff.clone());
-            monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) condBuff.clone());
+            //monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) damageBuff.clone());
+            //monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) condBuff.clone());
+
+            BuffAction damage = createSkillEffect(skillType, "데미지", skillToUse.skillLevel, skillUser, skillUser.entityID);
+            monster.buffActionHistoryComponent.conditionHistory.add(damage);
 
         }
 
@@ -5783,6 +5364,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         BuffAction afterUsing = new BuffAction();
         afterUsing.unitID = skillUser.entityID;     // 스킬 시전자가 본인에게 거는 것.
@@ -5796,7 +5378,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -5819,7 +5401,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -5915,6 +5497,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         /* 스킬 모션 중계 */
 
@@ -5939,7 +5522,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
 
     }
@@ -5964,7 +5547,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6000,7 +5583,7 @@ public class SkillFactory {
 
         /** 타겟을 검색한다 */
         /**
-         * 모든 몬스터 앤티티에 대해
+         * 모든 캐릭터 앤티티에 대해
          * 0) 죽은 대상은 제외한다
          * 1) 대상이 스킬 사거리 내에 존재하는지 판단한다
          *
@@ -6035,7 +5618,12 @@ public class SkillFactory {
 
             /** 타겟에게 효과를 걸어준다 */
 
-            character.buffActionHistoryComponent.conditionHistory.add(defenseBuff);
+            //character.buffActionHistoryComponent.conditionHistory.add(defenseBuff);
+
+            BuffAction defense = createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
+            character.buffActionHistoryComponent.conditionHistory.add(defense);
+
+            System.out.println("효과 줬음..");
 
         }
 
@@ -6054,6 +5642,7 @@ public class SkillFactory {
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         BuffAction afterUsing = new BuffAction();
         afterUsing.unitID = skillUser.entityID;     // 스킬 시전자가 본인에게 거는 것.
@@ -6067,7 +5656,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
 
     }
@@ -6091,7 +5680,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6133,7 +5722,7 @@ public class SkillFactory {
         int createdSkillType;
         createdSkillType = skillToUse.skillinfo.skillType;
 
-        int skillAreaType = SkillAreaType.CIRCLE;
+        int skillAreaType = skillToUse.skillinfo.skillObjectInfo.skillAreaType;
 
         float skillObjectRadius;
         skillObjectRadius = skillInfo.attackRange;
@@ -6195,6 +5784,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillInfo.coolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         /* 스킬 모션 중계 */
         SkillInfoData skillInfoData = new SkillInfoData();
@@ -6217,7 +5807,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -6240,7 +5830,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6293,7 +5883,7 @@ public class SkillFactory {
         int createdSkillType;
         createdSkillType = skillToUse.skillinfo.skillType;
 
-        int skillAreaType = SkillAreaType.CIRCLE;
+        int skillAreaType = skillToUse.skillinfo.skillObjectInfo.skillAreaType;
 
         float skillObjectRadius;
         skillObjectRadius = skillInfo.attackRange;
@@ -6349,6 +5939,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         /* 스킬 모션 중계 */
@@ -6374,7 +5965,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -6423,7 +6014,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6467,7 +6058,7 @@ public class SkillFactory {
         int createdSkillType;
         createdSkillType = skillToUse.skillinfo.skillType;
 
-        int skillAreaType = SkillAreaType.CONE;
+        int skillAreaType = skillToUse.skillinfo.skillObjectInfo.skillAreaType;
 
         float skillObjectRadius;
         skillObjectRadius = skillInfo.range;
@@ -6513,11 +6104,12 @@ public class SkillFactory {
         skillObjBuff.skillType = SkillType.MAGICIAN_FROZEN_BEAM;
         skillObjBuff.buffDurationTime = skillObjBuff.remainTime;
 
+        float skillObjectAngle = skillToUse.skillinfo.skillObjectInfo.skillObjectAngle / 2f;
 
         /* SkillObject Component */
         SkillObjectComponent skillObjectComponent
                 = new SkillObjectComponent(createdSkillType, skillAreaType, userEntityID,
-                skillObjDurationTime, skillObjectRadius, 30f,
+                skillObjDurationTime, skillObjectRadius, skillObjectAngle,
                 0f, startPosition, skillDir, skillDistanceRate, skillObjBuff);
 
         /* SkillObject Entity */
@@ -6534,6 +6126,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         /* 스킬 모션 중계 */
@@ -6558,7 +6151,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -6582,7 +6175,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6613,13 +6206,18 @@ public class SkillFactory {
         attackSpeedBuff.skillType = SkillType.ARCHER_INC_ATTACK_SPEED;
         attackSpeedBuff.buffDurationTime = attackSpeedBuff.remainTime;
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(attackSpeedBuff);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(attackSpeedBuff);
+
+        /* 2020 04 02 */
+        BuffAction attackSpeed = createSkillEffect(skillType, "공격속도", skillToUse.skillLevel, skillUser, skillUser.entityID);
+        skillUser.buffActionHistoryComponent.conditionHistory.add(attackSpeed);
 
 
         /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         /* 스킬 모션 중계 */
@@ -6644,7 +6242,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
 
     }
 
@@ -6674,7 +6272,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6709,8 +6307,15 @@ public class SkillFactory {
         headShotBuff.floatParam.add(criticalDam);
 
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(headShotBuff);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(headShotBuff);
 
+        /* 2020 04 02 */
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "헤드샷활성화", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        /*skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "크리뎀", skillToUse.skillLevel, skillUser) );*/
 
 
         /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
@@ -6742,7 +6347,7 @@ public class SkillFactory {
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
     }
 
     /**
@@ -6765,7 +6370,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
 
@@ -6839,7 +6444,12 @@ public class SkillFactory {
 
             /** 타겟에게 효과를 걸어준다 */
 
-            character.buffActionHistoryComponent.conditionHistory.add(criticalBuff);
+            // character.buffActionHistoryComponent.conditionHistory.add(criticalBuff);
+
+            character.buffActionHistoryComponent.conditionHistory.add(
+                    createSkillEffect(skillType, "치명확률", skillToUse.skillLevel, skillUser,skillUser.entityID) );
+            character.buffActionHistoryComponent.conditionHistory.add(
+                    createSkillEffect(skillType, "치명데미지증가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
         }
 
@@ -6850,6 +6460,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         /* 스킬 모션 중계 */
@@ -6875,7 +6486,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
     }
 
     /**
@@ -6897,7 +6508,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -6976,7 +6587,7 @@ public class SkillFactory {
 
         int createdSkillType = skillToUse.skillinfo.skillType;
 
-        float flyingObjectRadius = 2.5f; // 괜찮은 값인지...!!
+        float flyingObjectRadius = skillInfo.attackRange;
         float flyingObjectSpeed = skillInfo.flyingObjectSpeed;
 
         float remainDistance = skillInfo.range; // 아맞다 range들 범위 수정 해줘야 됨 * 0.01f
@@ -7024,7 +6635,10 @@ public class SkillFactory {
         // event.skillDirection = skillUser.velocityComponent.velocity;    // 이렇게 해도 될려나??
 
         /** 2020 02 20 목 권령희 */
-        event.remainCoolTime = 0.1f;
+
+        /* 2020 04 02 ; 쿨타임을.. 스킬정보 - 효과 지속시간?으로 해보 */
+        //event.remainCoolTime = 0.1f;
+        event.remainCoolTime = skillInfo.durationTime;
         worldMap.enqueueClientAction(event);
 
 
@@ -7054,7 +6668,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
     }
 
     /**
@@ -7076,7 +6690,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
@@ -7150,7 +6764,12 @@ public class SkillFactory {
         fireBuff.skillType = SkillType.ARCHER_FIRE;
         fireBuff.buffDurationTime = fireBuff.remainTime;
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(fireBuff);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(fireBuff);
+
+        /* 2020 04 02 */
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "난사활성화", skillToUse.skillLevel, skillUser, skillUser.entityID));
+
 
         /*
         * 스킬타입별 투사체 조건이라던가 뭐 그런거를 별도로 만들어두고, 여기서 필요한 값들 적용해둔 다음에
@@ -7165,6 +6784,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         /* 스킬 모션 중계 */
@@ -7190,7 +6810,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        // skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
     }
 
     /**
@@ -7212,7 +6832,7 @@ public class SkillFactory {
         }
 
         int skillType = skillToUse.skillinfo.skillType;
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillToUse.skillLevel);
 
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
 
@@ -7246,7 +6866,7 @@ public class SkillFactory {
 
         int createdSkillType = skillToUse.skillinfo.skillType;
 
-        float flyingObjectRadius = 10f;
+        float flyingObjectRadius = skillInfo.attackRange;
         float flyingObjectSpeed = skillInfo.flyingObjectSpeed;
 
         float remainDistance = skillInfo.range; // 아맞다 range들 범위 수정 해줘야 됨 * 0.01f
@@ -7328,6 +6948,7 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
         /* 스킬 모션 중계 */
@@ -7353,7 +6974,7 @@ public class SkillFactory {
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
+        //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
     }
 
 
@@ -7371,7 +6992,6 @@ public class SkillFactory {
     public static SkillSlot findSkillSlotBySlotNum(int slotNum, CharacterEntity skillUser){
 
         SkillSlot slot = null;
-
         List<SkillSlot> skillSlots = skillUser.skillSlotComponent.skillSlotList;
 
         for(int i=0; i<skillSlots.size(); i++){
@@ -7380,7 +7000,6 @@ public class SkillFactory {
                 slot = skillSlots.get(i);
                 break;
             }
-
         }
 
         return slot;
@@ -7489,10 +7108,9 @@ public class SkillFactory {
         SkillInfoPerLevel skillInfo = null;
 
         SkillSlot skillToStop = findSkillSlotBySlotNum(event.skillSlotNum, skillUser);
-
         if(skillToStop == null){    /* 해당 스킬 슬롯을 찾지 못했는데 */
 
-            if(event.skillSlotNum == 100){  // 스킬 요청이 귀환인 경우
+            if(event.skillSlotNum == SkillType.RECALL){  // 스킬 요청이 귀환인 경우
 
                 skillType = SkillType.RECALL;
             }
@@ -7635,58 +7253,6 @@ public class SkillFactory {
 
 
 
-            /* 평타 vs 치명타 결정 */
-            int max = 99;
-            int min = 0;
-            int randomValue = (int)(Math.random()*((max-min)+1))+min;
-            float criticalChance = attacker.attackComponent.criticalChance + attacker.conditionComponent.criticalChanceRate + randomValue;
-
-            /* 평타, 치명타 여부에 따른 처리 */
-            boolean isCriticalAttack = (criticalChance >= 100f) ? true : false;
-            /*if(isCriticalAttack){
-
-                //원래 공격력 + 보너스 공격력
-                float sumDamage = attacker.attackComponent.attackDamage + attacker.conditionComponent.attackDamageBonus;
-                //위의 수치에 공격력 증가비율 적용
-                float rateDamage = sumDamage * attacker.conditionComponent.attackDamageRate;
-
-                float criticalDamage
-                        = (attacker.attackComponent.criticalDamage * 0.01f) + attacker.conditionComponent.criticalDamageRate;
-                // 컨디션 컴포넌트의 criticalDamageRate는 디폴트값이 1, 여기에 추가 적용된 수치들이 * 0.01f 연산된 값이 붙는다.
-                // 어택 컴포넌트의 크리티컬데미지는 레벨1 기준 50으로 시작한다.
-
-                float dmgAmount = rateDamage * criticalDamage;
-
-                BuffAction criticalDmg = new BuffAction();
-
-                criticalDmg.skillUserID = attacker.entityID;
-                criticalDmg.remainTime = 0.15f;
-                criticalDmg.coolTime = -1f;
-                criticalDmg.remainCoolTime = -1f;
-                criticalDmg.floatParam.add(new ConditionFloatParam(ConditionType.criticalDamageAmount, dmgAmount));
-
-                flyingObjComponent.buffAction = criticalDmg;
-
-            }
-            else {
-
-                //원래 공격력 + 보너스 공격력
-                float sumDamage = attacker.attackComponent.attackDamage + attacker.conditionComponent.attackDamageBonus;
-                //위의 수치에 공격력 증가비율 적용
-                float rateDamage = sumDamage * attacker.conditionComponent.attackDamageRate;
-
-                BuffAction flatDmg = new BuffAction();
-
-                flatDmg.skillUserID = attacker.entityID;
-                flatDmg.remainTime = 0.15f;
-                flatDmg.coolTime = -1f;
-                flatDmg.remainCoolTime = -1f;
-                flatDmg.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, rateDamage));
-
-                flyingObjComponent.buffAction = flatDmg;
-
-            }*/
-
             /** 2020 02 20 */
             float attackerDefaultDamage = attacker.attackComponent.attackDamage;
 
@@ -7697,7 +7263,7 @@ public class SkillFactory {
             BuffAction damageBuff = createDamageBuff(damageParam, flyingObjectEntityID, attacker.entityID);
 
             flyingObjComponent.buffAction = damageBuff;
-            flyingObjComponent.createdSkillType = SkillType.ARCHER_FIRE;
+            //flyingObjComponent.createdSkillType = SkillType.ARCHER_FIRE;
 
             //flyingObjComponent.buffAction.unitID = flyingObjectEntityID;
             PositionComponent foPos = new PositionComponent(attackerPos.x(), attackerPos.y(), attackerPos.z());
@@ -7742,7 +7308,9 @@ public class SkillFactory {
         int createdSkillType = SkillType.ARCHER_NORMAL_ATTACK;
 
         float flyingObjectRadius = 2.5f;
+        flyingObjectRadius = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).attackRange;
         float flyingObjectSpeed = 20f;
+        flyingObjectSpeed = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).flyingObjectSpeed;
 
 
         Vector3 startPosition;
@@ -7771,19 +7339,7 @@ public class SkillFactory {
     }
 
 
-    /* 일단 안씀 */
-    public static void createFlyingObj_ArcherFire(FlyingObjectComponent component, MonsterEntity targetMob, WorldMap worldMap){
 
-        int flyingObjectEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-
-        /* 타겟 정보를 가지고, 방향 및 타겟 정보를 설정 */
-
-
-        FlyingObjectEntity flyingObject = new FlyingObjectEntity();
-
-
-
-    }
 
     /**
      * 헤드샷이 적용된 평타 처리
@@ -7805,7 +7361,7 @@ public class SkillFactory {
         }
 
 
-        SkillInfoPerLevel skillInfo = skillLevelTable.get(SkillType.ARCHER_HEAD_SHOT).get(skillUsed.skillLevel);
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(SkillType.ARCHER_HEAD_SHOT).get(skillUsed.skillLevel);
 
 
         /** 투사체를 생성한다 */
@@ -7825,8 +7381,8 @@ public class SkillFactory {
 
         int createdSkillType = SkillType.ARCHER_HEAD_SHOT;
 
-        float flyingObjectRadius = 2.5f;
-        float flyingObjectSpeed = 20f;
+        float flyingObjectRadius = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).attackRange;
+        float flyingObjectSpeed = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).flyingObjectSpeed;
 
         Vector3 startPosition;
         startPosition = (Vector3) positionComponent.position.clone();
@@ -7993,9 +7549,11 @@ public class SkillFactory {
         damageBuff.unitID = unitID;
         damageBuff.skillUserID = skillUserID;
 
-        damageBuff.remainTime = 0.15f;
-        damageBuff.remainCoolTime = -1f;
-        damageBuff.coolTime = -1f;
+        //damageBuff.remainTime = 0.15f;
+
+        damageBuff.remainTime = 1.1f;
+        damageBuff.remainCoolTime = 0.2f;
+        damageBuff.coolTime = 1.1f;
 
         damageBuff.floatParam.add( damageParam);
 
@@ -8016,7 +7574,9 @@ public class SkillFactory {
                 break;
             }
         }
+
         return slot;
+
     }
 
     /** 2020 03 20 권령희 추가  */
@@ -8046,6 +7606,392 @@ public class SkillFactory {
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
     }
+
+    /**
+     * 작성날짜 : 2020 04 01 수요일
+     * 작성내용 :
+     * -- CSV 파일로부터 읽어들인 단위의 효과(BuffAction) 객체 하나를 생성하기 위해 필요한 절차들
+     * --
+     * --
+     *
+     */
+    /*******************************************************************************************************************/
+
+    /**
+     *      Aim : 매서드 작성 틀 예시
+     *    Input : 매서드 인자
+     *   Output : 리턴값
+     *  Process : 처리과정을을 적는다
+     *
+     */
+    public static void methodName(){
+
+
+
+    }
+
+    /**
+     *      Aim : 스킬에서 적용하고자 하는 효과를 생성할 때 호출하면 된다!
+     *    Input :
+     *   Output :
+     *  Process :
+     *
+     */
+    public static BuffAction createSkillEffect(int skillType, String effectName, int skillLevel, CharacterEntity skillUser, int effectEntityID){
+
+
+        /** 스킬 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
+        BuffInfo effectInfo = skillEffectInfoLIST.get(skillType).get(effectName);
+
+        /** 효과의 지속시간을 구한다 (필요하다면) */
+        /*
+         * 조건 : 효과의 적중 타입이 '지속'이면서 효과정보 객체에 들어있는 지속시간 값이 0 이하인 경우
+         *          스킬정보 혹은 스킬 레벨정보 등을 통해 구해야 한다.
+         * 현재는 지속시간이 정해져있지 않은 경우가 위와 같은 것들 뿐인데, 나중에 기획 변경 또는 레벨 디자인에 따라 달라질 수 있음.
+         * 효과적용 타입이 도트 이면서 지속시간이 스킬레벨에 따라 달라진다거나 하는 경우 등등.
+         * ㄴ 이런 경우, "지속시간이 0이하라면"으로 조건문을 변경해야 할 듯.
+         *
+         * 참고)) 현재 GDM 이 효과목록을 읽어올 시, 파일의 지속시간 필드가 '스킬'로 되어 있는 경우
+         *      BuffInfo 클래스의 지속시간 값에 -1을 채우고 있다.
+         *      위 경우를 제외하고는, 지속시간이 0 이하인 효과 목록은 존재하지 않을 것.
+         *      그래서 "0 이하"조건을 사용했다.
+         */
+        float effectDurationTime;
+        boolean needToGetDurationTime =
+                (( effectInfo.effectAppicationType == EffectApplicationType.지속)
+                && ( effectInfo.effectDurationTime <= 0f)) ? true : false;
+        if(needToGetDurationTime){
+
+            /* 지속시간 값을 구해야 한다면, 시전자의 스킬 레벨 값에 맞는 적용시간 값을 가져와 적용한다 */
+            effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+            System.out.println("스킬레벨정보에서 지속 시간 가져옴 : " + effectDurationTime);
+        }
+        else{
+
+            /* 지속시간 값을 별도로 구해 줄 필요가 없다면, 기존에 들어있는 값을 가져와 그대로 적용하면 된다. */
+            effectDurationTime = effectInfo.effectDurationTime;
+            System.out.println("그냥ㄴ 그대로 씀 : " + effectDurationTime);
+        }
+
+
+
+        /** 효과 객체를 생성한다 (틀) */
+        // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
+        BuffAction newEffect;
+
+        /* 미친 예외처리.. */
+        if((skillType == SkillType.MAGICIAN_FROZEN_BEAM)
+                && ((effectName.contains("슬로우") || effectName.contains("데미지"))) ){
+
+            /**
+             * 마법사 프로즌빔 스킬의 경우, 대상에게
+             *  스킬 레벨에 따라 N초의 빙결 상태를
+             *
+             */
+
+            float freezingTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+            effectDurationTime += skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+
+            newEffect = new BuffAction(skillType, effectDurationTime, effectInfo.remainCoolTime + freezingTime, effectInfo.effectCoolTime);
+
+        }
+        else{
+
+            newEffect = new BuffAction(skillType, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
+
+        }
+
+
+
+
+        /** 효과 내용을 채운다 */
+        // BuffAction 객체에, 실제 효과를 부여하기 위한 처리를 한다. 경우에 따라, 스킬 시전자 정보 혹은 스킬레벨 정보를 참조해야 한다.
+
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectName);
+        boolean isConditionEffect = checkIsConditionEffect(effectType);
+        if(isConditionEffect){
+
+            /* 상태이상을 결정하는 효과 타입인 경우, boolParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionBoolParam conditionEffect = new ConditionBoolParam(effectType, true);
+            newEffect.addEffect(conditionEffect);
+        }
+        else{
+
+            /* 기존 스탯 등에 영향을 미치는 버프 OR 디버프 효과 타입인 경우, floatParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionFloatParam valueEffect = createEffectParam(skillType, skillLevel, effectInfo, skillUser);
+            newEffect.addEffect(valueEffect);
+
+        }
+
+        // 나중에.. 근거리 공격용? 매서드도 하나 만들자..
+        newEffect.unitID = effectEntityID;
+        newEffect.skillUserID = skillUser.entityID;
+
+        /* Output */
+        return newEffect;
+
+    }
+
+
+    /**
+     * 넘겨받은 효과가 상태 이상 타입의 효과인지 여부를 판단하는 매서드
+     * @return
+     */
+    public static boolean checkIsConditionEffect(int effectType){
+
+        boolean isConditionEffect = false;
+
+        switch (effectType){
+
+            case ConditionType.isDisableMove :
+            case ConditionType.isDisableAttack :
+            case ConditionType.isDisableSkill :
+            case ConditionType.isDisableItem :
+            case ConditionType.isDamageImmunity :
+            case ConditionType.isUnTargetable :
+
+            case ConditionType.isAirborneImmunity :
+            case ConditionType.isAirborne :
+            case ConditionType.isGarrenQApplied :
+            case ConditionType.isTargetingInvincible :
+            case ConditionType.isArcherFireActivated :
+            case ConditionType.isStunned :
+            case ConditionType.isArcherHeadShotActivated :
+            case ConditionType.isFreezing :
+            case ConditionType.isSlow :
+            case ConditionType.isSilence :
+            case ConditionType.isBlind :
+            case ConditionType.isSightBlocked :
+            case ConditionType.isGrounding :
+            case ConditionType.isPolymorph :
+            case ConditionType.isDisarmed :
+            case ConditionType.isSnare :
+            case ConditionType.isKnockedAirborne :
+            case ConditionType.isKnockback :
+            case ConditionType.isSuspension :
+            case ConditionType.isTaunt :
+            case ConditionType.isCharm :
+            case ConditionType.isFlee :
+            case ConditionType.isSuppressed :
+            case ConditionType.isSleep :
+            case ConditionType.isReturning :
+
+                isConditionEffect = true;
+                break;
+
+            default:
+                isConditionEffect = false;
+        }
+
+        return isConditionEffect;
+    }
+
+    /**
+     * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
+     *
+     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
+     */
+    public static ConditionFloatParam createEffectParam(int skillType, int skillLevel, BuffInfo effectInfo, CharacterEntity skillUser){
+
+        /* Input */
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectInfo.effectTypeName);
+        String effectValueStr = effectInfo.effectValue;
+
+        /* Output */
+        float effectValue = 0f;
+        ConditionFloatParam valueEffect;
+
+        /* 효과값을 결정한다 */
+        switch (effectValueStr){
+
+            case "공격력" :
+
+                /* 스킬 시전자의 공격력 값을 가져와 적용한다 */
+                effectValue = skillUser.attackComponent.attackDamage;
+
+                System.out.println("효과파람 생성 매서드 ; 공격력 타입 ");
+                break;
+
+            case "스킬" :
+
+                /* 스킬 시전자의 해당 스킬 레벨을 참고해, 레벨에 맞는 스킬데미지값을 가져와 적용한다 */
+                effectValue = getProperEffectValue(skillType, effectInfo.effectTypeName, effectType, skillLevel);
+
+                System.out.println("효과파람 생성 매서드 ; 스킬 타입 ; " + effectInfo.effectTypeName);
+                break;
+
+            default :
+
+                effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
+
+                /* 가렌R 예외.. 추가딜.. */
+                boolean isGarrenR
+                        = (effectInfo.effectTypeName.contains("추가 데미지")
+                        && (skillType == SkillType.KNIGHT_GARREN_R)) ? true : false;
+                if(isGarrenR){
+
+                    // 예외처리가 하드코딩..
+                    float skillDamage
+                            = getProperEffectValue(skillType, "데미지", ConditionType.damageAmount, skillLevel);
+                    effectValue *= (skillDamage * 0.01f) ; // 스킬값에 들어있는 퍼센테이지만큼을, 기존 스킬 데미지값에 곱함.
+                }
+
+                /* 메테오 ; 장판딜 */
+                if((skillType == SkillType.MAGICIAN_METEOR) && effectInfo.effectTypeName.contains("장판 데미지")){
+
+                    float skillDamage = skillInfoPerLevelLIST.get(skillType).get(skillLevel).attackDamage;
+                    effectValue *= (skillDamage * 0.01f);
+                }
+
+
+
+                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                break;
+
+        }
+
+        /* 예외처리
+            ; 일반 '데미지' 타입인 경우, 해당 공격이 평탄지, 크리티컬인지 판정도 거처야 한다. */
+
+        switch (effectType){    // 효과타입Name == "데미지"로 하는게 의미상 더 정확하긴 할텐데..
+
+            case ConditionType.damageAmount :
+                valueEffect = createDamageParam(effectValue, skillUser.attackComponent, skillUser.conditionComponent);
+                break;
+
+            default:
+
+                valueEffect = new ConditionFloatParam(effectType, effectValue);
+                break;
+        }
+
+
+        return valueEffect;
+
+    }
+
+
+    /**
+     *
+     */
+    public static float getProperEffectValue(int skillType, String effectName, int effectType, int skillLevel){
+
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillLevel);
+
+        /* Output */
+        float effectValue = 0f;
+
+        switch (effectType){
+
+            case ConditionType.moveSpeedRate :
+
+                effectValue = skillInfo.moveSpeedRate;
+                break;
+
+            case ConditionType.attackSpeedRate :
+
+                effectValue = skillInfo.attackSpeedRate;
+                break;
+
+            case ConditionType.maxHPRate :
+
+                effectValue = skillInfo.maxHpRate;
+                break;
+
+            case ConditionType.bloodSuckingRate :
+
+                effectValue = skillInfo.bloodSuckingRate;
+                break;
+
+            case ConditionType.criticalChanceRate :
+
+                System.out.println("크리티컬 확률! ");
+
+                effectValue = skillInfo.criticalChanceRate;
+                if(skillType == SkillType.ARCHER_CRITICAL_HIT){
+
+                    // 아직 확실하진 않은데.. 이전 처리에서 그렇게 되어 있음.
+                    //effectValue += 100f;
+                }
+                break;
+
+            /* 미친;zz 크리티컬 */
+            case ConditionType.criticalDamageRate :
+
+                System.out.println("크리티컬 데미지! ");
+
+                effectValue = skillInfo.criticalDamageRate;
+                break;
+
+            /* '스킬 공격력 만큼' 효과를 주도록 되어있음.
+                나중에, skillInfoPerLevel 클래스에 항목을 추가해 처리할 것... */
+            case ConditionType.defenseBonus :
+            case ConditionType.hpRecoveryAmount :
+            case ConditionType.mpRecoveryAmount :
+            case ConditionType.damageAmount :
+
+                effectValue = skillInfo.attackDamage;
+
+                /* 가레니 예외처리.. */
+                if((skillType == SkillType.KNIGHT_GARREN_E) && effectName.contains("데미지")){
+
+                    float durationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+                    effectValue /= durationTime;
+
+                }
+
+
+                break;
+
+            case ConditionType.criticalDamageAmount :
+
+                /* 예외처리; */
+                boolean isArcherSnipe
+                        = (effectName.contains("2차") && (skillType == SkillType.ARCHER_SNIPE)) ? true : false;
+                boolean isArcherHeadShot
+                        = (skillType == SkillType.ARCHER_HEAD_SHOT) ? true : false;
+
+                if(isArcherSnipe || isArcherHeadShot){
+                    effectValue = skillInfo.attackDamage * (100 + skillInfo.criticalBonusDamageRate) * 0.01f;
+
+                    if(effectName.contains("보스")){
+                        effectValue *= 2;
+                    }
+
+                }
+                else{
+                    effectValue = skillInfo.attackDamage;
+                }
+                break;
+
+            /* 해당 효과를 주는 스킬이 (아직) 존재하지 않음 */
+            case ConditionType.hpRecoveryRate :
+            case ConditionType.mpRecoveryRate :
+            case ConditionType.goldGainRate :
+            case ConditionType.expGainRate :
+            case ConditionType.buffDurationRate :
+            case ConditionType.attackDamageRate :
+            case ConditionType.defenseRate :
+            case ConditionType.maxMPRate :
+            case ConditionType.coolTimeReduceRate :
+            case ConditionType.moveSpeedBonus :
+            case ConditionType.attackDamageBonus :
+            case ConditionType.maxHPBonus :
+            case ConditionType.maxMPBonus :
+
+                effectValue = 0f;
+                break;
+
+        }
+
+        return effectValue;
+    }
+
+
+
+
+
+    /*******************************************************************************************************************/
 
 
 

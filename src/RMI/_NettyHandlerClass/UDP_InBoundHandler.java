@@ -56,10 +56,11 @@ public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
 
         if(65535 < packet_size || packet_size < 0 || (packet_size + 12) != receive_data.readableBytes() )
         {
-            System.out.println("[UDP_InBoundHandler] Packet손상!! packet_size="+packet_size+" / receive_data.readableBytes()="+receive_data.readableBytes());
+            System.out.println("[MOF_UDP_InBoundHandler] Packet손상!! packet_size="+packet_size+" / receive_data.readableBytes()="+receive_data.readableBytes());
 
             //사용된 메모리를 반환한다!
-            received_datagram.release();
+            if(received_datagram.refCnt()>0)
+                ReferenceCountUtil.release(received_datagram, received_datagram.refCnt());
             return;
         }
 

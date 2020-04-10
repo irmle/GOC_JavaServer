@@ -2,11 +2,15 @@ package ECS.System;
 
 import ECS.Classes.BuffAction;
 import ECS.Classes.BuildSlot;
+import ECS.Classes.Type.TurretType;
 import ECS.Classes.Vector3;
 import ECS.Components.BuffComponent;
 import ECS.Entity.BuffTurretEntity;
 import ECS.Entity.CharacterEntity;
+import ECS.Factory.BuffTurretFactory;
 import ECS.Game.WorldMap;
+import sun.plugin2.gluegen.runtime.BufferFactory;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,7 +30,42 @@ public class BuffTurretSystem {
             /* 타워의 버프 정보 */
             BuffTurretEntity buffTurret = buffTurretEntity.getValue();
             BuffComponent buff = buffTurret.buffComponent;
-            BuffAction buffInfo = buff.buffActionInfo;
+            //BuffAction buffInfo = buff.buffActionInfo;
+
+            /** 2020 04 03 */
+            String effectName = "";
+            switch (buffTurret.turretComponent.turretType){
+
+                case TurretType.BUFF_TURRET_DEFAULT :
+
+                    effectName = "체력회복";
+                    break;
+
+                case TurretType.BUFF_TURRET_TYPE1_UPGRADE1 :
+                case TurretType.BUFF_TURRET_TYPE1_UPGRADE2 :
+                case TurretType.BUFF_TURRET_TYPE1_UPGRADE3 :
+
+
+                    effectName = "마력회복";
+                    break;
+
+                case TurretType.BUFF_TURRET_TYPE2_UPGRADE1 :
+                case TurretType.BUFF_TURRET_TYPE2_UPGRADE2 :
+                case TurretType.BUFF_TURRET_TYPE2_UPGRADE3 :
+
+                    effectName = "이동속도증가";
+                    break;
+
+                case TurretType.BUFF_TURRET_TYPE3_UPGRADE1 :
+                case TurretType.BUFF_TURRET_TYPE3_UPGRADE2 :
+                case TurretType.BUFF_TURRET_TYPE3_UPGRADE3 :
+
+                    effectName = "체력회복";
+                    break;
+
+            }
+
+
 
             if( (buffTurret.hpComponent.currentHP <= 0)){
                 continue;
@@ -102,7 +141,7 @@ public class BuffTurretSystem {
 
                     // buffInfo.remainTime = deltaTime;    // 버프 지속 남은 시간을 초기화해준다
                     //targetsBuffAction.remainTime = deltaTime;
-                    targetsBuffAction.remainTime = buffTurret.buffComponent.buffActionInfo.remainTime;
+                    //targetsBuffAction.remainTime = targetsBuffAction.buffDurationTime;
 
                 }
                 else{   /** 기존에 효과를 받고있지 않다면 */
@@ -110,9 +149,14 @@ public class BuffTurretSystem {
                     System.out.println("버프포탑의 버프를 새로 추가해줍니다 ");
 
                     /* 대상의 버프 목록에 추가해준다. */
-                    BuffAction newBuff = (BuffAction) buffInfo.clone();
+                    //BuffAction newBuff = (BuffAction) buffInfo.clone();
+
+                    BuffAction newBuff;
+                    newBuff = BuffTurretFactory.createBuffTurretEffect(
+                            buffTurret.turretComponent.turretType, effectName, buffTurret, buffTurret.entityID);
 
                     newBuff.unitID = buffTurret.entityID;
+
 
                     /**
                      * 2019 12 23 월요일 추가

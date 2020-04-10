@@ -55,7 +55,7 @@ public class DeathSystem {
                 case EntityType.MonsterEntity :
 
                     MonsterEntity monster = worldMap.monsterEntity.get(death.deadEntityID);
-                    if(worldMap.jungleMonsterSlotList.containsKey(monster.entityID)){
+                    if(worldMap.jungleMonsterSlotHashMap.containsKey(monster.entityID)){
                         processJungleMonsterDeath(death);
                     }
                     else{
@@ -165,9 +165,10 @@ public class DeathSystem {
 
         /* 죽은 몬스터 정보를 찾는다 */
         MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
-        int typeOfDeadMonster = worldMap.monsterEntity.get(death.deadEntityID).monsterComponent.monsterType;
+        int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
+        int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
-        System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
+                System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
         Reward reward;
 
@@ -180,8 +181,9 @@ public class DeathSystem {
                 killer = worldMap.characterEntity.get(death.killerEntityID);
                 int killerLevel = ((CharacterEntity) killer).characterComponent.level;
 
+
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
-                reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killerLevel);
+                reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
 
                 // 테스트용 빨리 만렙 만들기
                 boolean isTestMode = true;
@@ -216,7 +218,7 @@ public class DeathSystem {
                 int builderLevel = turretBuildUser.characterComponent.level;
 
                 /* 해당 유저에게 보상을 넣어준다 */
-                reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, builderLevel);
+                reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, monsterLevel);
                 turretBuildUser.rewardHistoryComponent.rewardHistory.add(reward);
 
                 break;
@@ -239,7 +241,7 @@ public class DeathSystem {
                 CharacterEntity skillUser = worldMap.characterEntity.get(skillUserID);
 
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
-                reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killer.entityID);
+                reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
                 skillUser.rewardHistoryComponent.rewardHistory.add(reward);
 
 
@@ -364,7 +366,8 @@ public class DeathSystem {
 
         /* 죽은 몬스터 정보를 찾는다 */
         MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
-        int typeOfDeadMonster = worldMap.monsterEntity.get(death.deadEntityID).monsterComponent.monsterType;
+        int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
+        int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
         System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
@@ -373,7 +376,11 @@ public class DeathSystem {
          *
          */
         JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, deadMonster.entityID);
-        slot.setMonsterState(JungleMobState.DIED);
+        slot = worldMap.jungleMonsterSlotHashMap.get(deadMonster.entityID);
+        if(slot == null){
+            System.out.println("널임;");
+        }
+        //slot.setMonsterState(JungleMobState.DIED);
 
 
 
@@ -391,7 +398,7 @@ public class DeathSystem {
 
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killerLevel);
-                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID);
+                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID,monsterLevel);
 
                 // 테스트용 빨리 만렙 만들기
                 boolean isTestMode = false;
@@ -427,7 +434,7 @@ public class DeathSystem {
 
                 /* 해당 유저에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, builderLevel);
-                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID);
+                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
                 turretBuildUser.rewardHistoryComponent.rewardHistory.add(reward);
 
                 break;
@@ -451,7 +458,7 @@ public class DeathSystem {
 
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killer.entityID);
-                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID);
+                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
                 skillUser.rewardHistoryComponent.rewardHistory.add(reward);
 
 

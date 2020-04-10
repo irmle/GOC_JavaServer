@@ -1,5 +1,6 @@
 package ECS.System;
 
+import ECS.Factory.AttackTurretFactory;
 import ECS.Factory.MapFactory;
 import ECS.Factory.SkillFactory;
 import RMI.AutoCreatedClass.CharacterData;
@@ -11,6 +12,7 @@ import ECS.Entity.*;
 import ECS.Game.*;
 import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
 
+import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,11 +44,80 @@ public class FlyingObjectSystem {
     }
 
     public void onUpdate(float deltaTime) {
+
+        boolean doOldVersion = false;
+
         /* 투사체 갯수만큼 반복한다 */
         for (HashMap.Entry<Integer, FlyingObjectEntity> flyingObjectEntity : worldMap.flyingObjectEntity.entrySet()) {
 
             FlyingObjectEntity flyingObject = flyingObjectEntity.getValue();
             FlyingObjectComponent flyingObjectComponent = flyingObject.flyingObjectComponent;
+
+
+            /** 2020 04 02 */
+            // 스킬 시전자 및 스킬 레벨 정보를 구한다
+            CharacterEntity skillUser;
+            AttackTurretEntity attackTurret;
+
+            SkillSlot skillSlot;
+            int skillLevel;
+            int skillType;
+
+            int createdEntityType = worldMap.entityMappingList.get(flyingObjectComponent.userEntityID);
+            switch (createdEntityType){
+
+                case EntityType.CharacterEntity :
+
+                    System.out.println("캐릭맞음? ");
+
+                    attackTurret = null;
+                    skillUser = worldMap.characterEntity.get(flyingObjectComponent.userEntityID);
+                    skillType = flyingObjectComponent.createdSkillType;
+
+                    if((skillType == SkillType.ARCHER_NORMAL_ATTACK)
+                            || (skillType == SkillType.MAGICIAN_NORMAL_ATTACK) ){
+
+                        skillSlot = null;
+                        skillLevel = 1;
+                    }
+                    else{
+
+                        skillSlot = SkillFactory.findSkillSlotBySkillType(worldMap, skillUser, flyingObjectComponent.createdSkillType);
+                        skillLevel = skillSlot.skillLevel;
+
+                    }
+                    break;
+
+                case EntityType.AttackTurretEntity :
+
+                    skillUser = null;
+                    skillType = flyingObjectComponent.createdSkillType;
+                    attackTurret = worldMap.attackTurretEntity.get(flyingObjectComponent.userEntityID);
+                    if(attackTurret == null){
+                        System.out.println("널;");
+                    }
+                    skillSlot = null;
+                    skillLevel = 1;
+
+                    break;
+
+                default:
+
+                    skillUser = null;
+                    skillType = flyingObjectComponent.createdSkillType;
+                    attackTurret = null;
+                    skillSlot = null;
+                    skillLevel = 1;
+
+                    break;
+
+
+            }
+
+
+
+            /************************************************************************************************************/
+
 
             boolean hasTarget = false;
 
@@ -57,8 +128,6 @@ public class FlyingObjectSystem {
                 hasTarget = true;
             }
             //한 월드맵당 EntityID는 0 이상으로 주어지며, 모든 Entity마다 고유하게 부여된다. (최소 0 ~ 최대 21억 범위)
-
-
 
             /* 타겟이 존재하는 타게팅 투사체의 경우 타겟ID에 따라 처리한다 */
             if (hasTarget) {  /* 타게팅인 경우 */
@@ -77,9 +146,15 @@ public class FlyingObjectSystem {
                 else
                     targetEntityType = worldMap.entityMappingList.get(targetEntityID);
 
+
                 //타겟의 EntityType별로 지정할 것.
                 switch (targetEntityType)
                 {
+                    /**
+                     * 왜.. 타겟별로 별도 처리를 해야하는지 아직 모르겠지만,
+                     * 일단 현 시점에서 타게팅 투사체 중 캐릭터를 타겟으로 하는 경우는
+                     * 존재하지 않으므로, 처리를 수정하지 않음.
+                     */
                     case EntityType.CharacterEntity: {
 
                         CharacterEntity targetEntity = worldMap.characterEntity.get(targetEntityID);
@@ -140,8 +215,6 @@ public class FlyingObjectSystem {
                     }
                     case EntityType.MonsterEntity: {
 
-                        System.out.println("몹 타게팅 투사체 처리하고?? ");
-
                         MonsterEntity targetEntity = worldMap.monsterEntity.get(targetEntityID);
 
                         float speed = flyingObjectComponent.flyingSpeed;
@@ -158,16 +231,26 @@ public class FlyingObjectSystem {
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
                         if(distance <= movedDeltaDistance * 2)
                         {
-                            System.out.println(" 남은 거리가 이동해야 할 거리보다 적은 경우 !! ");
-                            //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
-
-                            //targetEntity.hpHistoryComponent.hpHistory.add(
-                                    //new DamageHistory(flyingObjectComponent.userEntityID, true, 50f) );
 
                             /** 2020 01 27 권령희 추가 */
 
                             //BuffAction buff = flyingObject.flyingObjectComponent.buffAction;
-                            BuffAction buff = (BuffAction) flyingObject.flyingObjectComponent.buffAction.clone();
+                            //BuffAction buff = (BuffAction) flyingObject.flyingObjectComponent.buffAction.clone();
+                            BuffAction buff = new BuffAction();
+
+                            /**
+                             * 공격터렛..
+                             */
+                            if(createdEntityType == EntityType.AttackTurretEntity){
+
+                                int turretType = attackTurret.turretComponent.turretType;
+
+                                targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                        AttackTurretFactory.createAttackTurretEffect(
+                                                turretType, "데미지", attackTurret, attackTurret.entityID));
+
+                            }
+
 
                             /** 마법사 아이스볼의 경우 추가 처리
                              *  법사 아이스볼 투사체에 설정된 버프효과는 슬로우(일정시간 이동속도 느려짐)이다.
@@ -178,63 +261,37 @@ public class FlyingObjectSystem {
                              *  그 후 남는 버프효과를 대상의 버프 목록에 넣어주는 식으로 처리함 우선.
                              *
                              */
-                            if(flyingObject.flyingObjectComponent.createdSkillType == SkillType.MAGICIAN_ICEBALL){
+                            else if(flyingObject.flyingObjectComponent.createdSkillType == SkillType.MAGICIAN_ICEBALL){
 
-                                /*float damage = flyingObject.flyingObjectComponent.buffAction.floatParam.get(0).value;
-                                DamageHistory iceDam = new DamageHistory(buff.skillUserID, true, damage);
+                                if(doOldVersion){  /** 2020 02 07 */
 
-                                targetEntity.hpHistoryComponent.hpHistory.add(iceDam);
+                                    /* 데미지 처리 */
+                                    ConditionFloatParam damageParam = (ConditionFloatParam) buff.floatParam.get(0).clone();
+                                    BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, buff.unitID, buff.skillUserID);
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(damageBuff);
 
-                                flyingObject.flyingObjectComponent.buffAction.floatParam.remove(0);
+                                    /* 상태이상 처리 - 슬로우 */
+                                    buff.floatParam.remove(0);  // 기존 floatParam 0번에 데미지, 1번에 슬로우 있음.
+                                    // 일단 맞았을 때 잠깐 이동불가, 공격불가 하는거는 제외했음..
+                                    // 혹시 필요하다면 아래 버프 추가.
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(buff);
 
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(flyingObject.flyingObjectComponent.buffAction);*/
+                                    /* *************************************************************************************/
 
-                                /** 2020 01 31 크리개념 추가 후 */
+                                }
+                                else{
 
-                                /* 데미지 처리 */
-                                /*BuffAction damage = new BuffAction();
-                                damage.unitID = buff.unitID;
-                                damage.skillUserID = buff.skillUserID;
-                                damage.remainTime = 0.15f;
-                                damage.coolTime = -1f;
-                                damage.remainCoolTime = -1f;
-                                damage.floatParam.add( (ConditionFloatParam) buff.floatParam.get(0).clone() );*/
+                                    /** 2020 04 02 ver */
 
-                                /**
-                                 * 2020 02 07
-                                 */
-                                /* 데미지 처리 */
-                                ConditionFloatParam damageParam = (ConditionFloatParam) buff.floatParam.get(0).clone();
-                                BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, buff.unitID, buff.skillUserID);
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                                    // 아이스볼 데미지 효과를 넣어준다.
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
 
-                                /* 상태이상 처리 - 슬로우 */
-                                buff.floatParam.remove(0);  // 기존 floatParam 0번에 데미지, 1번에 슬로우 있음.
-                                                                    // 일단 맞았을 때 잠깐 이동불가, 공격불가 하는거는 제외했음..
-                                                                    // 혹시 필요하다면 아래 버프 추가.
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(buff);
+                                    // 아이스볼 슬로우 효과를 넣어준다
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "슬로우", skillLevel, skillUser, flyingObject.entityID));
 
-                                /* 상태이상 처리 - 이동불가, 공격불가 */
-
-                                /*
-                                ConditionBoolParam moveDebuff = new ConditionBoolParam(ConditionType.isDisableMove, true);
-                                ConditionBoolParam attackDebuff = new ConditionBoolParam(ConditionType.isDisableAttack, true);
-
-                                BuffAction condBuff = new BuffAction();
-                                condBuff.unitID = buff.unitID;
-                                condBuff.skillUserID = buff.skillUserID;
-
-                                condBuff.remainTime = 3f;
-                                condBuff.coolTime = -1f;
-                                condBuff.remainCoolTime = -1f;
-
-                                condBuff.boolParam.add(moveDebuff);
-                                condBuff.boolParam.add(attackDebuff);
-
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(condBuff);
-                                */
-
-                                /* *************************************************************************************/
+                                }
 
                             }
                             /**
@@ -250,49 +307,92 @@ public class FlyingObjectSystem {
                              */
                             else if(flyingObject.flyingObjectComponent.createdSkillType == SkillType.ARCHER_HEAD_SHOT){
 
-                                //크리티컬댐 적용하기
-                                ConditionFloatParam criDamParam = buff.floatParam.get(0);
-                                BuffAction criticalDamBuff = SkillFactory.createDamageBuff(criDamParam, buff.unitID, buff.skillUserID);
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(criticalDamBuff);
+                                if(doOldVersion){
 
-                                //상태댐 적용하기
-                                buff.floatParam.clear();
-                                BuffAction condBuff = buff;
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(condBuff);
+                                    //크리티컬댐 적용하기
+                                    ConditionFloatParam criDamParam = buff.floatParam.get(0);
+                                    BuffAction criticalDamBuff = SkillFactory.createDamageBuff(criDamParam, buff.unitID, buff.skillUserID);
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(criticalDamBuff);
 
-                                /** 기존에 .. 시전자에게 들어있던 버프 제거해주기 */
+                                    //상태댐 적용하기
+                                    buff.floatParam.clear();
+                                    BuffAction condBuff = buff;
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(condBuff);
 
-                                CharacterEntity skillUser = worldMap.characterEntity.get(buff.skillUserID);
+                                    /** 기존에 .. 시전자에게 들어있던 버프 제거해주기 */
 
-                                //SkillFactory.cancelDeBuffEffect(skillUser, ConditionType.isArcherHeadShotActivated);
+                                    //SkillFactory.cancelDeBuffEffect(skillUser, ConditionType.isArcherHeadShotActivated);
 
-                                SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
+                                    SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
 
-                                System.out.println("헤드샷 버프 삭제함");
+                                    System.out.println("헤드샷 버프 삭제함");
+
+                                }
+                                else{
+
+                                    /** 2020 04 02 ver */
+
+                                    // 크리댐 적용하기
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "크리뎀", skillLevel, skillUser, flyingObject.entityID));
+
+                                    // 시전자의 헤드샷활성화 버프 제거
+                                    SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
+
+                                }
+
 
                             }
                             else {  // 그냥 버프를 그대로 넣어주면 되는 경우.
 
-                                /* 실제로 적용될 버프를 처리 */
-                                //targetEntity.buffActionHistoryComponent.conditionHistory.add(flyingObject.flyingObjectComponent.buffAction);
-                                // targetEntity.buffActionHistoryComponent.conditionHistory.add( buff );   // 복사해준 값으로. 혹시 몰라서...
+                                if(doOldVersion){
 
-                                /**
-                                 * 2020 02 06
-                                 * buff ; 현 투사체의 buffAction을 복사한 값.
-                                 */
+                                    /**
+                                     * 2020 02 06
+                                     * buff ; 현 투사체의 buffAction을 복사한 값.
+                                     */
 
-                                /* 데미지 버프 적용 */
-                                BuffAction damageBuff = SkillFactory.createDamageBuff(buff.floatParam.get(0), buff.unitID, buff.skillUserID);
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                                    /* 데미지 버프 적용 */
+                                    BuffAction damageBuff = SkillFactory.createDamageBuff(buff.floatParam.get(0), buff.unitID, buff.skillUserID);
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(damageBuff);
 
-                                /* 상태 버프 적용 */
-                                buff.floatParam.clear();// 위의 데미지 효과를 지우고.. // 설마. 클리어 했다고 아예 사라지는건 아니겠지??
-                                BuffAction condBuff = buff; // 먼가 쓸모없는 선언이긴 한데, 나중에 buff가 뭔 버프지.. 하고 헷갈릴 일 없게.
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(condBuff);
+                                    /* 상태 버프 적용 */
+                                    buff.floatParam.clear();// 위의 데미지 효과를 지우고.. // 설마. 클리어 했다고 아예 사라지는건 아니겠지??
+                                    BuffAction condBuff = buff; // 먼가 쓸모없는 선언이긴 한데, 나중에 buff가 뭔 버프지.. 하고 헷갈릴 일 없게.
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(condBuff);
 
-                                /***************************************************************************************/
+                                    /***************************************************************************************/
+                                }
+                                else{
 
+                                    /** 2020 04 02 */
+
+                                    // 그 외 모든 타게팅 투사체 충돌 데미지 처리들.
+                                    if(skillUser == null){
+                                        System.out.println("투사체 유저가 널;");
+                                    }
+
+                                    switch (createdEntityType){
+
+                                        case EntityType.CharacterEntity :
+                                            targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                                    SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
+
+                                            break;
+
+                                        /*case EntityType.AttackTurretEntity :
+
+                                            System.out.println("공격자가 공격터렛이넹~ : " + attackTurret.entityID);
+
+                                            targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                                    AttackTurretFactory.createAttackTurretEffect(attackTurret.turretComponent.turretType, "데미지", attackTurret, attackTurret.entityID));
+
+
+                                            break;*/
+                                    }
+
+
+                                }
 
                             }
 
@@ -335,14 +435,6 @@ public class FlyingObjectSystem {
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
                         if(distance <= movedDeltaDistance * 2)
                         {
-                            //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
-
-/*
-                            targetEntity.hpHistoryComponent.hpHistory.add(
-                                    new DamageHistory(flyingObjectComponent.userEntityID, true, 50f) );
-*/
-
-
 
                             /** 2020 01 31 추가, 수정 */
                             /* 데미지 처리 */
@@ -354,11 +446,6 @@ public class FlyingObjectSystem {
                             damage.remainCoolTime = -1f;
                             damage.floatParam.add( new ConditionFloatParam(ConditionType.damageAmount, 50f) );
                             targetEntity.buffActionHistoryComponent.conditionHistory.add(damage);
-
-
-
-
-
 
                             //삭제요청Queue에 FlyingObjectEntity를 삽입하여, 삭제요청을 한다.
                             worldMap.requestDeleteQueue.add(flyingObject);
@@ -396,14 +483,6 @@ public class FlyingObjectSystem {
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
                         if(distance <= movedDeltaDistance * 2)
                         {
-                            //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
-
-/*
-                            targetEntity.hpHistoryComponent.hpHistory.add(
-                                    new DamageHistory(flyingObjectComponent.userEntityID, true, 50f) );
-*/
-
-
 
                             /** 2020 01 31 추가, 수정 */
                             /* 데미지 처리 */
@@ -415,11 +494,6 @@ public class FlyingObjectSystem {
                             damage.remainCoolTime = -1f;
                             damage.floatParam.add( new ConditionFloatParam(ConditionType.damageAmount, 50f) );
                             targetEntity.buffActionHistoryComponent.conditionHistory.add(damage);
-
-
-
-
-
 
                             //삭제요청Queue에 FlyingObjectEntity를 삽입하여, 삭제요청을 한다.
                             worldMap.requestDeleteQueue.add(flyingObject);
@@ -457,13 +531,6 @@ public class FlyingObjectSystem {
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
                         if(distance <= movedDeltaDistance * 2)
                         {
-                            //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
-
-/*
-                            targetEntity.hpHistoryComponent.hpHistory.add(
-                                    new DamageHistory(flyingObjectComponent.userEntityID, true, 50f) );
-*/
-
 
                             /** 2020 01 31 추가, 수정 */
                             /* 데미지 처리 */
@@ -475,11 +542,6 @@ public class FlyingObjectSystem {
                             damage.remainCoolTime = -1f;
                             damage.floatParam.add( new ConditionFloatParam(ConditionType.damageAmount, 50f) );
                             targetEntity.buffActionHistoryComponent.conditionHistory.add(damage);
-
-
-
-
-
 
                             //삭제요청Queue에 FlyingObjectEntity를 삽입하여, 삭제요청을 한다.
                             worldMap.requestDeleteQueue.add(flyingObject);
@@ -515,14 +577,6 @@ public class FlyingObjectSystem {
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
                         if(distance <= movedDeltaDistance * 2)
                         {
-                            //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
-
-/*
-                            targetEntity.hpHistoryComponent.hpHistory.add(
-                                    new DamageHistory(flyingObjectComponent.userEntityID, true, 50f) );
-*/
-
-
 
                             /** 2020 01 31 추가, 수정 */
                             /* 데미지 처리 */
@@ -534,11 +588,6 @@ public class FlyingObjectSystem {
                             damage.remainCoolTime = -1f;
                             damage.floatParam.add( new ConditionFloatParam(ConditionType.damageAmount, 50f) );
                             targetEntity.buffActionHistoryComponent.conditionHistory.add(damage);
-
-
-
-
-
 
                             //삭제요청Queue에 FlyingObjectEntity를 삽입하여, 삭제요청을 한다.
                             worldMap.requestDeleteQueue.add(flyingObject);
@@ -565,83 +614,9 @@ public class FlyingObjectSystem {
                         throw new IllegalArgumentException("FlyingObjectSystem 중 비정상적인 값 : "+targetEntityType);
                 }
 
-
-                /** 타겟을 찾는다 *//*
-                if(worldMap.monsterEntity.containsKey(flyingObjectComponent.userEntityID)){
-                    flyingObjectOwnerIsMonster = true;
-                }
-
-                if(flyingObjectOwnerIsMonster == true){
-                    // 몬스터가 생성한 투사체일 경우. 비움.
-                }
-                else{
-                    targetEntity = worldMap.monsterEntity.get(flyingObjectComponent.targetEntityID);
-                }
-
-                *//** 타겟과의 거리 및 공격 가능 여부를 판별한다 *//*
-                boolean attackable = false;
-                // 거리 계산
-                float currentDistance = 0f;
-
-                Vector3 flyingObjectPos = flyingObject.positionComponent.position;
-                Vector3 targetPos = targetEntity.positionComponent.position;
-
-                currentDistance = Vector3.distance(flyingObjectPos, targetPos);
-
-                // 타겟 상태 // 몬스터라고 가정.
-                ConditionComponent targetConditon = ((MonsterEntity) targetEntity ).conditionComponent;
-
-                *//* 공격 가능 여부를 판별한다 *//*
-
-                boolean attackableDistance = false;
-                // 판별 처리....
-
-                if( (attackableDistance == true) && (targetConditon.isUnTargetable == false) ){
-                    attackable = true;
-                }
-
-
-                if (attackable) { *//* 타겟에게 공격을 한다 *//*
-
-                 *//* 공격 처리를 한다 *//*
-
-                    // 데미지 계산
-                    int userEntityID = flyingObjectComponent.userEntityID;
-                    boolean isDamage = true;
-                    float amount = 5;   // 계산??
-
-                    // 타겟의 히스토리에 넣어주기
-                    ((MonsterEntity) targetEntity).hpHistoryComponent.hpHistory.add(new DamageHistory(userEntityID, isDamage, amount));
-
-
-                    *//* 현 투사체를 삭제 처리한다 *//*
-                    worldMap.requestDeleteQueue.add(flyingObject);
-
-                } else {   *//* 이동 처리를 한다 *//*
-
-                 *//* 다음 이동 좌표를 계산한다 *//*
-                    // 방향을 구한다
-                    Vector3 direction = Vector3.normalizeVector(flyingObjectPos, targetPos);
-
-                    // 이동할 거리(?)를 구한다 // 맞는지 모르겠고..
-                    //Vector3 거리 = direction * flyingObject.flyingObject.flyingSpeed * deltaTime;
-                    float temp = flyingObjectComponent.flyingSpeed * deltaTime;
-                    Vector3 moveDistance = new Vector3(direction.x() * temp, direction.y() * temp, direction.z() * temp );
-
-                    *//* 좌표를 반영한다 *//*
-                    // 기존 위치 + 이동할 거리. ??
-                    flyingObjectPos.movePosition(flyingObjectPos, moveDistance);
-                }
-*/
             }
-
-
-            // 19/11/16 기준 아직 추가되지 않음
-            // 2019/11/29 추가중,,
-
-            else {  /* 논타게팅인 경우 */
-
-                //float currentDistance = 0f;
+            else {
+                /** 논타게팅인 경우 */
 
                 Vector3 flyingObjectPos = flyingObject.positionComponent.position;
                 //Vector3 destinationPos = flyingObjectComponent.startPosition;   //..아니이거 주석처리 왜했지
@@ -748,8 +723,7 @@ public class FlyingObjectSystem {
                             CharacterData characterData = worldMap.getCharacterDataFromEntity(character);
 
                         /*RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-                        server_to_client.broadcastingCharacterSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldMap.worldEntityData.characterData);
-*/
+                        server_to_client.broadcastingCharacterSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldMap.worldEntityData.characterData);*/
 
                         }
                         else if(false){   /** 2002 02 13, 맵뚫기 보정 버전 */  /** 2020 02 19 주석처리 함 */
@@ -897,16 +871,6 @@ public class FlyingObjectSystem {
 
                             }
 
-
-                            /*targetList.add(monster.entityID);
-                            if( currentDistance <minDistance ){
-
-                                minDistance = currentDistance;
-                                targetID = monster.entityID;
-
-                                //System.out.println("몬스터" + monster.entityID + "를 가장 가까운 타겟으로 지정합니다.");
-                            }*/
-
                         }
 
 
@@ -919,7 +883,8 @@ public class FlyingObjectSystem {
                     /* 타겟이 존재한다면 */
                     if(targetID > 0){
 
-                        if(flyingObjectComponent.beDestroyedByCrash){   // 한 번 충돌하고 죽는 애라면
+                        if(flyingObjectComponent.beDestroyedByCrash){
+                            // 한 번 충돌하고 죽는 애라면
                             // 충돌 처리 후 삭제
 
                             target = worldMap.monsterEntity.get(targetID);
@@ -927,16 +892,29 @@ public class FlyingObjectSystem {
                             /** 테스트. 멀티샷에만 별도로 버프 추가 처리 해주기 */
                             if(flyingObjectComponent.createdSkillType == SkillType.ARCHER_MULTI_SHOT){
 
-                                BuffAction multiShotBuff = (BuffAction) flyingObject.flyingObjectComponent.buffAction.clone();
+                                if(doOldVersion){
 
-                                // 대미지 버프?
-                                ConditionFloatParam damageParam = (ConditionFloatParam) multiShotBuff.floatParam.get(0).clone();
-                                BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, multiShotBuff.unitID, multiShotBuff.skillUserID);
-                                target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                                    BuffAction multiShotBuff = (BuffAction) flyingObject.flyingObjectComponent.buffAction.clone();
 
-                                // 상태 버프?
-                                multiShotBuff.floatParam.clear();
-                                target.buffActionHistoryComponent.conditionHistory.add(multiShotBuff);
+                                    // 대미지 버프?
+                                    ConditionFloatParam damageParam = (ConditionFloatParam) multiShotBuff.floatParam.get(0).clone();
+                                    BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, multiShotBuff.unitID, multiShotBuff.skillUserID);
+                                    target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+
+                                    // 상태 버프?
+                                    multiShotBuff.floatParam.clear();
+                                    target.buffActionHistoryComponent.conditionHistory.add(multiShotBuff);
+
+                                }
+                                else{
+
+                                    /** 2020 04 02 ver */
+
+                                    target.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
+
+
+                                }
 
                             }
                             /**
@@ -945,87 +923,130 @@ public class FlyingObjectSystem {
                              */
                             else if(flyingObjectComponent.createdSkillType == SkillType.ARCHER_SNIPE) {
 
-                                /** 데미지 처리 */
+                                if(doOldVersion){
 
-                                BuffAction snipeBuff = (BuffAction) flyingObjectComponent.buffAction.clone();
+                                    /** 데미지 처리 */
 
-                                boolean isBoss = false; // 충돌 대상이 보스인지 여부를 체크한다. 나중에 변경
-                                if(isBoss){ /* 보스몹 */
+                                    BuffAction snipeBuff = (BuffAction) flyingObjectComponent.buffAction.clone();
 
-                                    /** 2020 01 31 추가, 수정 */
-                                    /* 1차 뎀 */
-                                    BuffAction bossCriticalDam = new BuffAction();
-                                    bossCriticalDam.unitID = flyingObject.entityID;
-                                    bossCriticalDam.skillUserID = flyingObjectComponent.userEntityID;
-                                    bossCriticalDam.remainTime = 0.15f;
-                                    bossCriticalDam.coolTime = -1f;
-                                    bossCriticalDam.remainCoolTime = -1f;
-                                    bossCriticalDam.floatParam.add( (ConditionFloatParam) snipeBuff.floatParam.get(2).clone() );
+                                    boolean isBoss = false; // 충돌 대상이 보스인지 여부를 체크한다. 나중에 변경
+                                    if(isBoss){ /* 보스몹 */
 
-                                    target.buffActionHistoryComponent.conditionHistory.add(bossCriticalDam);
+                                        /** 2020 01 31 추가, 수정 */
+                                        /* 1차 뎀 */
+                                        BuffAction bossCriticalDam = new BuffAction();
+                                        bossCriticalDam.unitID = flyingObject.entityID;
+                                        bossCriticalDam.skillUserID = flyingObjectComponent.userEntityID;
+                                        bossCriticalDam.remainTime = 0.15f;
+                                        bossCriticalDam.coolTime = -1f;
+                                        bossCriticalDam.remainCoolTime = -1f;
+                                        bossCriticalDam.floatParam.add( (ConditionFloatParam) snipeBuff.floatParam.get(2).clone() );
+
+                                        target.buffActionHistoryComponent.conditionHistory.add(bossCriticalDam);
 
 
-                                    /* 2차 뎀 */
-                                    BuffAction bossBonusDam = new BuffAction();
-                                    bossBonusDam.unitID = snipeBuff.unitID;
-                                    bossBonusDam.skillUserID = snipeBuff.skillUserID;
-                                    bossBonusDam.remainCoolTime = 0.1f;
-                                    bossBonusDam.remainTime = 0.15f;
-                                    bossBonusDam.coolTime = 0.1f;
+                                        /* 2차 뎀 */
+                                        BuffAction bossBonusDam = new BuffAction();
+                                        bossBonusDam.unitID = snipeBuff.unitID;
+                                        bossBonusDam.skillUserID = snipeBuff.skillUserID;
+                                        bossBonusDam.remainCoolTime = 0.1f;
+                                        bossBonusDam.remainTime = 0.15f;
+                                        bossBonusDam.coolTime = 0.1f;
 
-                                    bossBonusDam.floatParam.add( (ConditionFloatParam) snipeBuff.floatParam.get(3).clone() );
+                                        bossBonusDam.floatParam.add( (ConditionFloatParam) snipeBuff.floatParam.get(3).clone() );
 
-                                    target.buffActionHistoryComponent.conditionHistory.add(bossBonusDam);
+                                        target.buffActionHistoryComponent.conditionHistory.add(bossBonusDam);
+
+                                    }
+                                    else{   /* 일반 몹 */
+
+                                        ConditionFloatParam damageParam = (ConditionFloatParam) snipeBuff.floatParam.get(0).clone();
+                                        BuffAction criticalDam = SkillFactory.createDamageBuff(damageParam, snipeBuff.unitID, snipeBuff.skillUserID);
+
+                                        target.buffActionHistoryComponent.conditionHistory.add(criticalDam);
+
+
+                                        /* 2차 뎀 */
+                                        ConditionFloatParam criticalBonusParam = (ConditionFloatParam) snipeBuff.floatParam.get(1).clone();
+                                        BuffAction criticalBonusDam = SkillFactory.createDamageBuff(criticalBonusParam, snipeBuff.unitID, snipeBuff.skillUserID);
+                                        criticalBonusDam.remainCoolTime = 0.1f;
+                                        criticalBonusDam.remainTime = 0.15f;
+                                        criticalBonusDam.coolTime = 0.1f;
+
+                                        target.buffActionHistoryComponent.conditionHistory.add(criticalDam);
+
+                                    }
+
+                                    /** 상태이상 처리 */
+
+                                    snipeBuff.floatParam.clear();   // 상태이상(bool)만 들어가게끔
+                                    target.buffActionHistoryComponent.conditionHistory.add(snipeBuff);
+
+
 
                                 }
-                                else{   /* 일반 몹 */
+                                else{
 
-                                    ConditionFloatParam damageParam = (ConditionFloatParam) snipeBuff.floatParam.get(0).clone();
-                                    BuffAction criticalDam = SkillFactory.createDamageBuff(damageParam, snipeBuff.unitID, snipeBuff.skillUserID);
+                                    /** 2020 04 02 ver */
 
-                                    target.buffActionHistoryComponent.conditionHistory.add(criticalDam);
+                                    boolean isBoss = false; // 충돌 대상이 보스인지 여부를 체크한다. 나중에 변경
+                                    if(isBoss){ /* 보스몹 */
 
+                                        /* 1차 뎀 */
+                                        target.buffActionHistoryComponent.conditionHistory.add(
+                                                SkillFactory.createSkillEffect(skillType, "보스 1차데미지", skillLevel, skillUser, flyingObject.entityID));
 
-                                    /* 2차 뎀 */
-                                    ConditionFloatParam criticalBonusParam = (ConditionFloatParam) snipeBuff.floatParam.get(1).clone();
-                                    BuffAction criticalBonusDam = SkillFactory.createDamageBuff(criticalBonusParam, snipeBuff.unitID, snipeBuff.skillUserID);
-                                    criticalBonusDam.remainCoolTime = 0.1f;
-                                    criticalBonusDam.remainTime = 0.15f;
-                                    criticalBonusDam.coolTime = 0.1f;
+                                        /* 2차 뎀 */
+                                        target.buffActionHistoryComponent.conditionHistory.add(
+                                                SkillFactory.createSkillEffect(skillType, "보스 2차데미지", skillLevel, skillUser, flyingObject.entityID));
 
-                                    target.buffActionHistoryComponent.conditionHistory.add(criticalDam);
+                                    }
+                                    else{   /* 일반 몹 */
 
+                                        /* 1차 뎀 */
+                                        target.buffActionHistoryComponent.conditionHistory.add(
+                                                SkillFactory.createSkillEffect(skillType, "1차 데미지", skillLevel, skillUser,flyingObject.entityID));
+
+                                        /* 2차 뎀 */
+                                        target.buffActionHistoryComponent.conditionHistory.add(
+                                                SkillFactory.createSkillEffect(skillType, "2차 데미지", skillLevel, skillUser, flyingObject.entityID));
+
+                                    }
+
+                                    // 상태. 추가할거라면 여기에.
                                 }
-
-                                /** 상태이상 처리 */
-
-                                snipeBuff.floatParam.clear();   // 상태이상(bool)만 들어가게끔
-                                target.buffActionHistoryComponent.conditionHistory.add(snipeBuff);
 
                             }
 
                             else{
 
-                                //target.buffActionHistoryComponent.conditionHistory.add((BuffAction) flyingObjectComponent.buffAction.clone());
 
-                                /**
-                                 * 2020 02 06
-                                 * buff ; 현 투사체의 buffAction을 복사한 값.
-                                 */
+                                if(doOldVersion){
 
-                                BuffAction buff = (BuffAction) flyingObjectComponent.buffAction.clone();
+                                    /**
+                                     * 2020 02 06
+                                     * buff ; 현 투사체의 buffAction을 복사한 값.
+                                     */
 
-                                /* 데미지 버프 적용 */
-                                BuffAction damageBuff = SkillFactory.createDamageBuff(buff.floatParam.get(0), buff.unitID, buff.skillUserID);
-                                target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                                    BuffAction buff = (BuffAction) flyingObjectComponent.buffAction.clone();
 
-                                /* 상태 버프 적용 */
-                                buff.floatParam.clear();// 위의 데미지 효과를 지우고.. // 설마. 클리어 했다고 아예 사라지는건 아니겠지??
-                                BuffAction condBuff = buff; // 먼가 쓸모없는 선언이긴 한데, 나중에 buff가 뭔 버프지.. 하고 헷갈릴 일 없게.
-                                target.buffActionHistoryComponent.conditionHistory.add(condBuff);
+                                    /* 데미지 버프 적용 */
+                                    BuffAction damageBuff = SkillFactory.createDamageBuff(buff.floatParam.get(0), buff.unitID, buff.skillUserID);
+                                    target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
 
-                                /***************************************************************************************/
+                                    /* 상태 버프 적용 */
+                                    buff.floatParam.clear();// 위의 데미지 효과를 지우고.. // 설마. 클리어 했다고 아예 사라지는건 아니겠지??
+                                    BuffAction condBuff = buff; // 먼가 쓸모없는 선언이긴 한데, 나중에 buff가 뭔 버프지.. 하고 헷갈릴 일 없게.
+                                    target.buffActionHistoryComponent.conditionHistory.add(condBuff);
 
+                                    /***************************************************************************************/
+
+                                }
+                                else{
+
+                                    target.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
+                                }
 
                             }
 
@@ -1035,7 +1056,6 @@ public class FlyingObjectSystem {
                         else{
 
                             // 모든 대상에 대해 반복
-
                             for(int i=0; i<targetList.size(); i++){
 
                                 targetID = targetList.get(i);
@@ -1044,15 +1064,30 @@ public class FlyingObjectSystem {
 
                                 //target.buffActionHistoryComponent.conditionHistory.add((BuffAction) flyingObjectComponent.buffAction.clone());
 
-                                BuffAction flyingObjBuff = flyingObjectComponent.buffAction;
 
-                                ConditionFloatParam damageParam = (ConditionFloatParam) flyingObjBuff.floatParam.get(0).clone();
-                                BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, flyingObjBuff.unitID, flyingObjBuff.skillUserID);
-                                target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+                                if(doOldVersion){
+
+                                    BuffAction flyingObjBuff = flyingObjectComponent.buffAction;
+
+                                    ConditionFloatParam damageParam = (ConditionFloatParam) flyingObjBuff.floatParam.get(0).clone();
+                                    BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, flyingObjBuff.unitID, flyingObjBuff.skillUserID);
+                                    target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
+
+                                }
+                                else{
+
+                                    /** 2020 04 02 ver */
+
+                                    target.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
+
+                                }
 
 
                                 /** 전사 찌르기 스킬에 대한 예외처리 추가 */
+                                // ?? 이거 왜 해주는지 모르겠지만.. 일단 넣어주는 부분만 주석처리.
                                 if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE) {
+
                                     BuffAction conBuff = new BuffAction();
                                     conBuff.remainTime = 3;
                                     conBuff.coolTime = -1;
@@ -1063,7 +1098,7 @@ public class FlyingObjectSystem {
                                     conBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
                                     conBuff.boolParam.add(new ConditionBoolParam(ConditionType.isUnTargetable, true));
 
-                                    target.buffActionHistoryComponent.conditionHistory.add(conBuff);
+                                    //target.buffActionHistoryComponent.conditionHistory.add(conBuff);
 
                                 }
 
@@ -1080,7 +1115,7 @@ public class FlyingObjectSystem {
                                     conBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
                                     conBuff.boolParam.add(new ConditionBoolParam(ConditionType.isUnTargetable, true));
 
-                                    target.buffActionHistoryComponent.conditionHistory.add(conBuff);
+                                    //target.buffActionHistoryComponent.conditionHistory.add(conBuff);
 
                                 }
                             }

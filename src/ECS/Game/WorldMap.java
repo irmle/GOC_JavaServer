@@ -37,7 +37,6 @@ import ECS.Entity.*;
 import Enum.MapType;
 import Enum.MapComponents;
 import com.google.gson.*;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.asynchttpclient.*;
 import org.asynchttpclient.util.HttpConstants;
 
@@ -64,6 +63,13 @@ import org.asynchttpclient.util.HttpConstants;
  *
  */
 public class WorldMap {
+
+    WorldMap worldMap;
+
+    /* 게임 난이도 관련 */
+    public int gameGrade = 0;
+    public int monsterExpLevel = 0;
+    public float standardDeviation = 30f;
 
     //현재 월드맵의 고유 식별자ID
     int worldMapID;
@@ -265,15 +271,17 @@ public class WorldMap {
 
     /** 2020 02 27 추가, 정글몬스터 관련 */
     public ArrayList<JungleMonsterSlot> jungleMonsterSlots;
-    //public HashMap<JungleMonsterSlot, MonsterEntity> jungleMonsterSlotList;
-    public HashMap<Integer, JungleMonsterSlot> jungleMonsterSlotList;
+    public HashMap<JungleMonsterSlot, MonsterEntity> jungleMonsterSlotMonsterEntityHashMap;
+    public HashMap<Integer, JungleMonsterSlot> jungleMonsterSlotHashMap;
     public JungleMonsterSystem jungleMonsterSystem;
 
 
     //WorldMap 생성자
     public WorldMap(int worldMapID, RMI_ID[] matchingUserList, LoadingPlayerData[] matchingUserDataList) {
+
         System.out.println("WorldMap [" + worldMapID + "] 초기화중...");
 
+        worldMap = this;
 
         //한 맵당 최대 유저수 Count;
         userCount = MatchingManager.userCount;
@@ -334,7 +342,6 @@ public class WorldMap {
 
 
         store = new Store(this);
-        store.initStore();
 
         //TokenID , EntityID를 서로 연결해주는 매핑 리스트 초기화.
         //이 리스트는 추후 재접속, 또는 게임로직이 종료되어 월드맵을 소멸시킬 때,
@@ -424,20 +431,14 @@ public class WorldMap {
             StoreUpgradeSlot slot = new StoreUpgradeSlot(i+1, i+1);
             upgradeSlotList.add(slot);
         }
-        // 아래는 테스트 코드 ; OK
-        if(false){
 
-            upgradeSlotList.get(1).upgradeLevel = 3;
-            upgradeSlotList.get(2).upgradeLevel = 4;
-
-        }
 
         /********************************/
 
         // 2020 01 09
-        if(true){
+        /* 경로 구분 테스트 */
+        if(false){
 
-            System.out.println("경로 구분 테스트 ");
             MapInfo mapInfo;
             System.out.println("=========================================");
 
@@ -502,7 +503,7 @@ public class WorldMap {
 
 
         // 길찾기 테스트
-        if(true){
+        if(false){
 
             MapInfo startPoint = MapFactory.findTileByPosition(gameMap, 25 * 2, -52 * 2);
             System.out.println("시작 지점 : " + startPoint.arrayX + ", " + startPoint.arrayY + ", " + startPoint.canMove);
@@ -537,10 +538,15 @@ public class WorldMap {
         /** 2020 02 27 추가, 정글몹 시스템 관련 */
         jungleMonsterSystem = new JungleMonsterSystem(this);
         jungleMonsterSlots = new ArrayList<>();
-        jungleMonsterSlotList = new HashMap<>();
+        jungleMonsterSlotMonsterEntityHashMap = new HashMap<>();
+        jungleMonsterSlotHashMap = new HashMap<>();
 
-        /* 정글몹 목록 초기화 처리 해주기 << 나중에 함수로 따로 분리하던지..  */
+        /** 정글몹 목록 초기화 처리 해주기 << 나중에 함수로 따로 분리하던지..  */
+
+        /* 맵상 정글몹 스폰 지점을 찾는다 */
         ArrayList<MapInfo> jungleSPList = MapFactory.findMapInfoListByType(gameMap, MapComponents.JUNGLE_SPAWN_POINT);
+
+        System.out.println("정글 갯수 : " + jungleSPList.size());
 
         JungleMonsterSlot slot = null;
         for(int i=0; i< jungleSPList.size(); i++){
@@ -550,107 +556,34 @@ public class WorldMap {
 
             jungleMonsterSlots.add(slot);
         }
-        /*
-         * 슬롯에 지정된 몹을 실제로 생성하는 처리는, 정글몹 시스템이 슬롯 상태를 보고
-         * EMPTY일 경우, 슬롯에 지정된 몬스터 정보에 따라 몬스터를 생성한다
-         */
-        setJungleMonsterSetting();
-
 
 
 
         //월드맵 시작전 초기화!
-        //initWorldMap(matchingUserList, matchingUserDataList);
-        initWorldMapVer20200210(matchingUserList, matchingUserDataList);
+        initWorldMap(matchingUserList, matchingUserDataList);
+
+        /*
+         * 슬롯에 지정된 몹을 실제로 생성하는 처리는, 정글몹 시스템이 슬롯 상태를 보고
+         * EMPTY일 경우, 슬롯에 지정된 몬스터 정보에 따라 몬스터를 생성한다
+         *
+         * 오후 6:42 2020-04-08 매서드 수정.
+         *  -- 전자는 기존의 하드코딩 세팅 매서드
+         *  -- 후자는 각 정글몬스터의 발생 확률을 가지고,
+         *      각 슬롯에 나타날 몬스터를 랜덤으로 지정해주는 식으로 초기화 작업을 수행함
+         */
+        //setJungleMonsterSetting();
+        initializeJungleMobSpawnPoints();
 
         //게임 로직 스레드 실행!
         gameLogicThread.start();
 
         System.out.println("WorldMap [" + worldMapID + "] 초기화 완료");
+
     }
 
-    //월드맵 시작전 초기화 해주는 부분.
-    void initWorldMap(RMI_ID[] matchingUserList, LoadingPlayerData[] matchingUserDataList)
-    {
-
-        /** 크리스탈 **/
-        CrystalEntity crystal = CrystalFactory.createCrystal();
-        crystal.entityID = worldMapEntityIDGenerater.getAndIncrement();
-        crystalEntity.put(crystal.entityID, crystal);
-        crystalID = crystal.entityID;
-
-        //EntityID , EntityType
-        entityMappingList.put(crystal.entityID, EntityType.CrystalEntity);
-
-
-        //월드맵 캐릭터 초기화! 그와동시에, 매칭이 완료되었음을 전달한다!
-        //월드맵을 생성할 때, 매칭이 완료되었던 RMI_ID목록을 가져와서 해당 리스트에 담느다.
-        for (int i = 0; i < matchingUserList.length; i++) {
-
-            LoadingPlayerData loadingPlayerData = matchingUserDataList[i];
-            RMI_ID rmi_id = matchingUserList[i];
-
-
-            //처음 유저가 RequestLogin메소드를 호출하여 서버로 접속하면 SessionManager 에서
-            //RMI_ID와, TokenID를 매핑하는 단계를 거치는데, 이때의 RMI_HostID를 통하여 매핑된 TokenID를 불러올수가 있다.
-            String tokenID = SessionManager.findTokenIDfromRMI_HostID(rmi_id.rmi_host_id);
-
-            CharacterData newUser = null;
-
-            //createCharacterData() 메소드를 사용하여 임의로 Data정보를 초기화 한다.
-            switch (loadingPlayerData.characterType) {
-                case CharacterType.KNIGHT: {
-                    newUser = createKnightCharacterData(loadingPlayerData.characterName, loadingPlayerData.characterType);  // 기사 캐릭터 데이터 만들기
-                    break;
-                }
-                case CharacterType.MAGICIAN: {
-                    newUser = createMagicianCharacterData(loadingPlayerData.characterName, loadingPlayerData.characterType);  // 마법사 캐릭터 데이터 만들기
-                    break;
-                }
-                case CharacterType.ARCHER: {
-                    newUser = createArcherCharacterData(loadingPlayerData.characterName, loadingPlayerData.characterType);  // 궁수 캐릭터 데이터 만들기
-                    break;
-                }
-                default:
-                    throw new IllegalArgumentException("initWorldMap()중 에러 발생!! 잘못된 CharacterType 데이터 도착!");
-                    //break;
-            }
-
-            //만들어진 Data로부터, Entity를 생성한다.
-            CharacterEntity newEntity = getCharacterEntityFromData(newUser);
-
-
-            //불러온 tokenID를 List에 추가. tokenID를 기준으로 EntityID를 불러온다.
-            worldMapTokenIDList.put(tokenID, newEntity.entityID);
-
-            //EntityID, RMI_ID를 매핑하는 Map. 이 Map의 경우에는 도중에 플레이어가 접속이 끊길때마다, 비워지게된다.
-            //같은 TokenID로 들어올때마다 바뀔 수 있도록 해야할 것.
-            worldMapRMI_IDList.put(newEntity.entityID, rmi_id);
-
-
-            //이후, 각각의 rmi_id에 맞게 캐릭터 Entity를 생성하고 월드맵의 Entity목록에 추가한다.
-            characterEntity.put(newEntity.entityID, newEntity);
-            entityMappingList.put(newEntity.entityID, EntityType.CharacterEntity);
-
-            //모든 클라이언트와 동시에 게임을 시작하기 위해서는, 모든 클라이언트들이 준비가 되었는지 확인이 필요한데,
-            //월드맵Scene 로딩 준비가 모두 끝났는지 확인하는 프로세스를 위한 항목.
-            loadingProgressList.put(tokenID, loadingPlayerData);
-
-
-            /* 2020 01 16 목 */
-            // 접속한 유저 캐릭터에 게임 스코어 객체 할당.
-            playerGameScoreList.put(newEntity.entityID, new PlayerGameScore(newEntity));
-
-
-        }
-
-        //매칭이 완료되었음을 중계한다. 이 메소드가 호출되면, 클라이언트들은 로딩 장면인 LoadingGameScene을 로드하게 된다.
-        server_to_client.completeMatching(matchingUserList, RMI_Context.Reliable_Public_AES256,
-                getWorldMapID(), "127.0.0.1_임시주소", 65005);
-    }
 
     //월드맵 시작전 초기화 해주는 부분.
-    void initWorldMapVer20200210(RMI_ID[] matchingUserList, LoadingPlayerData[] matchingUserDataList) {
+    void initWorldMap(RMI_ID[] matchingUserList, LoadingPlayerData[] matchingUserDataList) {
 
         /** 캐릭터 정보 요청을 위한 요청데이터(JS) 구성 */
 
@@ -789,12 +722,29 @@ public class WorldMap {
             }
 
 
+            /**
+             * [작성] 오전 4:09 2020-04-08
+             * 생성된 플레이어 목록을 가지고, 팀 속성 및 게임 난이도를 결정한다
+             */
+
+            /** 팀 속성 정하기 및 캐릭터들에 팀속성 할당 */
+            decideTeamElemental();
+
+            /** 게임 난이도 등급 정하기 */
+            decideGameDifficultyGrade();
+
+
+            /***************************************************************************************************/
+
+
+
             /** 크리스탈 **/
             CrystalEntity crystal = CrystalFactory.createCrystal();
             crystal.entityID = worldMapEntityIDGenerater.getAndIncrement();
             crystalEntity.put(crystal.entityID, crystal);
             crystalID = crystal.entityID;
 
+            System.out.println("크리스탈 생성: " + crystal.entityID);
             //EntityID , EntityType
             entityMappingList.put(crystal.entityID, EntityType.CrystalEntity);
 
@@ -960,18 +910,7 @@ public class WorldMap {
                     server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable_AES256, ownCharacterEntityID);
                 }
 
-                /**
-                 * 2020 02 17 권령희
-                 * 추가/수정할 내용 :
-                 *      1. BuildSlotData라는 클래스 작성
-                 *          ; 서버의 BuildSlot 클래스를 클라이언트로 중계해주기 위한 변환클래스.
-                 *      2. WorldMapDataListSet 클래스의 멤버 변수로, BuildSlotData 리스트 추가.
-                 *      3. 아래 initData() 에서, 다른 앤티티 목록들과 마찬가지로
-                 *          월드 내 BuildSlot 목록을 하나씩 읽어서, BuildSlotData 형식으로 변환해 중계 데이터를 만들도록 함.
-                 *      4. 아래 initializeWorldMap 매서드의 인자로, worldData.buildSlotData가 추가되도록 RMI 수정되어야 함.
-                 *
-                 *
-                 */
+
                 //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 각 클라에서 초기화 하도록 모든 클라에게 중계한다.
                 WorldMapDataListSet worldData = initData();
                 server_to_client.initializeWorldMap(TARGET, RMI_Context.Reliable_Public_AES256,
@@ -985,7 +924,6 @@ public class WorldMap {
                 isGameMapStarted = true;
                 //모든 과정이 끝났다면 게임을 시작하고 매 TickRate마다 월드맵의 모든 Entity 들의 Snapshot을 각 클라이언트에 중계한다.
 
-                // 2020 01 16 목요일
                 gameStartTime = System.currentTimeMillis();
 
             }
@@ -1330,12 +1268,7 @@ public class WorldMap {
 
                             //클리어에 성공하여 게임이 종료되었음을 모든 클라이언트에게 중계.  1번값을 보낸다.
                             //클리어에 실패하였다면 -1 번값을 보낸다.
-                            /*RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
-                            server_to_client.EndGame(TARGET, RMI_Context.Reliable_Public_AES256, 1,
-
-                                    "ssdgbfkjsdghfskadhbfgkashkjg"); // <- json문자열 넣으시면 됩니다.
-*/
-                            System.out.println("설마 여기?? ");
+                            // ㄴ>> 게임이 완전히 종료된 이후에 처리하도록 변경되었음. 일단 주석만 남겨둠.
 
                             continue;
                         }
@@ -1441,7 +1374,8 @@ public class WorldMap {
                                     int spawnMonsterID = monsterSpawnList.poll();
 
                                     /* 꺼낸 항목에 해당하는 몬스터 객체를 생성한다 ( 팩토리 활용 ) */
-                                    MonsterEntity newMonster = MonsterFactory.createMonster(spawnMonsterID);
+                                    MonsterEntity newMonster
+                                            = MonsterFactory.createMonster(spawnMonsterID, worldMap);
 
                                     /* 새로 생성된 몬스터Entity에 고유 EntityID를 부여한다. */
                                     newMonster.entityID = worldMapEntityIDGenerater.getAndIncrement();
@@ -1500,7 +1434,7 @@ public class WorldMap {
                                     MonsterEntity monster = monsterEntity.getValue();
 
                                     /** 2020 02 28 추가. 정글몬스터의 생사 여부는 패스함 */
-                                    if(jungleMonsterSlotList.containsKey(monster.entityID)){
+                                    if(jungleMonsterSlotHashMap.containsKey(monster.entityID)){
                                         continue;
                                     }
 
@@ -1600,10 +1534,10 @@ public class WorldMap {
                     levelUpSystem.onUpdate(tickRate * 0.001f);
 
                     //몬스터AI, 상태, 행동 관련 처리
-                    //monsterSystem2.onUpdate(tickRate * 0.001f);
+                    monsterSystem2.onUpdate(tickRate * 0.001f);
 
-                    /** 2020 02 19 추가 */
-                    monsterSystem3.onUpdate(tickRate * 0.001f);
+                    /** 2020 04 08 주석 */
+                    //monsterSystem3.onUpdate(tickRate * 0.001f);
 
                     /** 2020 02 28 추가 */
                     jungleMonsterSystem.onUpdate(tickRate * 0.001f);
@@ -1804,7 +1738,7 @@ public class WorldMap {
                             CharacterEntity entity = characterEntity.get(getSkillEvent.entityID);
 
                             /* 스킬을 생성한다 */
-                            SkillInfo newSkill = SkillFactory.createSkill(getSkillEvent.skillID);
+                            SkillInfo newSkill = SkillFactory.createSkillInfo(getSkillEvent.skillID);
                             SkillSlot slot = new SkillSlot(getSkillEvent.skillSlotNum, newSkill);
                             entity.skillSlotComponent.skillSlotList.add(slot);
 
@@ -1826,7 +1760,7 @@ public class WorldMap {
                         CharacterEntity entity = characterEntity.get(event.entityID);
 
                         /* 스킬을 생성한다 */
-                        SkillInfo newSkill = SkillFactory.createSkill(event.skillID);
+                        SkillInfo newSkill = SkillFactory.createSkillInfo(event.skillID);
                         SkillSlot slot = new SkillSlot(event.skillSlotNum, newSkill);
 
                         entity.skillSlotComponent.skillSlotList.add(slot);
@@ -2760,7 +2694,7 @@ public class WorldMap {
         characterData.attackDamage = entity.attackComponent.attackDamage;
 
         characterData.criticalChance = entity.attackComponent.criticalChance;
-        characterData.attackDamage = entity.attackComponent.criticalDamage;
+        characterData.criticalDamage = entity.attackComponent.criticalDamage;
 
         characterData.defense = entity.defenseComponent.defense;
 
@@ -3384,9 +3318,12 @@ public class WorldMap {
             PlayerGameScore gameScore = playerGameScoreList.get(entityID);
 
             int level = characterEntity.get(entityID).characterComponent.level;
-            System.out.println("레벨 : " + level);
+            System.out.println("googleToken : " + tokenID);
+
+            int charType = characterEntity.get(entityID).characterComponent.characterType;
 
             player = new JsonObject();
+            player.addProperty("googleToken", tokenID);
             player.addProperty("userToken", dbUserToken);
             player.addProperty("earnedGold", gameScore.earnedGold);
             player.addProperty("level", level);
@@ -3396,6 +3333,7 @@ public class WorldMap {
             player.addProperty("deathCount", gameScore.characterDeathCount);
             player.addProperty("grade", gameScore.resultGrade);
             player.addProperty("finalScore", gameScore.finalScore);
+            player.addProperty("guardianType", charType);
 
             /** 2020 03 09 월 추가 */
             /**
@@ -3708,6 +3646,7 @@ public class WorldMap {
         entity.characterComponent.characterName = playerData.characterName;
         entity.characterComponent.characterType = characterData.guardianType;
         entity.attribute = characterData.elemental;
+        //entity.attribute = ElementalType.RED;
 
         System.out.println("캐릭터 타입 : " + entity.characterComponent.characterType);
 
@@ -3721,6 +3660,7 @@ public class WorldMap {
         entity.itemSlotComponent = new ItemSlotComponent();
 
         entity.hpComponent = new HPComponent();
+        //characterData.hp = 3000f;
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
@@ -3736,6 +3676,16 @@ public class WorldMap {
         entity.attackComponent.attackRange = characterData.attackRange;
         entity.attackComponent.attackSpeed = characterData.attackSpeed;
         entity.attackComponent.attackDamage = characterData.attackDamage;
+        //entity.attackComponent.attackDamage = 3000f;
+
+        /**
+         * 추가 & 수정
+         * 오전 4:56 2020-04-07
+         * 크리티컬 적용 안해주고 있었음. 이거랑 밸런스 추가.
+         */
+        entity.attackComponent.balance = characterData.balance;
+        entity.attackComponent.criticalChance = characterData.criticalRate;
+        entity.attackComponent.criticalDamage = characterData.criticalBonus;
 
         entity.defenseComponent = new DefenseComponent();
         entity.defenseComponent.defense = characterData.defense;
@@ -3752,6 +3702,7 @@ public class WorldMap {
         entity.velocityComponent = new VelocityComponent();
         entity.velocityComponent.velocity = new Vector3(0f, 0f, 0f);
         entity.velocityComponent.moveSpeed = characterData.moveSpeed;
+        entity.velocityComponent.moveSpeed = 10f;
 
         entity.buffActionHistoryComponent = new BuffActionHistoryComponent();
         entity.buffActionHistoryComponent.conditionHistory = new ArrayList<>();
@@ -3769,6 +3720,7 @@ public class WorldMap {
 
 
 
+
         return entity;
 
     }
@@ -3778,7 +3730,7 @@ public class WorldMap {
     /** 2020 02 10 추가한 매서드 끝*/
 
 
-    /** 2020 02 28 정글몹 지정 하드코딩한다 권령희 */
+    /** 2020 02 28 정글몹 지정 하드코딩함 권령희 */
     public void setJungleMonsterSetting(){
 
         System.out.println("정글몹 스폰지점 갯수 : " + jungleMonsterSlots.size());
@@ -3989,11 +3941,16 @@ public class WorldMap {
             int playerNum = i+1;
             JsonObject player = players.getAsJsonObject(playerNum+"");
 
+            String tokenID = player.get("googleToken").getAsString();
+            CharacterEntity character = characterEntity.get(worldMapTokenIDList.get(tokenID));
+            int guardianType = character.characterComponent.characterType;
+
             for(int j=0; j<count; j++){
 
                 JsonObject reward = rewardInfoJS.getAsJsonObject(playerNum+"");
                 if(reward.get("userToken").getAsInt() == player.get("userToken").getAsInt()){
 
+                    player.addProperty("guardianType", guardianType);
                     player.addProperty("rewardExp", reward.get("rewardExp").getAsFloat());
                     player.addProperty("rewardGold", reward.get("rewardGold").getAsInt());
 
@@ -4028,6 +3985,199 @@ public class WorldMap {
 
         return rewardInfoObj;
     }
+
+    /*******************************************************************************************************************/
+
+    /************* 정글몹 관련 처리 ************************************************************************************/
+
+    /**
+     * 업뎃시점 :
+     *      -- 오후 6:33 2020-04-08
+     *
+     * 기    능 :
+     *      -- 게임 시작 시 정글 몹 슬롯을 초기화하는 작업을 한다.
+     *
+     * 내    용 :
+     *
+     *      -- 초기화 작업 :
+     *
+     *          슬롯에 정글몹 배치하기
+     *
+     *      -- 방법 :
+     *
+     *              정글몹 슬롯 목록을 돌면서, 해당 슬롯에 배치할 정글몹을 랜덤으로 결정한다.
+     *              ㄴ 정글몹을 랜덤으로 결정하기 위한 매서드를 호출.
+     *              몹 지정 후, 몹이 바로 생성될 수 있게끔 상태를 설정한다 ; 아마 EMPTY
+     *
+     * 인풋 :
+     * 아웃풋 :
+     */
+    public void initializeJungleMobSpawnPoints(){
+
+        /** GDM 데이터 참조 */
+        HashMap<Integer, MonsterInfo> jungleMonsterInfoList = GameDataManager.jungleMonsterInfoList;
+        MonsterInfo jungleInfo;
+
+        /** 정글몹 슬롯 목록을 돌면서 반복한다 */
+
+        int monsterType = JungleMobType.NONE;
+        JungleMonsterSlot jungleSlot;
+
+        for(int i=0; i<jungleMonsterSlots.size(); i++){
+
+            jungleSlot = jungleMonsterSlots.get(i);
+
+            /** 슬롯에 들어갈 몬스터를 결정한다 */
+            monsterType = decideJungleMonsterToBeSpawned();
+
+            /** 결정된 정글 몬스터의 정보를 참조 */
+            jungleInfo = jungleMonsterInfoList.get(monsterType);
+
+            /** 슬롯에, 정글몹의 정보를 세팅한다 */
+            jungleSlot.setJungleMonsterInfo(monsterType, jungleInfo.regenTime * 60f);
+
+            System.out.println("슬롯" + i + "에 셋팅된 몬스터 타입 : " + jungleInfo.monsterName);
+
+        }
+
+    }
+
+    /**
+     * 업뎃시점 :
+     *
+     *      -- 오후 6:13 2020-04-08
+     *
+     * 기    능 :
+     *
+     *      -- 임의 정글몹 슬롯에 생성할 정글몬스터를 확률에 따라 랜덤으로 결정한다
+     *
+     * 사    용 :
+     *
+     *      # 게임이 막 시작된 후 정글몹 슬롯을 초기화 할 때.
+     *      # 각 슬롯의 정글몹이 죽은 후, 리젠 대기상태를 거쳐 몬스터를 부활시킬 때.
+     *
+     * 처리방법 :
+     *
+     *      1. 0~99 사이의 랜덤값을 하나 생성함
+     *          # 예외처리 ( 범위 내 값이 발생한다던지 하는.. )
+     *              정글 몹 목록의 Info를 돌면서, 확률값을 모두 더한다.
+     *              0 ~ 최종적으로 더해진 수 사이의 값이 나오도록 한다.
+     *
+     *      2. GDM의 정글몬스터 Info 목록을 참조하여 반복한다
+     *          구간 MAX 값 = 0으로 초기화;
+     *          for(정글몹 목록){
+     *
+     *              현 정글몹의 등장 확률값을 가지고, 구간 MAX 값을 갱신한다 ( += 누적 )
+     *              랜덤값이 MAX값보다 작은지 판단한다
+     *              if 랜덤값이 MAX값 이하라면
+     *                  해당 구간의 몬스터로 결정
+     *                  break;
+     *          }
+     *
+     *
+     */
+    public int decideJungleMonsterToBeSpawned(){
+
+        int jungleType = JungleMobType.NONE;
+
+        /** GDM 데이터 참조 */
+        HashMap<Integer, MonsterInfo> jungleMonsterList = GameDataManager.jungleMonsterInfoList;
+
+
+        /** 랜덤 수 설정 */
+
+        /* 랜덤뽑기 할 범위의 max 값 구하기 */
+        float maxValue = 0;
+        for(MonsterInfo monsterInfo : jungleMonsterList.values()){
+
+            maxValue +=  monsterInfo.appearProbRate;
+        }
+
+        /* 랜덤 뽑기를 수행 */
+        float randomNum = (float) ( (Math.random() * (maxValue) ) );
+
+
+
+        /** 정글몹 등장 확률구간을 활용하여, 랜덤값이 속한 구간을 정함 */
+        float rangeMax = 0;
+        for(MonsterInfo monsterInfo : jungleMonsterList.values()){
+
+            rangeMax +=  monsterInfo.appearProbRate;
+            if(randomNum < rangeMax){
+
+                jungleType = monsterInfo.monsterType;
+                break;
+            }
+        }
+
+
+        return jungleType;
+    }
+
+
+    /**
+     * 기    능 :
+     *
+     *   INPUT :
+     *  OUTPUT :
+     * PROCESS :
+     */
+    public void decideGameDifficultyGrade(){
+
+        /** 팀 전투력을 계산한다 */
+        float teamStrengthPower = GameDifficultyGrade.calculateTeamStrengthPower(characterEntity);
+
+        /** 전투력이 속한 등급을 찾는다 */
+        int grade = GameDifficultyGrade.decideGameGrade(teamStrengthPower);
+
+        /** 등장하는 몬스터의 레벨을 구한다 */
+        int level = GameDifficultyGrade.decideMonsterExpLevel(grade, teamStrengthPower);
+
+        /** 월드에 세팅 */
+        this.monsterExpLevel = level;
+        this.gameGrade = grade;
+
+    }
+
+
+    /**
+     *
+     */
+    public void decideTeamElemental(){
+
+        /** 인자로 건네줄 속성값 목록 구성 */
+        ArrayList<Integer> elementalList = new ArrayList<>();
+        for(CharacterEntity character : characterEntity.values()){
+            elementalList.add( character.attribute);
+        }
+
+        /** 속성을 혼합한다 */
+        int teamElemental = ElementalType.getMixedElemental(elementalList);
+
+        System.out.println("팀 속성 : " + teamElemental);
+
+        /** 캐릭터들에 할당 */
+        for(CharacterEntity character : characterEntity.values()){
+
+            //character.setTeamElementalType(teamElemental);
+            //character.setTeamElementalType(ElementalType.BLACK);
+            character.attribute = teamElemental;
+        }
+
+    }
+
+
+
+
+    /*******************************************************************************************************************/
+
+
+
+
+
+
+
+
 
 
 }

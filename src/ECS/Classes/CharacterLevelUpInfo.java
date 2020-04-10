@@ -1,5 +1,4 @@
 package ECS.Classes;
-
 /**
  * 작 성 자 : 권령희
  * 작성날짜 : 2019 12 16 월
@@ -62,5 +61,8 @@ public class CharacterLevelUpInfo {
         this.moveSpeed = moveSpeed;
         this.attackRange = attackRange;
         this.lookRadius = lookRadius;
+
+        System.out.println("크리티걸 발생 확률 증가량 : " + criticalProbRate );
+        System.out.println("크리티걸 데미지 증가량 : " + criticalDamage );
     }
 }

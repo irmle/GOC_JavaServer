@@ -93,10 +93,11 @@ public class RMI_ID {
             value = rmi_id_count.getAndIncrement();
         return value;
     }
-    static final RMI_ID[] Type = new RMI_ID[0];
+
     public static RMI_ID[] getArray(Collection<RMI_ID> values)
     {
-        return values.toArray(RMI_ID.Type);
+        RMI_ID[] arr = new RMI_ID[values.size()];
+        return values.toArray(arr);
     }
 
 /*    public static RMI_ID[] getArray_Map(Collection<CharacterEntity> values)

@@ -1,9 +1,15 @@
 package ECS.Classes;
 
+
 import ECS.Classes.Type.ElementalType;
 import ECS.Classes.Type.GradeType;
 import ECS.Classes.Type.MonsterType;
 
+/**
+ * 업뎃내용 :
+ *  -- 몬스터 레벨에 따른 스탯 증가량을 담기 위한 변수들 추가.
+ *  -- 생성자 추가
+ */
 //몬스터 타입을 기준으로 불러와지는 몬스터 데이터.
 public class MonsterInfo implements Cloneable {
 
@@ -53,6 +59,20 @@ public class MonsterInfo implements Cloneable {
     public float regenTime = 0f;    // 정글몹의 경우에만 적용됨.
                                     // 일단 정글몹을 생성하기 위한 정보를 담는데도 이 클래스를 사용할건데, 후에 분리할 수 있음.
 
+    /** 2020 03 30 권령희 추가 ; 몬스터 레벨에 따라 올라가는 증가량들 */
+    public float hpIncrValue;
+    public float hpRecoveryIncrValue;
+    public float attackDamageIncrValue;
+    public float defenseIncrValue;
+
+    /** 2020 03 30 권령희 추가 ;  */
+    public int rewardGoldIncrValue = 0;
+    public int rewardExpIncrValue = 0;
+    public boolean hasBuff = false; // 몹 처치 시 버프를 주는가??
+
+    public float appearProbRate = 0f;
+
+
 
     public MonsterInfo(int monsterType, int monsterGrade, int monsterElemental, String monsterName, float maxHP, float recoveryRateHP, float attackDamage, float attackSpeed, float attackRange, float defense, float lookRadius, float moveSpeed) {
             this.monsterType = monsterType;
@@ -86,6 +106,116 @@ public class MonsterInfo implements Cloneable {
         this.lookRadius = lookRadius;
         this.regenTime = regenTime;
     }
+
+    /**
+     * 2020 03 30 추가
+     * csv 파일에서 읽어온 값을 통해 몬스터정보 생성 시 사용.
+     *
+     * @param monsterType
+     * @param monsterGrade
+     * @param monsterElemental
+     * @param monsterName
+     * @param moveSpeed
+     * @param maxHP
+     * @param recoveryRateHP
+     * @param attackDamage
+     * @param attackSpeed
+     * @param attackRange
+     * @param defense
+     * @param lookRadius
+     * @param hpIncrValue
+     * @param hpRecoveryIncrValue
+     * @param attackDamageIncrValue
+     * @param defenseIncrValue
+     */
+    public MonsterInfo(int monsterType, int monsterGrade, int monsterElemental, String monsterName, float moveSpeed, float maxHP, float recoveryRateHP, float attackDamage, float attackSpeed, float attackRange, float defense, float lookRadius, float hpIncrValue, float hpRecoveryIncrValue, float attackDamageIncrValue, float defenseIncrValue) {
+        this.monsterType = monsterType;
+        this.monsterGrade = monsterGrade;
+        this.monsterElemental = monsterElemental;
+        this.monsterName = monsterName;
+        this.moveSpeed = moveSpeed;
+        this.maxHP = maxHP;
+        this.recoveryRateHP = recoveryRateHP;
+        this.attackDamage = attackDamage;
+        this.attackSpeed = attackSpeed;
+        this.attackRange = attackRange;
+        this.defense = defense;
+        this.lookRadius = lookRadius;
+        this.hpIncrValue = hpIncrValue;
+        this.hpRecoveryIncrValue = hpRecoveryIncrValue;
+        this.attackDamageIncrValue = attackDamageIncrValue;
+        this.defenseIncrValue = defenseIncrValue;
+
+        this.regenTime = 0; // 정글몹이 아니므로 0
+    }
+
+    /**
+     * 정글몹 전용 생성자.
+     * @param monsterType
+     * @param monsterGrade
+     * @param monsterElemental
+     * @param monsterName
+     * @param moveSpeed
+     * @param maxHP
+     * @param recoveryRateHP
+     * @param attackDamage
+     * @param attackSpeed
+     * @param attackRange
+     * @param defense
+     * @param lookRadius
+     * @param rewardEXP
+     * @param rewardGold
+     * @param regenTime
+     * @param hpIncrValue
+     * @param hpRecoveryIncrValue
+     * @param attackDamageIncrValue
+     * @param defenseIncrValue
+     * @param rewardGoldIncrValue
+     * @param rewardExpIncrValue
+     * @param hasBuff
+     * @param appearProbRate
+     */
+    public MonsterInfo(int monsterType, int monsterGrade, int monsterElemental, String monsterName, float moveSpeed, float maxHP, float recoveryRateHP, float attackDamage, float attackSpeed, float attackRange, float defense, float lookRadius, int rewardEXP, int rewardGold, float regenTime, float hpIncrValue, float hpRecoveryIncrValue, float attackDamageIncrValue, float defenseIncrValue, int rewardGoldIncrValue, int rewardExpIncrValue, boolean hasBuff, float appearProbRate) {
+        this.monsterType = monsterType;
+        this.monsterGrade = monsterGrade;
+        this.monsterElemental = monsterElemental;
+        this.monsterName = monsterName;
+        this.moveSpeed = moveSpeed;
+        this.maxHP = maxHP;
+        this.recoveryRateHP = recoveryRateHP;
+        this.attackDamage = attackDamage;
+        this.attackSpeed = attackSpeed;
+        this.attackRange = attackRange;
+        this.defense = defense;
+        this.lookRadius = lookRadius;
+        this.rewardEXP = rewardEXP;
+        this.rewardGold = rewardGold;
+        this.regenTime = regenTime;
+        this.hpIncrValue = hpIncrValue;
+        this.hpRecoveryIncrValue = hpRecoveryIncrValue;
+        this.attackDamageIncrValue = attackDamageIncrValue;
+        this.defenseIncrValue = defenseIncrValue;
+        this.rewardGoldIncrValue = rewardGoldIncrValue;
+        this.rewardExpIncrValue = rewardExpIncrValue;
+        this.hasBuff = hasBuff;
+        this.appearProbRate = appearProbRate;
+    }
+
+    public void printMonsterInfo(){
+
+        System.out.println(this.attackDamage);
+        System.out.println(this.attackRange);
+        System.out.println(this.attackSpeed);
+        System.out.println(this.attackDamageIncrValue);
+        System.out.println(this.defense);
+        System.out.println(this.maxHP);
+        System.out.println(this.monsterGrade);
+        System.out.println(this.monsterElemental);
+        System.out.println(this.defenseIncrValue);
+
+    }
+
+
 
     @Override
     public Object clone()  {

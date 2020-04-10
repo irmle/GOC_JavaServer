@@ -1,8 +1,10 @@
 package ECS.Factory;
 
+import ECS.Classes.BarricadeInfo;
 import ECS.Classes.MonsterInfo;
 import ECS.Components.*;
 import ECS.Entity.BarricadeEntity;
+import ECS.Game.GameDataManager;
 
 import java.util.HashMap;
 
@@ -10,6 +12,7 @@ public class BarricadeFactory {
 
     /** 멤버 변수 */
 
+    public static HashMap<Integer, BarricadeInfo> barricadeInfoTable;
     public static HashMap<Integer, BarricadeEntity> barricadeEntityTable;
 
     /** 매서드 */
@@ -17,30 +20,30 @@ public class BarricadeFactory {
     public static void initFactory() {
         System.out.println("BarricadeFactory 초기화중...");
 
+        barricadeInfoTable = new HashMap<>();
         barricadeEntityTable = new HashMap<>();
 
         /** 파일로부터 정보 읽기 */
-        //readBarricadeInfoFromFile();
+        readBarricadeInfoFromFile();
 
         /** 읽어온 정보를 Entity로 변환하기 */
-        convertBarricadeInfoToEntity();
+        createBarricadeEntityFromInfo();
 
         System.out.println("BarricadeFactory 초기화 완료");
     }
 
     public static void readBarricadeInfoFromFile(){
 
-        //MonsterInfo monsterInfo;
-        // int monIDCount = 1;
+        BarricadeInfo barricadeInfo;
 
-        /* 고블린 */
-        /*monsterInfo
-                = new MonsterInfo(1, "Goblin",
-                200f, 20f,
-                300f, 30f, 0.625f, 150f,
-                0f, 150 * 4f, 250f);
+        /* GDM의 바리케이드 정보 목록을 가져와 하나씩 처리한다 */
+        for ( HashMap.Entry<Integer, BarricadeInfo> barricadeInfoEntry
+                : GameDataManager.barricadeInfoList.entrySet() ){
 
-        monsterInfoTable.put(monsterInfo.monsterID, monsterInfo);*/
+            barricadeInfo = barricadeInfoEntry.getValue();
+            barricadeInfoTable.put(barricadeInfo.barricadeType, barricadeInfo);
+
+        }
 
     }
 
@@ -89,6 +92,51 @@ public class BarricadeFactory {
             /** 목록에 추가 */
 
             barricadeEntityTable.put(1, barricadeEntity);
+
+        }
+
+    }
+
+    public static void createBarricadeEntityFromInfo(){
+
+        for( BarricadeInfo barricadeInfo : barricadeInfoTable.values() ){
+
+            /** 바리케이드 생성에 필요한 각 컴포넌트들 생성한다 */
+
+            /* Barricade Component */
+            BarricadeComponent barricadeComponent
+                    = new BarricadeComponent(barricadeInfo.costTime, barricadeInfo.costGold);
+
+            /* Position Component */
+            PositionComponent positionComponent
+                    = new PositionComponent();
+
+            /* HP Component */
+            HPComponent hpComponent
+                    = new HPComponent(barricadeInfo.maxHP, barricadeInfo.recoveryRateHP);
+
+            /* Defense Component */
+            DefenseComponent defenseComponent
+                    = new DefenseComponent(barricadeInfo.defense);
+
+            /* BuffActionHistory Component */
+            BuffActionHistoryComponent buffActionHistoryComponent = new BuffActionHistoryComponent();
+
+            /* HpHistory Component */
+            HpHistoryComponent hpHistoryComponent = new HpHistoryComponent();
+
+            /* Condition Component */
+            ConditionComponent conditionComponent = new ConditionComponent();
+
+            /** 생성된 컴포넌트들을 가지고, 바리케이드 Entity 객체를 만든다 */
+
+            /* Barricade Entity */
+            BarricadeEntity barricadeEntity
+                    = new BarricadeEntity(positionComponent, barricadeComponent,hpComponent, defenseComponent,
+                    buffActionHistoryComponent, hpHistoryComponent, conditionComponent );
+
+            /** Entity 목록에 추가 */
+            barricadeEntityTable.put(barricadeInfo.barricadeType, barricadeEntity);
 
         }
 

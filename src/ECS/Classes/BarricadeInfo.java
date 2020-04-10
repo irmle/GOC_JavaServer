@@ -1,7 +1,5 @@
 package ECS.Classes;
 
-import ECS.Classes.Type.CharacterType;
-
 public class BarricadeInfo implements Cloneable {
 
     //방호벽 타입
@@ -28,6 +26,16 @@ public class BarricadeInfo implements Cloneable {
     //방호벽 건설시 드는 골드
     public int costGold = 0;
 
+    public BarricadeInfo(int barricadeType, String barricadeName, float maxHP, float recoveryRateHP, float lookRadius, float defense, float costTime, int costGold) {
+        this.barricadeType = barricadeType;
+        this.barricadeName = barricadeName;
+        this.maxHP = maxHP;
+        this.recoveryRateHP = recoveryRateHP;
+        this.lookRadius = lookRadius;
+        this.defense = defense;
+        this.costTime = costTime;
+        this.costGold = costGold;
+    }
 
     @Override
     public Object clone()  {

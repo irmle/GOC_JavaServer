@@ -1,5 +1,6 @@
 package ECS.Classes;
 
+
 import ECS.Classes.Type.SkillAreaType;
 
 public class SkillObjectInfo implements Cloneable {
@@ -34,6 +35,18 @@ public class SkillObjectInfo implements Cloneable {
         this.skillObjectAngle = skillObjectAngle;
         this.skillObjectDistance = skillObjectDistance;
         this.buffAction = buffAction;
+    }
+
+    /**
+     * 2020 03 31
+     * @param skillAreaType
+     * @param skillObjectAngle
+     */
+    public SkillObjectInfo(int skillAreaType, float skillObjectAngle) {
+        this.skillAreaType = skillAreaType;
+        this.skillObjectAngle = skillObjectAngle;
+
+        this.buffAction = new BuffAction();
     }
 
     @Override

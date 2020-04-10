@@ -24,8 +24,6 @@ public class BuffAction implements Cloneable {
     public int itemType;    // 템에 의한 버프가 아니라면, 값이 0일 것. (아마 itemType class에 정의돼있을 건데, NONE이라고 .)
     public float buffDurationTime;
 
-
-
     //float영향을 주는값, bool영향을 주는값.
     public ArrayList<ConditionBoolParam> boolParam;
     public ArrayList<ConditionFloatParam> floatParam;
@@ -83,6 +81,78 @@ public class BuffAction implements Cloneable {
 
         buffDurationTime = remainTime;
     }
+
+    /**
+     * 2020 04 01 작성
+     * 스킬의 효과를 생성할 때 쓸 생성자.
+     * @param skillType
+     * @param remainTime
+     * @param remainCoolTime
+     * @param coolTime
+     */
+    public BuffAction( int skillType, float remainTime, float remainCoolTime, float coolTime) {
+
+        this.skillType = skillType;
+
+        this.remainTime = remainTime;
+        this.buffDurationTime = remainTime;
+
+        this.remainCoolTime = remainCoolTime;
+        this.coolTime = coolTime;
+
+        boolParam = new ArrayList<>();
+        floatParam = new ArrayList<>();
+
+        skillUserID = 0;
+        unitID = 0;
+        itemType = 0;
+
+    }
+
+    public BuffAction(float remainTime, float remainCoolTime, float coolTime) {
+
+        this.remainTime = remainTime;
+        this.buffDurationTime = remainTime;
+
+        this.remainCoolTime = remainCoolTime;
+        this.coolTime = coolTime;
+
+        boolParam = new ArrayList<>();
+        floatParam = new ArrayList<>();
+
+        skillType = 0;
+        skillUserID = 0;
+        unitID = 0;
+        itemType = 0;
+
+    }
+
+    /**
+     * 2020 04 01 작성
+     * @param effectParam
+     */
+    public void addEffect(ConditionBoolParam effectParam){
+
+        // 혹여나 널인 경우를 위한 예외처리
+        if(this.boolParam == null){
+            this.boolParam = new ArrayList<>();
+        }
+
+        this.boolParam.add(effectParam);
+
+    }
+
+    public void addEffect(ConditionFloatParam effectParam){
+
+        // 혹여나 널인 경우를 위한 예외처리
+        if(this.floatParam == null){
+            this.floatParam = new ArrayList<>();
+        }
+
+        this.floatParam.add(effectParam);
+
+    }
+
 
     @Override
     public Object clone() {

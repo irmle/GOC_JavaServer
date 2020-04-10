@@ -4,8 +4,10 @@ import ECS.Classes.*;
 import ECS.Classes.Type.ConditionType;
 import ECS.Classes.Type.SkillType;
 import ECS.Classes.Type.Team;
+import ECS.Classes.Type.TurretType;
 import ECS.Components.*;
 import ECS.Entity.*;
+import ECS.Factory.AttackTurretFactory;
 import ECS.Factory.SkillFactory;
 import ECS.Game.WorldMap;
 
@@ -28,6 +30,7 @@ public class AttackTurretSystem {
             /* 터렛 및 공격 정보 */
             AttackTurretEntity attackTurret = attackTurretEntity.getValue();
             AttackComponent attackAbility = attackTurret.attackComponent;    // 데미지, 범위, 스피드, 쿨타임
+            AttackTurretInfo turretInfo = AttackTurretFactory.attackTurretInfoTable.get(attackTurret.turretComponent.turretType);
 
             if( (attackTurret.hpComponent.currentHP <= 0)){
                 continue;
@@ -109,10 +112,14 @@ public class AttackTurretSystem {
                     System.out.println("create = "+targetID);
 
                     flyingObject.createdSkillType = SkillType.MAGICIAN_FIREBALL;    // "포탑 공격" 타입
-                    flyingObject.flyingObjectRemainDistance = 0f; // 타겟이 정해져 있으므로, 목적지를 따로 정하지 않음
-                    flyingObject.flyingSpeed = 15.0f;    // 대강 지어 적음.
+                    //flyingObject.createdSkillType = attackTurret.turretComponent.turretType;    // "포탑 공격" 타입
 
-                    flyingObject.flyingObjectRemainDistance = 0f;
+                    flyingObject.flyingObjectRemainDistance = 0f; // 타겟이 정해져 있으므로, 목적지를 따로 정하지 않음
+                    /*flyingObject.flyingSpeed = 15.0f;    // 대강 지어 적음.
+                    flyingObject.flyingObjectRadius = 2.5f;*/
+
+                    flyingObject.flyingSpeed = turretInfo.flyingObjSpeed;
+                    flyingObject.flyingObjectRadius = turretInfo.flyingObjAttackRadius;
 
                     flyingObject.direction = new Vector3(0f, 0f, 0f);
 
@@ -142,7 +149,6 @@ public class AttackTurretSystem {
                     FlyingObjectEntity flyingObjectEntity = new FlyingObjectEntity(flyingObject);
                     flyingObjectEntity.team = Team.BLUE;
                     flyingObjectEntity.entityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
-                    // ㄴ atuomicInteger?라는걸로, 월드 내 식별가능한 ID를 부여해줘야 함.
 
                     flyingObjectEntity.positionComponent.position = (Vector3)attackTurret.positionComponent.position.clone();
                     flyingObjectEntity.positionComponent.position.set(

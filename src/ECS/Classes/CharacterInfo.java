@@ -1,9 +1,10 @@
 package ECS.Classes;
 
-import java.util.ArrayList;
+
 import ECS.Classes.Type.CharacterType;
 import ECS.Classes.Type.ElementalType;
-import ECS.Components.SkillObjectComponent;
+
+import java.util.ArrayList;
 
 //저장되어있는 캐릭터정보
 public class CharacterInfo implements Cloneable {   //team정보등은 없어도 된다.
