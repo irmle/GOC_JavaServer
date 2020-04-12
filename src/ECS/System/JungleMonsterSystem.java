@@ -479,7 +479,7 @@ public class JungleMonsterSystem {
         PositionComponent monsterPos = monster.positionComponent;
         Vector3 currentPos = monsterPos.position;
 
-        if(monster.conditionComponent.isStunned || monster.conditionComponent.isDisableMove){
+        if(monster.conditionComponent.isStunned || monster.conditionComponent.isDisableMove || monster.conditionComponent.isAriborne){
             return;
         }
 
@@ -501,13 +501,25 @@ public class JungleMonsterSystem {
         /* 경로 구하기 */
         ArrayList<MapInfo> pathToTarget = MapFactory.pathFindForJungle(worldMap, currentTile, targetTile, target.entityID);
         System.out.println("경로 사이즈 : " + pathToTarget.size());
-        if(pathToTarget.get(1) == null){
+        /*if(pathToTarget.get(1) == null){
             System.out.println("또 널이냐.. moveToTargetPos");
+        }*/
+        if(pathToTarget.size() == 1){
+
+            /* 이동 처리하기 */
+            moveTo(monster, pathToTarget.get(0));
+
+        }
+        else{
+
+            /* 이동 처리하기 */
+            moveTo(monster, pathToTarget.get(1));
+
         }
 
 
         /* 이동 처리하기 */
-        moveTo(monster, pathToTarget.get(1));
+        //moveTo(monster, pathToTarget.get(1));
 
 
     }

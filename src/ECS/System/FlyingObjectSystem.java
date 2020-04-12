@@ -653,8 +653,13 @@ public class FlyingObjectSystem {
 
                             if(flyingObject.entityID == buffActionList.get(k).unitID){
 
-                                buffActionList.remove(k);
-                                break;
+                                if(buffActionList.get(k).boolParam.size()>0){
+                                    if(buffActionList.get(k).boolParam.get(0).type == ConditionType.isDisableMove){
+
+                                        buffActionList.remove(k);
+                                        break;
+                                    }
+                                }
                             }
                         }
 
@@ -790,8 +795,30 @@ public class FlyingObjectSystem {
                         float targetHP = monster.hpComponent.currentHP;
                         if( (currentDistance < (flyingObjectComponent.flyingObjectRadius )) && (targetHP > 0) && !(monster.conditionComponent.isUnTargetable))
                         {
-                            isInTargetRange = true;
-                            System.out.println("몬스터" + monster.entityID + "가 공격 범위 내에 있습니다.");
+                            /* 2020 01 22 권령희 추가. */
+                            /* 찌르기의 경우, 범위각도 (뒤에있는 놈은 공격하지 않도록..?? ) 체크하는 처리 추가,, */
+                            if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE){
+
+                                // 투사체 방향 백터 구하기
+                                Vector3 flyingDirection = flyingObjectComponent.direction;
+                                Vector3 monsterDirection = Vector3.getTargetDirection(flyingObjectPos , monster.positionComponent.position);
+
+                                float betweenAngle = Vector3.getAngle(flyingDirection, monsterDirection);
+                                System.out.println("투사체와 대상의 사이각 : " + betweenAngle);
+
+                                isInTargetRange = false;
+                                if((betweenAngle <= 90f)){
+
+                                    System.out.println("대상" + monster.entityID + "가 범위각도 내에 존재합니다.");
+                                    isInTargetRange = true;
+                                }
+
+                            }
+                            else{
+                                isInTargetRange = true;
+                                System.out.println("몬스터" + monster.entityID + "가 공격 범위 내에 있습니다.");
+                            }
+
                         }
 
                         System.out.println("투사체 공격 범위 : " +
@@ -799,25 +826,7 @@ public class FlyingObjectSystem {
 
 
 
-                        /* 2020 01 22 권령희 추가. */
-                        /* 찌르기의 경우, 범위각도 (뒤에있는 놈은 공격하지 않도록..?? ) 체크하는 처리 추가,, */
-                        if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE){
 
-                            // 투사체 방향 백터 구하기
-                            Vector3 flyingDirection = flyingObjectComponent.direction;
-                            Vector3 monsterDirection = Vector3.getTargetDirection(flyingObjectPos , monster.positionComponent.position);
-
-                            float betweenAngle = Vector3.getAngle(flyingDirection, monsterDirection);
-                            System.out.println("투사체와 대상의 사이각 : " + betweenAngle);
-
-                            isInTargetRange = false;
-                            if((betweenAngle <= 90f)){
-
-                                System.out.println("대상" + monster.entityID + "가 범위각도 내에 존재합니다.");
-                                isInTargetRange = true;
-                            }
-
-                        }
 
                         /************************************************************************************************/
 

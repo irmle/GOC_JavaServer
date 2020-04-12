@@ -394,6 +394,7 @@ public class SkillFactory {
 
                         targetEntity.buffActionHistoryComponent.conditionHistory.add(normalAttackDamage);
 
+                        return;
                     }
 
                 }   // 근거리 공격처리 끝, 끝나면 리턴하게 되어 아래 처리는 실행하지 않는다.
@@ -3071,8 +3072,8 @@ public class SkillFactory {
             flyingObjectRadius = currentLevelSkillInfo.attackRange;
 
             float userSpeed = skillUser.velocityComponent.moveSpeed;    // N단위값 들어있음.
-            //flyingSpeed = userSpeed * 5f;
-            flyingSpeed = userSpeed * currentLevelSkillInfo.flyingObjectSpeed;
+            flyingSpeed = userSpeed * 5f;
+            //flyingSpeed = userSpeed * currentLevelSkillInfo.flyingObjectSpeed;
 
             startPosition = (Vector3) positionComponent.position.clone();
             direction = skillDirection;
@@ -3083,7 +3084,7 @@ public class SkillFactory {
             int newEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
 
             /* buffAction **/
-            buffAction = (BuffAction) skillInfo.flyingObjectInfo.buffAction.clone();
+            buffAction = new BuffAction();
             buffAction.remainTime = 0.5f;
             buffAction.remainCoolTime = 0f;
             buffAction.coolTime = 1f;
@@ -3161,16 +3162,16 @@ public class SkillFactory {
             userBuffAfterSkillUse.remainCoolTime = -1;
             userBuffAfterSkillUse.coolTime = -1;
             userBuffAfterSkillUse.boolParam = new ArrayList<>();
-            userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
+            //userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
             userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));
-            userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableSkill, true));
+            //userBuffAfterSkillUse.boolParam.add(new ConditionBoolParam(ConditionType.isDisableSkill, true));
             userBuffAfterSkillUse.floatParam = new ArrayList<>();
 
 
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
 
-            //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
+            skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
 
             SkillInfoData skillInfoData = new SkillInfoData();
             skillInfoData.skillType = SkillType.KNIGHT_PIERCE;
@@ -3281,7 +3282,7 @@ public class SkillFactory {
 
 
             /* buffAction **/ // 2020 02 06 안씀
-            buffAction = (BuffAction) skillInfo.skillObjectInfo.buffAction.clone();
+            buffAction = new BuffAction();
             buffAction.floatParam = new ArrayList<>();
             buffAction.floatParam.add(new ConditionFloatParam(ConditionType.damageAmount, currentLevelSkillInfo.attackDamage));
 
@@ -3327,7 +3328,7 @@ public class SkillFactory {
 
             /* SkillObject Component */
             SkillObjectComponent skillObjectComponent
-                    = new SkillObjectComponent(createdSkillType, skillAreaType, newEntityID,skillObjectDurationTime, skillObjectRadius,
+                    = new SkillObjectComponent(createdSkillType, skillAreaType, skillUser.entityID, skillObjectDurationTime, skillObjectRadius,
                     -1f, -1f, startPosition, event.skillDirection, skillDistanceRate, skillObjBuff);
 
             positionComponent = new PositionComponent((Vector3) startPosition.clone());

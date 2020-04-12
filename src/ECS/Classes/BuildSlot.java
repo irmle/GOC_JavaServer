@@ -117,6 +117,7 @@ public class BuildSlot implements Cloneable{
 
     public void setBuildingType(int buildType){
         this.buildingType = buildType;
+        this.mapPosition.setMapInfoMovable(false);
     }
 
     public int getBuildingType(){
@@ -158,6 +159,8 @@ public class BuildSlot implements Cloneable{
         this.slotState = BuildSlotState.EMPTY;
         this.builderEntityID = 0;
         this.buildingEntityID = 0;
+
+        this.mapPosition.setMapInfoMovable(true);
     }
 
     public int getBuilderEntityID(){

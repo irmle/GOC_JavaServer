@@ -9,6 +9,9 @@ public class PositionComponent implements Cloneable  {
     public Vector3 crystalTargetPosition;
 
     public PositionComponent() {
+        this.position = new Vector3(0f, 0f, 0f);
+        this.flyingObjectTargetPosition = new Vector3(0f, 0f, 0f);
+        this.crystalTargetPosition = new Vector3(0f, 0f, 0f);
     }
 
     public PositionComponent(Vector3 position) {

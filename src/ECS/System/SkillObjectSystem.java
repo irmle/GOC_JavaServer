@@ -325,14 +325,14 @@ public class SkillObjectSystem {
 
                         if(target.conditionComponent.isAriborne){
                         //if(targetsBuffAction.remainCoolTime <= 0){
-                            if(targetPos.y() <= 1.0f){
-                                System.out.println("1이하다. 2로 바꿔줌");
+                            if(targetPos.y() <= 0.5f){
+                                System.out.println("0.5이하다. 1로 바꿔줌");
 
-                                targetPos.set(targetPos.x(), 2.0f, targetPos.z());
+                                targetPos.set(targetPos.x(), 1f, targetPos.z());
                             }
                             else{
-                                System.out.println("2 이상이라 1로 바꿔줌");
-                                targetPos.set(targetPos.x(), 1.0f, targetPos.z());
+                                System.out.println("0.5 이상이라 0.5로 바꿔줌");
+                                targetPos.set(targetPos.x(), 0.5f, targetPos.z());
                             }
                         }
 
