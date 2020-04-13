@@ -8,17 +8,25 @@ import java.util.Set;
 
 import RMI.RMI_Common.server_to_client;
 import RMI.RMI_Classes.*;
+import sun.awt.image.ImageWatched;
+
+import javax.security.auth.callback.LanguageCallback;
 
 
 //매치메이킹을 담당하는 클래스
 public class MatchingManager {
 
     //한 방에 들어갈 수 있는 유저수.
-    public static int userCount = 1;
+    public static int userCount = 3;
+
+    //
+    public static float waitTime = 30f;
 
 
     //매칭용 tokenID(String), RMI_ID 목록정보.
     static LinkedHashMap<String, RMI_ID> matchingList;
+
+    static LinkedHashMap<String, Float> matchingWaitTime;
 
     //매칭용 tokenID(String), GameSessionRoom 목록정보.
     static HashMap<String, GameSessionRoom> gameSessionList;
@@ -48,6 +56,7 @@ public class MatchingManager {
         //각종 변수 초기화
         locking = new Object();
         matchingList = new LinkedHashMap<>();
+        matchingWaitTime = new LinkedHashMap<>();
         gameSessionList = new HashMap<>();
         playerWorldMapMappingList = new HashMap<>();
         worldMapList = new HashMap<>();
@@ -77,6 +86,12 @@ public class MatchingManager {
 
                     //1초간 대기
                     Thread.currentThread().sleep(1000);
+
+                    for(Float waitTime : matchingWaitTime.values()){
+
+                        waitTime -= 1000;
+                    }
+
                 } catch (Exception e) {
 
                 }
@@ -136,8 +151,11 @@ public class MatchingManager {
                 String tokenID = data.getKey();
                 RMI_ID rmi_id = data.getValue();
 
-                if (!matchingList.containsKey(tokenID))
+                if (!matchingList.containsKey(tokenID)){
                     matchingList.put(tokenID, rmi_id);
+                    matchingWaitTime.put(tokenID, waitTime * 1000f);
+                }
+
             }
         }
     }
@@ -148,8 +166,10 @@ public class MatchingManager {
             //매칭중인 리스트에 없어야 하고, 현재 매칭이 되어서 worldMap에 들어간 상태도 아니여야 한다.
             if (!matchingList.containsKey(tokenID)) {
                 //현재 픽중이거나, 게임중인 tokenID가 아니여야 한다.
-                if (!playerWorldMapMappingList.containsKey(tokenID) && !gameSessionList.containsKey(tokenID))
+                if (!playerWorldMapMappingList.containsKey(tokenID) && !gameSessionList.containsKey(tokenID)){
                     matchingList.put(tokenID, rmi_id);
+                    matchingWaitTime.put(tokenID, waitTime * 1000f);
+                }
                 else {
                     System.out.println("startMatching 요청이 있었으나 불가능한 상태!");
                     System.out.println(playerWorldMapMappingList.containsKey(tokenID) + " / " + gameSessionList.containsKey(tokenID));
@@ -162,18 +182,35 @@ public class MatchingManager {
     //매칭 취소시 (또는 매칭 도중 접속 끊김시)
     public static void cancelMatching(String tokenID) {
         synchronized (locking) {
-            if (matchingList.containsKey(tokenID))
+            if (matchingList.containsKey(tokenID)){
                 matchingList.remove(tokenID);
+                matchingWaitTime.remove(tokenID);
+            }
         }
     }
 
+    /**
+     * 2020 04 13 수정
+     * 매칭 가능 여부를 판별하는 매서드를 별도로 만들었음.
+     * @return
+     */
     //매칭여부 체크. 인원수가 조건을 만족하면 해당 유저들을 매칭시켜 새로운 WorldMap으로 밀어넣는다.
     static boolean checkMatchingUserCount() {
         synchronized (locking) {
             //매칭이 될 조건을 만족하는 경우.
-            if (matchingList.size() >= userCount) {
+            /*if (matchingList.size() >= userCount) {*/
+            if(checkMatchingCondition()){
+
                 //매칭이된 유저의 배열을 세팅한다.
-                RMI_ID[] matchedUserList = new RMI_ID[userCount];
+                //RMI_ID[] matchedUserList = new RMI_ID[userCount];
+
+                RMI_ID[] matchedUserList;
+                if(matchingList.size() >= userCount){
+                    matchedUserList = new RMI_ID[userCount];
+                }
+                else{
+                    matchedUserList = new RMI_ID[matchingList.size()];
+                }
 
                 try {
 
@@ -192,6 +229,7 @@ public class MatchingManager {
 
                         //이후 Iterator.remove()를 이용하여 매칭 HashMap에서 제거한다.
                         keys.remove();
+                        matchingWaitTime.remove(key);
 
                         //1회 행하였으므로 다음 숫자로 카운트.
                         count++;
@@ -225,6 +263,43 @@ public class MatchingManager {
                 return false;
         }
     }
+
+
+    /**
+     * 2020 04 13 월요일
+     * 매칭 가능 조건을 체크한다
+     * 조건 :
+     *  1) 인원이 3인이상 모였음
+     *  2) 3인 이하일 때, 매칭 대기자 중 대기 시간이 NN초 이상 지났다면
+     *      남은 인원들끼리 매칭되게끔 함.
+     *
+     * @return
+     */
+    public static boolean checkMatchingCondition(){
+
+        boolean ableToMatch = false;
+        if(matchingList.size() >= userCount){
+
+           ableToMatch = true;
+        }
+        else{
+
+            if(matchingList.size() >= 0) {
+
+                float remainedWaitingTime = matchingWaitTime.get(0);
+                if(remainedWaitingTime <= 0f){
+
+                    ableToMatch = true;
+                }
+
+            }
+
+        }
+
+        return ableToMatch;
+    }
+
+
 
     public static void removeGameSessionRoom(String tokenID) {
         if (gameSessionList.containsKey(tokenID))
