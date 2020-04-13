@@ -315,7 +315,7 @@ public class SkillObjectSystem {
                     /** 회오리 */ // 2020 01 18
                     if(skillObjectComponent.createdSkillType == SkillType.KNIGHT_TORNADO){
 
-                        System.out.println("이미 회오리 효과를 받고있음");
+                        /*System.out.println("이미 회오리 효과를 받고있음");
 
                         CharacterEntity character = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
 
@@ -333,6 +333,36 @@ public class SkillObjectSystem {
                             else{
                                 System.out.println("0.5 이상이라 0.5로 바꿔줌");
                                 targetPos.set(targetPos.x(), 0.5f, targetPos.z());
+                            }
+                        }*/
+
+                        /**
+                         * 2020 04 13
+                         */
+                        if((targetsBuffAction.boolParam.size() > 0)
+                                && targetsBuffAction.boolParam.get(0).type == ConditionType.isAirborne){
+
+                            boolean haveDamage = false;
+                            for(int q=0; q<buffActionList.size(); q++){
+
+                                BuffAction buff = buffActionList.get(q);
+                                if(buff.unitID == buffActionList.get(q).unitID){
+
+                                    if(buff.floatParam.get(0).type == ConditionType.damageAmount){
+
+                                        haveDamage = true;
+                                        break;
+
+                                    }
+                                }
+                            }
+
+                            if(!haveDamage){
+
+                                // 데미지
+                                target.buffActionHistoryComponent.conditionHistory.add(
+                                        SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
                             }
                         }
 

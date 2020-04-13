@@ -127,9 +127,6 @@ public class BuffActionSystem {
 
                             break;
 
-                        default :
-                            break;
-
                     }
 
                     /************************************************/
@@ -662,6 +659,26 @@ public class BuffActionSystem {
                     }*/
 
 
+                    /**
+                     * 에어본 효과를 받고있는 몬스터의 위치를 원상복귀 해준다.
+                     */
+                    switch (buffAction.skillType){
+                        case SkillType.KNIGHT_TORNADO :
+
+                            if((buffAction.boolParam.size() > 0) && buffAction.boolParam.get(0).type == ConditionType.isAirborne){
+
+                                // 위치 원상복귀 해준다.
+                                Vector3 monsterPos = monster.positionComponent.position;
+                                monsterPos.set(monsterPos.x(), 0f, monsterPos.z());
+
+                            }
+                            break;
+
+                        default :
+                            break;
+
+                    }
+
 
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
@@ -711,6 +728,17 @@ public class BuffActionSystem {
                                             break;
                                         case ConditionType.isAirborne :
                                             newCondition.isAriborne = true;
+
+                                            Vector3 monsterPos = monster.positionComponent.position;
+                                            if(monsterPos.y() >= 0.4){
+
+                                                monsterPos.set(monsterPos.x(), 0.2f, monsterPos.z());
+                                            }
+                                            else{
+
+                                                monsterPos.set(monsterPos.x(), 0.4f, monsterPos.z());
+                                            }
+
                                             break;
 
                                         case ConditionType.isStunned :
@@ -894,10 +922,22 @@ public class BuffActionSystem {
                                     case ConditionType.isAirborne :
                                         newCondition.isAriborne = true;
 
+                                        // 2020 04 13 주석처리함.. 머지...
+                                        //Vector3 monsterPos = monster.positionComponent.position;
+                                        //monsterPos.set(monsterPos.x(), 10f, monsterPos.z());
+
                                         Vector3 monsterPos = monster.positionComponent.position;
-                                        monsterPos.set(monsterPos.x(), 10f, monsterPos.z());
+                                        if(monsterPos.y() >= 0.4){
+
+                                            monsterPos.set(monsterPos.x(), 0.2f, monsterPos.z());
+                                        }
+                                        else{
+
+                                            monsterPos.set(monsterPos.x(), 0.4f, monsterPos.z());
+                                        }
 
                                         break;
+
 
                                     case ConditionType.isStunned :
                                         newCondition.isStunned =  true;

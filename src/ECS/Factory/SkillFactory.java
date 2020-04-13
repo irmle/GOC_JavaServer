@@ -7658,8 +7658,9 @@ public class SkillFactory {
          *      그래서 "0 이하"조건을 사용했다.
          */
         float effectDurationTime;
-        boolean needToGetDurationTime =
+        boolean needToGetDurationTime = (
                 (( effectInfo.effectAppicationType == EffectApplicationType.지속)
+                        ||( effectInfo.effectAppicationType == EffectApplicationType.도트))
                 && ( effectInfo.effectDurationTime <= 0f)) ? true : false;
         if(needToGetDurationTime){
 
