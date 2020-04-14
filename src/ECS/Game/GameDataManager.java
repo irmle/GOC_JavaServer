@@ -2924,9 +2924,12 @@ public class GameDataManager {
         /* 등장 몬스터 레벨 MAX */
         int maxLevel = Integer.parseInt(tokenizer.nextToken());
 
+        /* 게임 난이도에 따른, 몬스터 스탯 적용 비율 */
+        float monsterStatRate = Float.parseFloat(removePercentage(tokenizer.nextToken()));
+
 
         /** 생성 */
-        gradeInfo = new GameDifficultyGradeInfo(grade, minStrength, maxStrength, minLevel, maxLevel);
+        gradeInfo = new GameDifficultyGradeInfo(grade, minStrength, maxStrength, minLevel, maxLevel, monsterStatRate);
 
 
         return gradeInfo;

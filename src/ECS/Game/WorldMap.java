@@ -1253,27 +1253,35 @@ public class WorldMap {
                         waveInfoCount = 1;
                     }
 
-                    //마지막 웨이브에 도달하였을 경우, 게임이 클리어 됬음을 클라이언트에게 알림.
-                    if (waveInfoCount > 7) {
-                        /* 게임 종료 조건 설정 및 브로드캐스팅 */
-                        boolean crystalIsDead = crystalEntity.isEmpty();
+                    /**
+                     * 2020 04 14
+                     * 무한모드 설정을 위해, 실행되지 않게 묶어둠.
+                     * 나중에, 웨이브 시스템 별도로 파서 정리할 것.
+                     */
+                    if(false){
+                        //마지막 웨이브에 도달하였을 경우, 게임이 클리어 됬음을 클라이언트에게 알림.
+                        if (waveInfoCount > 7) {
+                            /* 게임 종료 조건 설정 및 브로드캐스팅 */
+                            boolean crystalIsDead = crystalEntity.isEmpty();
 
-                        if (crystalIsDead == false) {
+                            if (crystalIsDead == false) {
 
-                            isGameEnd = true;
-                            System.out.println("클리어 성공! 게임을 종료합니다.");
+                                isGameEnd = true;
+                                System.out.println("클리어 성공! 게임을 종료합니다.");
 
-                            // 2020 01 16
-                            gameFinishTime = System.currentTimeMillis();
-                            //gameElapsedTime = gameFinishTime - gameStartTime;
+                                // 2020 01 16
+                                gameFinishTime = System.currentTimeMillis();
+                                //gameElapsedTime = gameFinishTime - gameStartTime;
 
-                            //클리어에 성공하여 게임이 종료되었음을 모든 클라이언트에게 중계.  1번값을 보낸다.
-                            //클리어에 실패하였다면 -1 번값을 보낸다.
-                            // ㄴ>> 게임이 완전히 종료된 이후에 처리하도록 변경되었음. 일단 주석만 남겨둠.
+                                //클리어에 성공하여 게임이 종료되었음을 모든 클라이언트에게 중계.  1번값을 보낸다.
+                                //클리어에 실패하였다면 -1 번값을 보낸다.
+                                // ㄴ>> 게임이 완전히 종료된 이후에 처리하도록 변경되었음. 일단 주석만 남겨둠.
 
-                            continue;
+                                continue;
+                            }
                         }
                     }
+
 
                     /* 게임시작 이후, 웨이브 로직을 실행한다 */
                     if (isGameMapStarted) {
@@ -1329,7 +1337,8 @@ public class WorldMap {
                                 if(waveInfoCount < 21){
 
                                     /* 20웨이브 이하인 경우에는, 파일로부터 미리 읽어들인 웨이브 별 등장 몬스터 목록을 따른다 */
-                                    currentWaveArmy = GameDataManager.waveArmy.get(waveInfoCount);
+                                    // currentWaveArmy = GameDataManager.waveArmy.get(waveInfoCount);
+                                    currentWaveArmy = GameDataManager.waveArmyList.get(waveInfoCount);
 
                                 }
                                 else{
@@ -1341,9 +1350,7 @@ public class WorldMap {
 
 
                                     /** 마릿수만큼, 몬스터를 랜덤으로 뽑는다 */
-                                    currentWaveArmy =
-
-
+                                    currentWaveArmy = decideWaveMonsterTypeByRandom(waveInfoCount, monsterCount);
 
                                 }
 
@@ -1361,10 +1368,7 @@ public class WorldMap {
                                         monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
                                     }
 
-                                    //System.out.println(monsters.getKey() + "번째 몬스터의 수 : " + mobCount);
                                 }
-
-                                //System.out.println("총 등장하는 몬스터 수 : " + monsterSpawnList.size());
 
                                 /* 웨이브 상태를 "진행중"으로 변경한다 */
                                 isWaveStarted = true;
@@ -4298,16 +4302,31 @@ public class WorldMap {
 
         }
 
-        
+
         /* 총 마릿수만큼 반복한다 */
-        for(int i=0; i<totalMonsterCount; i++){
+        int randomMobType = 0;
+        for(int i=1; i<=totalMonsterCount; i++){
 
+            System.out.println(waveCount + "번째 웨이브의" + i + "번째 몬스터를 뽑습니다. ");
 
+            /* 랜덤으로 몹 종류 뽑기를 수행 */
+            randomMobType = (int)( (Math.random() * (maxTypeNum - minTypeNum) + 1) + minTypeNum );
 
+            /* 몹리스트에 집어넣는다 */
+            if(waveArmyList.containsKey(randomMobType)){
 
+                /* 이미 뽑힌 적이 있는 몬스터라면 */
+                int mobCount = waveArmyList.get(randomMobType);
+                waveArmyList.put(randomMobType, ++mobCount);
+            }
+            else{
 
+                /* 새로 등장한 몬스터라면 */
+                waveArmyList.put(randomMobType, 1);
+            }
 
-
+            System.out.println("몹 타입 " + randomMobType + "을 뽑았습니다., " +
+                    "해당 타입 마릿 수 : " + waveArmyList.get(randomMobType) + "마리");
 
         }
 

@@ -454,6 +454,9 @@ public class MonsterFactory {
         /* 몬스터의 레벨을 결정한다 */
         int level = decideMonsterLevel(worldMap);
 
+        /* 게임 등급에 맞춰, 몬스터의 초기 스탯 비율을 적용한다 */
+        applyMonsterStatByGameGrade(worldMap, newMonster);
+
         /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
         resetMonsterStatByLevel(newMonster, level);
 
@@ -709,6 +712,9 @@ public class MonsterFactory {
 
         /* 몬스터의 레벨을 결정한다 */
         int level = decideMonsterLevel(worldMap);
+
+        /* 게임 등급에 맞춰, 몬스터의 초기 스탯 비율을 적용한다 */
+        applyMonsterStatByGameGrade(worldMap, newJungleMob);
 
         /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
         resetJungleMonsterStatByLevel(newJungleMob, level);
@@ -1058,10 +1064,64 @@ public class MonsterFactory {
         }
 
 
-        return level;
+        /* 기대 몹 레벨로 고정 생성되게끔 */
+        return expLevel;
+
+        /* 기대 몹을 기반으로 한 랜덤 레벨로 생성되게끔 */
+        //return level;
 
     }
 
+
+    /**
+     * 기    능 :게임 등급에 따라, 몬스터 생성 후 초기 스탯 비율을 조절함. (100% ~ )
+     *
+     *
+     */
+    public static void applyMonsterStatByGameGrade(WorldMap worldMap, MonsterEntity monster){
+
+        /** 등급 정보를 참조함 */
+        GameDifficultyGradeInfo currentDifficultyInfo
+                = GameDataManager.gameDifficultyGradeInfoList.get(worldMap.gameGrade);
+
+        float statRate = currentDifficultyInfo.monsterStatRate * 0.01f;
+
+        /** 몬스터 정보 참조 */
+        HPComponent monsterHP = monster.hpComponent;
+        AttackComponent monsterAttack = monster.attackComponent;
+        DefenseComponent monsterDefense = monster.defenseComponent;
+        SightComponent monsterSight = monster.sightComponent;
+        VelocityComponent monstserMove = monster.velocityComponent;
+
+        /** 비율에 맞게, 스탯을 적용함 */
+
+        /* 체력 */
+        monsterHP.originalMaxHp *= statRate;
+        monsterHP.maxHP = monsterHP.originalMaxHp;
+        monsterHP.currentHP = monsterHP.originalMaxHp;
+
+        /* 체력 회복 */
+        monsterHP.recoveryRateHP *= statRate;
+
+        /* 공격력 */
+        monsterAttack.attackDamage *= statRate;
+
+        /* 방어력 */
+        monsterDefense.defense *= statRate;
+
+        /* 공격속도 */
+        monsterAttack.attackSpeed *= statRate;
+
+        /* 이동속도 */
+        monstserMove.moveSpeed *= statRate;
+
+        /* 사거리 */
+        monsterAttack.attackRange *= statRate;
+
+        /* 시야 */
+        monsterSight.lookRadius *= statRate;
+
+   }
 
 
 }

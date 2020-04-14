@@ -37,21 +37,21 @@ public class GameDifficultyGradeInfo {
     public int minMonsterLevel;
     public int maxMonsterLevel;
 
+    /* 몹 등급에 따른, 초기 몬스터 스탯 적용 비율 */
+    public float monsterStatRate;
+
 
 
     /** 생성자 */
 
-    public GameDifficultyGradeInfo(int grade, float minStrengthPower, float maxStrengthPower, int minMonsterLevel, int maxMonsterLevel) {
+    public GameDifficultyGradeInfo(int grade, float minStrengthPower, float maxStrengthPower, int minMonsterLevel, int maxMonsterLevel, float monsterStatRate) {
         this.grade = grade;
         this.minStrengthPower = minStrengthPower;
         this.maxStrengthPower = maxStrengthPower;
         this.minMonsterLevel = minMonsterLevel;
         this.maxMonsterLevel = maxMonsterLevel;
+        this.monsterStatRate = monsterStatRate;
     }
-
-
-
-
 
 
 }
