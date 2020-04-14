@@ -388,6 +388,11 @@ public class MapFactory implements Cloneable {
             nearTile = currentNearMP;
         }
 
+        /**
+         * 2020 04 13
+         */
+        nearTile = nextNearMP;
+
 
         /** 결정된 쪽의 타일을 반환한다 */
 
