@@ -39,6 +39,7 @@ import Enum.MapComponents;
 import com.google.gson.*;
 import org.asynchttpclient.*;
 import org.asynchttpclient.util.HttpConstants;
+import org.omg.PortableInterceptor.INACTIVE;
 
 /**
  * 업뎃날짜 : 2020 02 27 목요일 권령희
@@ -1295,7 +1296,7 @@ public class WorldMap {
                             waveWaitTimeCount -= tickRate;
                             if (waveWaitTimeCount < 0) {
 
-                                /** 2020 02 13 추가, 기존 몹 시체들 청소 */
+                                /** 기존 몹 시체들을 청소한다  */
                                 /**
                                  * 불완전한 방법이긴 한데.. 몹들이 모두 죽었다는 판정 후에도, 걔들이 만약에 지속적인 데미지를
                                  * 누군가에게 주고 있다거나, 반대로 걔네를 활용해야 하는 처리가 있다고 할 때
@@ -1305,15 +1306,9 @@ public class WorldMap {
                                  * 후에, 이 외에도 별도로 추가될만한?? 정리작업 등이 필요하면 처리할 것.
                                  */
 
-                                //monsterEntity.clear();
                                 for (HashMap.Entry<Integer, MonsterEntity> monster : monsterEntity.entrySet()) {
 
                                     MonsterEntity mobb = monster.getValue();
-
-                                    /*if(jungleMonsterSlotList.containsKey(mobb.entityID)){
-                                        continue;
-                                    }
-                                    */
 
                                     HPComponent mobHP = mobb.hpComponent;
                                     if(mobHP.currentHP <= 0){
@@ -1322,43 +1317,65 @@ public class WorldMap {
 
                                 }
 
-                                /*******************************************/
+
+                                /** 다음 웨이브에서 생성할 몹 목록을 갱신한다 */
+
+                                /* 이전 웨이브에서 사용한 몬스터 목록 클리어 */
+                                monsterSpawnList.clear();
+
+                                /* 웨이브 카운트에 따른 목록 갱신 처리를 한다 */
+
+                                HashMap<Integer, Integer> currentWaveArmy;
+                                if(waveInfoCount < 21){
+
+                                    /* 20웨이브 이하인 경우에는, 파일로부터 미리 읽어들인 웨이브 별 등장 몬스터 목록을 따른다 */
+                                    currentWaveArmy = GameDataManager.waveArmy.get(waveInfoCount);
+
+                                }
+                                else{
+
+                                    /* 21웨이브 이상인 경우, 웨이브에 등장할 몬스터를 랜덤으로 정한다 */
+
+                                    /** 이번 웨이브에 총 등장할 몬스터의 마릿수를 결정한다 */
+                                    int monsterCount = decideNextWaveMonsterCount(waveInfoCount);
+
+
+                                    /** 마릿수만큼, 몬스터를 랜덤으로 뽑는다 */
+                                    currentWaveArmy =
 
 
 
-
-                                monsterSpawnList.clear();   // 생성할 몬스터 목록 클리어.
+                                }
 
                                 System.out.println(waveInfoCount + " 번째 웨이브를 위한 몬스터 정보를 불러오는 중입니다. ");
 
-                                /* 현 웨이브에 맞는 몬스터 목록 큐를 갱신한다 */
-                                HashMap<Integer, Integer> currentWaveArmy = GameDataManager.waveArmy.get(waveInfoCount);
 
-                                //System.out.println("등장하는 몬스터 종류 : " + currentWaveArmy.size());
-
-                                /* 몹 종류만큼 반복한다 */
+                                /* 위에서 결정된 몹 종류 및 마릿수를 가지고, 최종적으로 몹 리스트를 갱신한다 */
                                 for (HashMap.Entry<Integer, Integer> monsters : currentWaveArmy.entrySet()) {
 
                                     int mobCount = monsters.getValue();
 
-                                    // mobCount = 30;
-
                                     /* 해당 종류의 마릿수만큼 반복한다 */
                                     for (int i = 0; i < mobCount; i++) {
+
                                         monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
                                     }
+
                                     //System.out.println(monsters.getKey() + "번째 몬스터의 수 : " + mobCount);
                                 }
+
                                 //System.out.println("총 등장하는 몬스터 수 : " + monsterSpawnList.size());
 
-                                /* 웨이브 상태를 "진행중"으로 바꾼다 */
+                                /* 웨이브 상태를 "진행중"으로 변경한다 */
                                 isWaveStarted = true;
                                 System.out.println("곧" + waveInfoCount + " 번째 웨이브를 시작합니다.");
 
                                 RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
                                 server_to_client.StartWave(TARGET, RMI_Context.Reliable_Public_AES256, waveInfoCount);
                             }
-                        } else { /* 웨이브 시작 */
+
+                        }
+                        else { /* 웨이브 시작 */
 
                             if (!monsterSpawnList.isEmpty()) {   /* 큐에 생성할 몬스터가 남아있다면 */
                                 //System.out.println("생성할 몬스터의 남은 마릿수 : " + monsterSpawnList.size());
@@ -4172,9 +4189,131 @@ public class WorldMap {
     /*******************************************************************************************************************/
 
 
+    /**
+     * 2020 04 14
+     * 기    능 :
+     *      -- 다음 웨이브에서 등장할 몬스터 마릿수를 랜덤으로 결정한다
+     *
+     * 공   식 :
+     * 5개 웨이브를 단위로 함.
+     *
+     * 현 웨이브가 현 웨이브 % 5 == 1 일 때,
+     * >> (현 웨이브 - ( 현 웨이브 % 10 - 1)) * 2;
+     *
+     * 현 웨이브 % 5 == 2 일 때,
+     * >> (현 웨이브 - ( 현 웨이브 % 10 - 1)) * 2 ) *  0.8
+     *
+     * 현 웨이브 % 5 == 3 일 때,
+     * >> (현 웨이브 - ( 현 웨이브 % 10 - 1)) * 2 ) *  1.2
+     *
+     * 현 웨이브 % 5 == 4 일 때,
+     * >> (현 웨이브 - ( 현 웨이브 % 10 - 1)) * 2 ) *  0.6
+     *
+     * 현 웨이브 % 5 == 5 일 때,
+     * >> (현 웨이브 - ( 현 웨이브 % 10 - 1)) * 2 ) *  1.4
+     *
+     */
+    public int decideNextWaveMonsterCount(int waveCount){
+
+        int entireMonsterCount = 0;
+
+        int defaultMonsterCount = ( waveCount - ( waveCount % 10 -1) ) * 2;
+
+        int waveCountNum = waveCount % 5;
+        switch (waveCountNum){
+
+            case 1:
+
+                entireMonsterCount = defaultMonsterCount;
+                break;
+
+            case 2:
+
+                entireMonsterCount = (int) Math.round(defaultMonsterCount * 0.8);
+                break;
+
+            case 3:
+
+                entireMonsterCount = (int) Math.round(defaultMonsterCount * 1.2);
+                break;
+
+            case 4:
+
+                entireMonsterCount = (int) Math.round(defaultMonsterCount * 0.6);
+                break;
+
+            case 0:
+
+                entireMonsterCount = (int) Math.round(defaultMonsterCount * 1.4);
+                break;
+
+        }
+
+
+        return entireMonsterCount;
+
+    }
+
+
+    /**
+     *
+     */
+    public HashMap<Integer, Integer> decideWaveMonsterTypeByRandom(int waveCount, int totalMonsterCount){
+
+        HashMap<Integer, Integer> waveArmyList = new HashMap<>();
+
+        /* 웨이브 카운트에 따라, 등장하는 몬스터의 타입 범위가 달라진다 */
+        // 아 이것도 나중에 파일로 만들어야겟지..
+        int minTypeNum = 0;
+        int maxTypeNum = 0;
+
+        int waveCountNum  = waveCount % 5;
+        switch (waveCountNum){
+
+            case 1 :
+
+                minTypeNum = 1;
+                maxTypeNum = 6;
+                break;
+            case 2 :
+
+                minTypeNum = 5;
+                maxTypeNum = 11;
+                break;
+            case 3 :
+
+                minTypeNum = 1;
+                maxTypeNum = 15;
+                break;
+            case 4 :
+
+                minTypeNum = 10;
+                maxTypeNum = 15;
+                break;
+            case 0 :
+
+                minTypeNum = 1;
+                maxTypeNum = 15;
+                break;
+
+        }
+
+        
+        /* 총 마릿수만큼 반복한다 */
+        for(int i=0; i<totalMonsterCount; i++){
 
 
 
+
+
+
+
+
+        }
+
+
+        return waveArmyList;
+    }
 
 
 
