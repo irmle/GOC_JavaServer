@@ -348,7 +348,8 @@ public class SkillObjectSystem {
                                 BuffAction buff = buffActionList.get(q);
                                 if(buff.unitID == buffActionList.get(q).unitID){
 
-                                    if(buff.floatParam.get(0).type == ConditionType.damageAmount){
+                                    if((buff.floatParam.size() > 0)
+                                            && (buff.floatParam.get(0).type == ConditionType.damageAmount)){
 
                                         haveDamage = true;
                                         break;

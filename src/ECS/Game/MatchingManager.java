@@ -20,7 +20,7 @@ public class MatchingManager {
     public static int userCount = 3;
 
     //
-    public static float waitTime = 30f;
+    public static float waitTime = 10f;
 
 
     //매칭용 tokenID(String), RMI_ID 목록정보.
@@ -84,13 +84,19 @@ public class MatchingManager {
                         System.out.println("매칭 성공. 캐릭터 픽창 진입.");
                     }
 
+                    /* 시간 */
+                    for(HashMap.Entry<String, Float> waitTimeEntry: matchingWaitTime.entrySet()){
+
+                        float remainedWaitTime = waitTimeEntry.getValue();
+                        remainedWaitTime -= 1f;
+
+                        matchingWaitTime.put(waitTimeEntry.getKey(), remainedWaitTime);
+
+                    }
+
                     //1초간 대기
                     Thread.currentThread().sleep(1000);
 
-                    for(Float waitTime : matchingWaitTime.values()){
-
-                        waitTime -= 1000;
-                    }
 
                 } catch (Exception e) {
 
@@ -153,7 +159,7 @@ public class MatchingManager {
 
                 if (!matchingList.containsKey(tokenID)){
                     matchingList.put(tokenID, rmi_id);
-                    matchingWaitTime.put(tokenID, waitTime * 1000f);
+                    matchingWaitTime.put(tokenID, waitTime);
                 }
 
             }
@@ -168,7 +174,7 @@ public class MatchingManager {
                 //현재 픽중이거나, 게임중인 tokenID가 아니여야 한다.
                 if (!playerWorldMapMappingList.containsKey(tokenID) && !gameSessionList.containsKey(tokenID)){
                     matchingList.put(tokenID, rmi_id);
-                    matchingWaitTime.put(tokenID, waitTime * 1000f);
+                    matchingWaitTime.put(tokenID, waitTime);
                 }
                 else {
                     System.out.println("startMatching 요청이 있었으나 불가능한 상태!");
@@ -200,6 +206,8 @@ public class MatchingManager {
             //매칭이 될 조건을 만족하는 경우.
             /*if (matchingList.size() >= userCount) {*/
             if(checkMatchingCondition()){
+
+                System.out.println("매칭 조건이 만족되어 세션을 생성합니다.");
 
                 //매칭이된 유저의 배열을 세팅한다.
                 //RMI_ID[] matchedUserList = new RMI_ID[userCount];
@@ -281,18 +289,29 @@ public class MatchingManager {
         if(matchingList.size() >= userCount){
 
            ableToMatch = true;
+
+            System.out.println("매칭 인원이 모였습니다.");
         }
         else{
 
-            if(matchingList.size() >= 0) {
+            if(matchingList.size() > 0) {
 
-                float remainedWaitingTime = matchingWaitTime.get(0);
+                Iterator<String> keys = matchingList.keySet().iterator();
+
+                float remainedWaitingTime = matchingWaitTime.get(keys.next());
                 if(remainedWaitingTime <= 0f){
 
                     ableToMatch = true;
+
+                    System.out.println("매칭 대기 시간이 종료되었습니다.");
+                }
+                else{
+
+                    /*System.out.println("남은 대기시간 : " + remainedWaitingTime);*/
                 }
 
             }
+
 
         }
 

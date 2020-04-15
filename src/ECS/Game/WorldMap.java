@@ -923,6 +923,7 @@ public class WorldMap {
 
                 //게임이 시작됨을 알리는 플래그변수.
                 isGameMapStarted = true;
+                waveInfoCount = 1;
                 //모든 과정이 끝났다면 게임을 시작하고 매 TickRate마다 월드맵의 모든 Entity 들의 Snapshot을 각 클라이언트에 중계한다.
 
                 gameStartTime = System.currentTimeMillis();
@@ -1230,8 +1231,10 @@ public class WorldMap {
                     //캐릭터의 부활 타이머를 체크하는 부분이다. 캐릭터의 부활시간이 다 지나면 부활처리를 하게 된다.
                     checkCharacterRespawn();
 
-                    //토탈 게임시간 카운팅. isGameMapStarted 가 true가 되면 플레이 타임 카운트를 시작한다.
+
                     if (isGameMapStarted){
+
+                        //토탈 게임시간 카운팅. isGameMapStarted 가 true가 되면 플레이 타임 카운트를 시작한다.
                         totalPlayTime += tickRate;
                         gameElapsedTime = totalPlayTime;
 
@@ -1243,348 +1246,356 @@ public class WorldMap {
                             data.currentGameworldTime = totalPlayTime;
                             server_to_client.broadcastingGameWorldStatusSnapshot(TARGET, RMI_Context.UnReliable, data);
                         }
-                    }
 
-                    /** 웨이브 컨트롤 */
-                    /* 첫 웨이브때 처리할 게 있다면. 없다면 이후에 이 절을 지울 것. */
-                    if (waveInfoCount == 0) {
 
-                        /* 첫 번째 웨이브 세팅 */
-                        waveInfoCount = 1;
-                    }
+                        /** 웨이브 컨트롤 */
+                        /* 첫 웨이브때 처리할 게 있다면. 없다면 이후에 이 절을 지울 것. */
+                        if (waveInfoCount == 0) {
 
-                    /**
-                     * 2020 04 14
-                     * 무한모드 설정을 위해, 실행되지 않게 묶어둠.
-                     * 나중에, 웨이브 시스템 별도로 파서 정리할 것.
-                     */
-                    if(false){
-                        //마지막 웨이브에 도달하였을 경우, 게임이 클리어 됬음을 클라이언트에게 알림.
-                        if (waveInfoCount > 7) {
+                            /* 첫 번째 웨이브 세팅 */
+                            //waveInfoCount = 1;
+                        }
+
+                        /**
+                         * 2020 04 14
+                         * 무한모드 설정을 위해, 실행되지 않게 묶어둠.
+                         * 나중에, 웨이브 시스템 별도로 파서 정리할 것.
+                         */
+                        if(false){
+                            //마지막 웨이브에 도달하였을 경우, 게임이 클리어 됬음을 클라이언트에게 알림.
+                            if (waveInfoCount > 7) {
+                                /* 게임 종료 조건 설정 및 브로드캐스팅 */
+                                boolean crystalIsDead = crystalEntity.isEmpty();
+
+                                if (crystalIsDead == false) {
+
+                                    isGameEnd = true;
+                                    System.out.println("클리어 성공! 게임을 종료합니다.");
+
+                                    // 2020 01 16
+                                    gameFinishTime = System.currentTimeMillis();
+                                    //gameElapsedTime = gameFinishTime - gameStartTime;
+
+                                    //클리어에 성공하여 게임이 종료되었음을 모든 클라이언트에게 중계.  1번값을 보낸다.
+                                    //클리어에 실패하였다면 -1 번값을 보낸다.
+                                    // ㄴ>> 게임이 완전히 종료된 이후에 처리하도록 변경되었음. 일단 주석만 남겨둠.
+
+                                    continue;
+                                }
+                            }
+                        }
+
+
+                        /* 게임시작 이후, 웨이브 로직을 실행한다 */
+                        if (isGameMapStarted) {
+
+                            //게임이 시작된 이후, 현재 맵에 접속중인 유저들 지속적으로 체크!
+                            //연결이 끊긴 유저의 경우, worldMapRMI_IDList 에서 제거된다.
+                            //만약 이 맵에 들어온 유저들 모두가 연결이 종료되었을 경우, 월드맵을 종료한다.
+                            if (worldMapRMI_IDList.isEmpty()) {
+                                isGameEnd = true;
+                                System.out.println("모든 유저의 접속이 해제되었으므로, 게임을 종료합니다.");
+                                continue;
+                            }
+
+
+                            if (!isWaveStarted) {   /* 웨이브 시작 전, 대기시간 */
+
+                                System.out.println(waveInfoCount + " 번째 웨이브 시작을 대기중입니다. ");
+
+                                /* 웨이팅 대기시간을 카운팅한다 */
+                                waveWaitTimeCount -= tickRate;
+                                if (waveWaitTimeCount < 0) {
+
+                                    /** 기존 몹 시체들을 청소한다  */
+                                    /**
+                                     * 불완전한 방법이긴 한데.. 몹들이 모두 죽었다는 판정 후에도, 걔들이 만약에 지속적인 데미지를
+                                     * 누군가에게 주고 있다거나, 반대로 걔네를 활용해야 하는 처리가 있다고 할 때
+                                     * 그 처리들이 다 끝나기도 전에 몹 객체들이 삭제될 가능성이 있으니까
+                                     * 현 웨이브가 끝나고, 일정시간 대기 후 다음 웨이브가 막 시작하려는 찰나에
+                                     * 몹 목록 지워준다던지 그런 처리를 하는걸로.. 일단은.
+                                     * 후에, 이 외에도 별도로 추가될만한?? 정리작업 등이 필요하면 처리할 것.
+                                     */
+
+                                    for (HashMap.Entry<Integer, MonsterEntity> monster : monsterEntity.entrySet()) {
+
+                                        MonsterEntity mobb = monster.getValue();
+
+                                        HPComponent mobHP = mobb.hpComponent;
+                                        if(mobHP.currentHP <= 0){
+                                            monsterEntity.remove(mobb);
+                                        }
+
+                                    }
+
+
+                                    /** 다음 웨이브에서 생성할 몹 목록을 갱신한다 */
+
+                                    /* 이전 웨이브에서 사용한 몬스터 목록 클리어 */
+                                    monsterSpawnList.clear();
+
+                                    /* 웨이브 카운트에 따른 목록 갱신 처리를 한다 */
+
+                                    HashMap<Integer, Integer> currentWaveArmy;
+                                    if(waveInfoCount < 21){
+
+                                        /* 20웨이브 이하인 경우에는, 파일로부터 미리 읽어들인 웨이브 별 등장 몬스터 목록을 따른다 */
+                                        // currentWaveArmy = GameDataManager.waveArmy.get(waveInfoCount);
+                                        currentWaveArmy = GameDataManager.waveArmyList.get(waveInfoCount);
+
+                                    }
+                                    else{
+
+                                        /* 21웨이브 이상인 경우, 웨이브에 등장할 몬스터를 랜덤으로 정한다 */
+
+                                        /** 이번 웨이브에 총 등장할 몬스터의 마릿수를 결정한다 */
+                                        int monsterCount = decideNextWaveMonsterCount(waveInfoCount);
+
+
+                                        /** 마릿수만큼, 몬스터를 랜덤으로 뽑는다 */
+                                        currentWaveArmy = decideWaveMonsterTypeByRandom(waveInfoCount, monsterCount);
+
+                                    }
+
+                                    System.out.println(waveInfoCount + " 번째 웨이브를 위한 몬스터 정보를 불러오는 중입니다. ");
+
+
+                                    /* 위에서 결정된 몹 종류 및 마릿수를 가지고, 최종적으로 몹 리스트를 갱신한다 */
+                                    for (HashMap.Entry<Integer, Integer> monsters : currentWaveArmy.entrySet()) {
+
+                                        int mobCount = monsters.getValue();
+
+                                        /* 해당 종류의 마릿수만큼 반복한다 */
+                                        for (int i = 0; i < mobCount; i++) {
+
+                                            monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
+                                        }
+
+                                    }
+
+                                    /* 웨이브 상태를 "진행중"으로 변경한다 */
+                                    isWaveStarted = true;
+                                    System.out.println("곧" + waveInfoCount + " 번째 웨이브를 시작합니다.");
+
+                                    RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
+                                    server_to_client.StartWave(TARGET, RMI_Context.Reliable_Public_AES256, waveInfoCount);
+                                }
+
+                            }
+                            else { /* 웨이브 시작 */
+
+                                if (!monsterSpawnList.isEmpty()) {   /* 큐에 생성할 몬스터가 남아있다면 */
+                                    //System.out.println("생성할 몬스터의 남은 마릿수 : " + monsterSpawnList.size());
+
+                                    /* 몬스터를 spawn할 조건이 만족되었는지 판단한다 : 대략 0.5 ~ 0.8초 정도?? */
+                                    boolean spawnable;
+                                    spawnable = (remainedSpawnCoolTime <= 0) ? true : false;
+
+                                    if (spawnable) {
+                                        //System.out.println("새 몬스터를 생성합니다.");
+
+                                        /* 큐에서 항목을 하나 꺼낸다 */
+                                        int spawnMonsterID = monsterSpawnList.poll();
+
+                                        /* 꺼낸 항목에 해당하는 몬스터 객체를 생성한다 ( 팩토리 활용 ) */
+                                        MonsterEntity newMonster
+                                                = MonsterFactory.createMonster(spawnMonsterID, worldMap);
+
+                                        /* 새로 생성된 몬스터Entity에 고유 EntityID를 부여한다. */
+                                        newMonster.entityID = worldMapEntityIDGenerater.getAndIncrement();
+
+                                        /* 몬스터의 타겟을 크리스탈로 설정한다. */
+                                        newMonster.monsterComponent.targetID = crystalID;
+
+
+                                        /**
+                                         * 2019 12 26 추가 *************************
+                                         * 2020 02 14 잠시 수정
+                                         */
+                                        if(true){
+
+                                            int spawnPointIndex = monsterSpawnList.size()%3 + 1;
+                                            //int spawnPointIndex = 2;
+
+                                            MapInfo spawnPoint = null;
+                                            switch (spawnPointIndex){
+                                                case PathType.TOP :
+                                                    spawnPoint = monsterSpawnPointList.get(0);
+                                                    break;
+                                                case PathType.BOTTOM :
+                                                    spawnPoint = monsterSpawnPointList.get(1);
+                                                    break;
+                                                case PathType.MIDDLE :
+                                                    spawnPoint = monsterSpawnPointList.get(2);
+                                                    break;
+                                            }
+
+                                            newMonster.positionComponent.position.set(spawnPoint.getPixelPosition());
+                                            newMonster.monsterComponent.movePathType = spawnPointIndex;
+                                            newMonster.monsterComponent.movePointIndex = 0;
+
+                                        }
+
+                                        /* 객체 생성 요청 리스트에 추가한다 */
+                                        requestCreateQueue.add(newMonster);
+
+                                        /* spawn 조건을 초기화화한다 */
+                                        remainedSpawnCoolTime = SPAWN_COOL_TIME;
+
+                                    } else {
+
+                                        /* spawn 조건을 업뎃한다 */
+                                        remainedSpawnCoolTime -= tickRate;
+                                    }
+
+                                } else {    /* 이번 웨이브에서 생성되어야 할 몹이 모두 생성된 상태 */
+
+                                    /* 월드 내 몹이 모두 죽었는지 판단한다 */
+
+                                    /** 2002 02 13 변경................... */
+                                    boolean allMonsterIsDead = true;
+                                    for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : monsterEntity.entrySet()){
+                                        MonsterEntity monster = monsterEntity.getValue();
+
+                                        /** 2020 02 28 추가. 정글몬스터의 생사 여부는 패스함 */
+                                        if(jungleMonsterSlotHashMap.containsKey(monster.entityID)){
+                                            continue;
+                                        }
+
+                                        if(monster.hpComponent.currentHP > 0){
+                                            allMonsterIsDead = false;
+                                        }
+                                    }
+
+                                    if (allMonsterIsDead) {
+
+                                        RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
+                                        server_to_client.EndWave(TARGET, RMI_Context.Reliable_Public_AES256, waveInfoCount);
+
+                                        System.out.println(waveInfoCount + "번째 웨이브가 종료되었습니다. ");
+
+                                        /* 웨이브 종료 조건 컨트롤 (테스트용) */
+                                        if (false) {
+                                            isGameEnd = true;
+                                            System.out.println("게임을 종료합니다.");
+                                        }
+
+                                        /* 현 웨이브가 무사히 종료된 것 */
+                                        waveInfoCount++;    // 웨이브 카운트 추가
+                                        isWaveStarted = false;  // 웨이브 상태 변경
+                                        waveWaitTimeCount = 5000;  // 웨이브 대기시간 초기화.
+
+                                    }
+
+                                }
+
+                            }
+
                             /* 게임 종료 조건 설정 및 브로드캐스팅 */
                             boolean crystalIsDead = crystalEntity.isEmpty();
 
-                            if (crystalIsDead == false) {
-
+                            /* 크리스탈이 파괴되었다면 */
+                            if (crystalIsDead) {
                                 isGameEnd = true;
-                                System.out.println("클리어 성공! 게임을 종료합니다.");
+                                System.out.println("클리어 실패! 게임을 종료합니다.");
 
                                 // 2020 01 16
                                 gameFinishTime = System.currentTimeMillis();
                                 //gameElapsedTime = gameFinishTime - gameStartTime;
 
-                                //클리어에 성공하여 게임이 종료되었음을 모든 클라이언트에게 중계.  1번값을 보낸다.
-                                //클리어에 실패하였다면 -1 번값을 보낸다.
-                                // ㄴ>> 게임이 완전히 종료된 이후에 처리하도록 변경되었음. 일단 주석만 남겨둠.
-
+                                //클리어에 실패하여 게임이 종료되었음을 모든 클라이언트에게 중계.  -1번값을 보낸다.
+                                //클리어에 성공하였다면 1 번값을 보낸다.
+                                //RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
+                                //server_to_client.EndGame(TARGET, RMI_Context.Reliable_Public_AES256, -1, "ㅁㄴ움노ㅓ오ㅠ머ㅏㄴㅇ");
                                 continue;
                             }
+
+
                         }
+                        /* 웨이브 로직의 끝 */
+
+                        /* ================================================================================================= */
+
+                        //클라이언트로부터 보내진 ActionQueue를 꺼내서 모두 처리함.
+                        dequeueClientAction();
+
+                        //이전 틱에서 추가된, [추가요청 Queue] 에 쌓여있는 오브젝트들을 리스트에 추가함.
+                        createEntityFromQueue();
+
+                        //아이템 관련 처리
+                        itemSlotSystem.onUpdate(tickRate * 0.001f);
+
+                        //건설 관련 처리
+                        buildSystem.onUpdate(tickRate * 0.001f);
+
+                        /** 2020 03 20 추가 */
+                        wellSystem.onUpdate(tickRate * 0.001f);
+
+                        // 2019 12 26 추가
+                        selfRecoverySystem.onUpdate(tickRate * 0.001f);
+
+                        //버프 관련 처리
+                        buffActionSystem.onUpdate(tickRate * 0.001f);
+
+                        /** 2020 02 06 추가 */
+                        damageHistorySystem.onUpdate(tickRate * 0.001f);
+
+
+                        //캐릭터 관련 처리
+                        characterSystem.onUpdate(tickRate * 0.001f);
+
+                        /** 2020 02 19 추가 */
+                        positionSystem.onUpdate(tickRate * 0.001f);
+
+
+                        //MP 상태 관련 처리
+                        mpHistorySystem.onUpdate(tickRate * 0.001f);
+
+                        //HP 상태 관련 처리
+                        hpHistorySystem.onUpdate(tickRate * 0.001f);
+
+                        // 레벨업 처리
+                        levelUpSystem.onUpdate(tickRate * 0.001f);
+
+                        //몬스터AI, 상태, 행동 관련 처리
+                        monsterSystem2.onUpdate(tickRate * 0.001f);
+
+                        /** 2020 04 08 주석 */
+                        //monsterSystem3.onUpdate(tickRate * 0.001f);
+
+                        /** 2020 02 28 추가 */
+                        //jungleMonsterSystem.onUpdate(tickRate * 0.001f);
+
+
+                        //공격 포탑 관련 처리
+                        attackTurretSystem.onUpdate(tickRate * 0.001f);
+
+                        //버프 포탑 관련 처리
+                        buffTurretSystem.onUpdate(tickRate * 0.001f);
+
+                        //투사체 관련 처리
+                        flyingObjectSystem.onUpdate(tickRate * 0.001f);
+
+                        //스킬 오브젝트 관련 처리
+                        skillObjectSystem.onUpdate(tickRate * 0.001f);
+
+                        //삭제 요청 큐의 모든 Entity 삭제 및 중계.
+                        deleteEntityFromQueue();
+
+                        /** 2020 02 13 위치 옮겨봄..... 사망한 앤티티 널 문제 때문에 */
+                        // 사망 처리
+                        deathSystem.onUpdate(tickRate * 0.001f);
+
+                        // 보상 처리
+                        rewardSystem.onUpdate(tickRate * 0.001f);
+
+
+
+
+
                     }
 
 
-                    /* 게임시작 이후, 웨이브 로직을 실행한다 */
-                    if (isGameMapStarted) {
-
-                        //게임이 시작된 이후, 현재 맵에 접속중인 유저들 지속적으로 체크!
-                        //연결이 끊긴 유저의 경우, worldMapRMI_IDList 에서 제거된다.
-                        //만약 이 맵에 들어온 유저들 모두가 연결이 종료되었을 경우, 월드맵을 종료한다.
-                        if (worldMapRMI_IDList.isEmpty()) {
-                            isGameEnd = true;
-                            System.out.println("모든 유저의 접속이 해제되었으므로, 게임을 종료합니다.");
-                            continue;
-                        }
-
-
-                        if (!isWaveStarted) {   /* 웨이브 시작 전, 대기시간 */
-
-                            System.out.println(waveInfoCount + " 번째 웨이브 시작을 대기중입니다. ");
-
-                            /* 웨이팅 대기시간을 카운팅한다 */
-                            waveWaitTimeCount -= tickRate;
-                            if (waveWaitTimeCount < 0) {
-
-                                /** 기존 몹 시체들을 청소한다  */
-                                /**
-                                 * 불완전한 방법이긴 한데.. 몹들이 모두 죽었다는 판정 후에도, 걔들이 만약에 지속적인 데미지를
-                                 * 누군가에게 주고 있다거나, 반대로 걔네를 활용해야 하는 처리가 있다고 할 때
-                                 * 그 처리들이 다 끝나기도 전에 몹 객체들이 삭제될 가능성이 있으니까
-                                 * 현 웨이브가 끝나고, 일정시간 대기 후 다음 웨이브가 막 시작하려는 찰나에
-                                 * 몹 목록 지워준다던지 그런 처리를 하는걸로.. 일단은.
-                                 * 후에, 이 외에도 별도로 추가될만한?? 정리작업 등이 필요하면 처리할 것.
-                                 */
-
-                                for (HashMap.Entry<Integer, MonsterEntity> monster : monsterEntity.entrySet()) {
-
-                                    MonsterEntity mobb = monster.getValue();
-
-                                    HPComponent mobHP = mobb.hpComponent;
-                                    if(mobHP.currentHP <= 0){
-                                        monsterEntity.remove(mobb);
-                                    }
-
-                                }
-
-
-                                /** 다음 웨이브에서 생성할 몹 목록을 갱신한다 */
-
-                                /* 이전 웨이브에서 사용한 몬스터 목록 클리어 */
-                                monsterSpawnList.clear();
-
-                                /* 웨이브 카운트에 따른 목록 갱신 처리를 한다 */
-
-                                HashMap<Integer, Integer> currentWaveArmy;
-                                if(waveInfoCount < 21){
-
-                                    /* 20웨이브 이하인 경우에는, 파일로부터 미리 읽어들인 웨이브 별 등장 몬스터 목록을 따른다 */
-                                    // currentWaveArmy = GameDataManager.waveArmy.get(waveInfoCount);
-                                    currentWaveArmy = GameDataManager.waveArmyList.get(waveInfoCount);
-
-                                }
-                                else{
-
-                                    /* 21웨이브 이상인 경우, 웨이브에 등장할 몬스터를 랜덤으로 정한다 */
-
-                                    /** 이번 웨이브에 총 등장할 몬스터의 마릿수를 결정한다 */
-                                    int monsterCount = decideNextWaveMonsterCount(waveInfoCount);
-
-
-                                    /** 마릿수만큼, 몬스터를 랜덤으로 뽑는다 */
-                                    currentWaveArmy = decideWaveMonsterTypeByRandom(waveInfoCount, monsterCount);
-
-                                }
-
-                                System.out.println(waveInfoCount + " 번째 웨이브를 위한 몬스터 정보를 불러오는 중입니다. ");
-
-
-                                /* 위에서 결정된 몹 종류 및 마릿수를 가지고, 최종적으로 몹 리스트를 갱신한다 */
-                                for (HashMap.Entry<Integer, Integer> monsters : currentWaveArmy.entrySet()) {
-
-                                    int mobCount = monsters.getValue();
-
-                                    /* 해당 종류의 마릿수만큼 반복한다 */
-                                    for (int i = 0; i < mobCount; i++) {
-
-                                        monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
-                                    }
-
-                                }
-
-                                /* 웨이브 상태를 "진행중"으로 변경한다 */
-                                isWaveStarted = true;
-                                System.out.println("곧" + waveInfoCount + " 번째 웨이브를 시작합니다.");
-
-                                RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
-                                server_to_client.StartWave(TARGET, RMI_Context.Reliable_Public_AES256, waveInfoCount);
-                            }
-
-                        }
-                        else { /* 웨이브 시작 */
-
-                            if (!monsterSpawnList.isEmpty()) {   /* 큐에 생성할 몬스터가 남아있다면 */
-                                //System.out.println("생성할 몬스터의 남은 마릿수 : " + monsterSpawnList.size());
-
-                                /* 몬스터를 spawn할 조건이 만족되었는지 판단한다 : 대략 0.5 ~ 0.8초 정도?? */
-                                boolean spawnable;
-                                spawnable = (remainedSpawnCoolTime <= 0) ? true : false;
-
-                                if (spawnable) {
-                                    //System.out.println("새 몬스터를 생성합니다.");
-
-                                    /* 큐에서 항목을 하나 꺼낸다 */
-                                    int spawnMonsterID = monsterSpawnList.poll();
-
-                                    /* 꺼낸 항목에 해당하는 몬스터 객체를 생성한다 ( 팩토리 활용 ) */
-                                    MonsterEntity newMonster
-                                            = MonsterFactory.createMonster(spawnMonsterID, worldMap);
-
-                                    /* 새로 생성된 몬스터Entity에 고유 EntityID를 부여한다. */
-                                    newMonster.entityID = worldMapEntityIDGenerater.getAndIncrement();
-
-                                    /* 몬스터의 타겟을 크리스탈로 설정한다. */
-                                    newMonster.monsterComponent.targetID = crystalID;
-
-
-                                    /**
-                                     * 2019 12 26 추가 *************************
-                                     * 2020 02 14 잠시 수정
-                                     */
-                                    if(true){
-
-                                        int spawnPointIndex = monsterSpawnList.size()%3 + 1;
-                                        //int spawnPointIndex = 2;
-
-                                        MapInfo spawnPoint = null;
-                                        switch (spawnPointIndex){
-                                            case PathType.TOP :
-                                                spawnPoint = monsterSpawnPointList.get(0);
-                                                break;
-                                            case PathType.BOTTOM :
-                                                spawnPoint = monsterSpawnPointList.get(1);
-                                                break;
-                                            case PathType.MIDDLE :
-                                                spawnPoint = monsterSpawnPointList.get(2);
-                                                break;
-                                        }
-
-                                        newMonster.positionComponent.position.set(spawnPoint.getPixelPosition());
-                                        newMonster.monsterComponent.movePathType = spawnPointIndex;
-                                        newMonster.monsterComponent.movePointIndex = 0;
-
-                                    }
-
-                                    /* 객체 생성 요청 리스트에 추가한다 */
-                                    requestCreateQueue.add(newMonster);
-
-                                    /* spawn 조건을 초기화화한다 */
-                                    remainedSpawnCoolTime = SPAWN_COOL_TIME;
-
-                                } else {
-
-                                    /* spawn 조건을 업뎃한다 */
-                                    remainedSpawnCoolTime -= tickRate;
-                                }
-
-                            } else {    /* 이번 웨이브에서 생성되어야 할 몹이 모두 생성된 상태 */
-
-                                /* 월드 내 몹이 모두 죽었는지 판단한다 */
-
-                                /** 2002 02 13 변경................... */
-                                boolean allMonsterIsDead = true;
-                                for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : monsterEntity.entrySet()){
-                                    MonsterEntity monster = monsterEntity.getValue();
-
-                                    /** 2020 02 28 추가. 정글몬스터의 생사 여부는 패스함 */
-                                    if(jungleMonsterSlotHashMap.containsKey(monster.entityID)){
-                                        continue;
-                                    }
-
-                                    if(monster.hpComponent.currentHP > 0){
-                                        allMonsterIsDead = false;
-                                    }
-                                }
-
-                                if (allMonsterIsDead) {
-
-                                    RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
-                                    server_to_client.EndWave(TARGET, RMI_Context.Reliable_Public_AES256, waveInfoCount);
-
-                                    System.out.println(waveInfoCount + "번째 웨이브가 종료되었습니다. ");
-
-                                    /* 웨이브 종료 조건 컨트롤 (테스트용) */
-                                    if (false) {
-                                        isGameEnd = true;
-                                        System.out.println("게임을 종료합니다.");
-                                    }
-
-                                    /* 현 웨이브가 무사히 종료된 것 */
-                                    waveInfoCount++;    // 웨이브 카운트 추가
-                                    isWaveStarted = false;  // 웨이브 상태 변경
-                                    waveWaitTimeCount = 5000;  // 웨이브 대기시간 초기화.
-
-                                }
-
-                            }
-
-                        }
-
-                        /* 게임 종료 조건 설정 및 브로드캐스팅 */
-                        boolean crystalIsDead = crystalEntity.isEmpty();
-
-                        /* 크리스탈이 파괴되었다면 */
-                        if (crystalIsDead) {
-                            isGameEnd = true;
-                            System.out.println("클리어 실패! 게임을 종료합니다.");
-
-                            // 2020 01 16
-                            gameFinishTime = System.currentTimeMillis();
-                            //gameElapsedTime = gameFinishTime - gameStartTime;
-
-                            //클리어에 실패하여 게임이 종료되었음을 모든 클라이언트에게 중계.  -1번값을 보낸다.
-                            //클리어에 성공하였다면 1 번값을 보낸다.
-                            //RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
-                            //server_to_client.EndGame(TARGET, RMI_Context.Reliable_Public_AES256, -1, "ㅁㄴ움노ㅓ오ㅠ머ㅏㄴㅇ");
-                            continue;
-                        }
-
-
-                    }
-                    /* 웨이브 로직의 끝 */
-
-                    /* ================================================================================================= */
-
-                    //클라이언트로부터 보내진 ActionQueue를 꺼내서 모두 처리함.
-                    dequeueClientAction();
-
-                    //이전 틱에서 추가된, [추가요청 Queue] 에 쌓여있는 오브젝트들을 리스트에 추가함.
-                    createEntityFromQueue();
-
-                    //아이템 관련 처리
-                    itemSlotSystem.onUpdate(tickRate * 0.001f);
-
-                    //건설 관련 처리
-                    buildSystem.onUpdate(tickRate * 0.001f);
-
-                    /** 2020 03 20 추가 */
-                    wellSystem.onUpdate(tickRate * 0.001f);
-
-                    // 2019 12 26 추가
-                    selfRecoverySystem.onUpdate(tickRate * 0.001f);
-
-                    //버프 관련 처리
-                    buffActionSystem.onUpdate(tickRate * 0.001f);
-
-                    /** 2020 02 06 추가 */
-                    damageHistorySystem.onUpdate(tickRate * 0.001f);
-
-
-                    //캐릭터 관련 처리
-                    characterSystem.onUpdate(tickRate * 0.001f);
-
-                    /** 2020 02 19 추가 */
-                    positionSystem.onUpdate(tickRate * 0.001f);
-
-
-                    //MP 상태 관련 처리
-                    mpHistorySystem.onUpdate(tickRate * 0.001f);
-
-                    //HP 상태 관련 처리
-                    hpHistorySystem.onUpdate(tickRate * 0.001f);
-
-                    // 레벨업 처리
-                    levelUpSystem.onUpdate(tickRate * 0.001f);
-
-                    //몬스터AI, 상태, 행동 관련 처리
-                    monsterSystem2.onUpdate(tickRate * 0.001f);
-
-                    /** 2020 04 08 주석 */
-                    //monsterSystem3.onUpdate(tickRate * 0.001f);
-
-                    /** 2020 02 28 추가 */
-                    jungleMonsterSystem.onUpdate(tickRate * 0.001f);
-
-
-                    //공격 포탑 관련 처리
-                    attackTurretSystem.onUpdate(tickRate * 0.001f);
-
-                    //버프 포탑 관련 처리
-                    buffTurretSystem.onUpdate(tickRate * 0.001f);
-
-                    //투사체 관련 처리
-                    flyingObjectSystem.onUpdate(tickRate * 0.001f);
-
-                    //스킬 오브젝트 관련 처리
-                    skillObjectSystem.onUpdate(tickRate * 0.001f);
-
-                    //삭제 요청 큐의 모든 Entity 삭제 및 중계.
-                    deleteEntityFromQueue();
-
-                    /** 2020 02 13 위치 옮겨봄..... 사망한 앤티티 널 문제 때문에 */
-                    // 사망 처리
-                    deathSystem.onUpdate(tickRate * 0.001f);
-
-                    // 보상 처리
-                    rewardSystem.onUpdate(tickRate * 0.001f);
 
                     //중계처리, 이 프레임 처리결과 전체를 모든 클라이언트에 중계.
                     //월드맵의 모든 Entity 객체를 전체 클라이언트에게 Broadcasting.
@@ -4301,6 +4312,9 @@ public class WorldMap {
                 break;
 
         }
+
+        //minTypeNum = 1;
+        //maxTypeNum = 4;
 
 
         /* 총 마릿수만큼 반복한다 */

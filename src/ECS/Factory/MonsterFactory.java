@@ -450,6 +450,8 @@ public class MonsterFactory {
 
         /* 생성 */
         newMonster = (MonsterEntity) ( monsterEntityTable.get(requestedMonsterID) ).clone();
+        newMonster.monsterComponent.monsterType %= 3;
+        newMonster.monsterComponent.monsterType++;
 
         /* 몬스터의 레벨을 결정한다 */
         int level = decideMonsterLevel(worldMap);
@@ -949,6 +951,12 @@ public class MonsterFactory {
         DefenseComponent monsterDefense = monster.defenseComponent;
 
         /** 레벨에 따른 스탯 값 적용하기 */
+
+        System.out.println("레벨 : " + level);
+        System.out.println("오리진체력 : " + monsterHP.originalMaxHp);
+        System.out.println("레벨별 체력증가 비율 : " + monsterInfo.hpIncrValue);
+        if(level == 1)
+            return;
 
         /* 체력 */
         monsterHP.originalMaxHp += monsterInfo.hpIncrValue * (level-1);
