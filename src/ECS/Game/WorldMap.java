@@ -3678,7 +3678,7 @@ public class WorldMap {
         entity.characterComponent.characterName = playerData.characterName;
         entity.characterComponent.characterType = characterData.guardianType;
         entity.attribute = characterData.elemental;
-        entity.attribute = ElementalType.RED;
+        entity.attribute++;
 
         System.out.println("캐릭터 타입 : " + entity.characterComponent.characterType);
 
