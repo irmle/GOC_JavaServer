@@ -99,7 +99,7 @@ public class AttackTurretSystem {
                 /* 공격 가능 여부에 따른 처리를 한다. */
                 if(turretIsAttackable){ /* 공격 가능하다면 */
 
-                    System.out.println("turretIsAttackable = "+turretIsAttackable);
+                    //System.out.println("turretIsAttackable = "+turretIsAttackable);
 
                     target = worldMap.monsterEntity.get(targetID);  // ..어! 필요 없엇네
 
@@ -109,7 +109,7 @@ public class AttackTurretSystem {
                     flyingObject.userEntityID = attackTurret.entityID;
                     flyingObject.targetEntityID = targetID;
 
-                    System.out.println("create = "+targetID);
+                    //System.out.println("create = "+targetID);
 
                     flyingObject.createdSkillType = SkillType.MAGICIAN_FIREBALL;    // "포탑 공격" 타입
                     //flyingObject.createdSkillType = attackTurret.turretComponent.turretType;    // "포탑 공격" 타입

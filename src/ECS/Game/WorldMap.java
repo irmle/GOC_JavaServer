@@ -1328,6 +1328,10 @@ public class WorldMap {
 
                                     }
 
+                                    flyingObjectEntity.clear();
+                                    skillObjectEntity.clear();
+
+
 
                                     /** 다음 웨이브에서 생성할 몹 목록을 갱신한다 */
 
@@ -1406,6 +1410,10 @@ public class WorldMap {
 
                                         /* 몬스터의 타겟을 크리스탈로 설정한다. */
                                         newMonster.monsterComponent.targetID = crystalID;
+
+                                        if(monsterSpawnPointList.size() == 0){
+                                            System.out.println("현 웨이브의 몬스터를 모두 생성함");
+                                        }
 
 
                                         /**
@@ -1514,81 +1522,128 @@ public class WorldMap {
                         }
                         /* 웨이브 로직의 끝 */
 
+                        System.out.println( "웨이브 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         /* ================================================================================================= */
 
                         //클라이언트로부터 보내진 ActionQueue를 꺼내서 모두 처리함.
                         dequeueClientAction();
 
+                        System.out.println( "클라요청 처리 후 경과 시간: "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d) );
+
                         //이전 틱에서 추가된, [추가요청 Queue] 에 쌓여있는 오브젝트들을 리스트에 추가함.
                         createEntityFromQueue();
+
+                        System.out.println( "앤티티 생성 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         //아이템 관련 처리
                         itemSlotSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "아이템 로직 처리 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         //건설 관련 처리
                         buildSystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "건설 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         /** 2020 03 20 추가 */
                         wellSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "우물 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         // 2019 12 26 추가
                         selfRecoverySystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "자가회복 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         //버프 관련 처리
                         buffActionSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "버프 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         /** 2020 02 06 추가 */
                         damageHistorySystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "데미지 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
 
                         //캐릭터 관련 처리
                         characterSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "캐릭터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         /** 2020 02 19 추가 */
                         positionSystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "위치 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
 
                         //MP 상태 관련 처리
                         mpHistorySystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "mp 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         //HP 상태 관련 처리
                         hpHistorySystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "hp 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         // 레벨업 처리
                         levelUpSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "레벨업 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         //몬스터AI, 상태, 행동 관련 처리
                         monsterSystem2.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "몬스터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         /** 2020 04 08 주석 */
                         //monsterSystem3.onUpdate(tickRate * 0.001f);
 
                         /** 2020 02 28 추가 */
-                        //jungleMonsterSystem.onUpdate(tickRate * 0.001f);
+                        jungleMonsterSystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "정글몹 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
 
                         //공격 포탑 관련 처리
                         attackTurretSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "공격포탑 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         //버프 포탑 관련 처리
                         buffTurretSystem.onUpdate(tickRate * 0.001f);
+
+                        System.out.println( "버프포탑 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         //투사체 관련 처리
                         flyingObjectSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "투사체 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         //스킬 오브젝트 관련 처리
                         skillObjectSystem.onUpdate(tickRate * 0.001f);
 
-                        //삭제 요청 큐의 모든 Entity 삭제 및 중계.
-                        deleteEntityFromQueue();
+                        System.out.println( "장판 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
                         /** 2020 02 13 위치 옮겨봄..... 사망한 앤티티 널 문제 때문에 */
                         // 사망 처리
                         deathSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "사망 로직 후 경과 시간 : " +  String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
                         // 보상 처리
                         rewardSystem.onUpdate(tickRate * 0.001f);
 
+                        System.out.println( "보상 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
+
+
+                        //삭제 요청 큐의 모든 Entity 삭제 및 중계.
+                        deleteEntityFromQueue();
+
+                        System.out.println( "앤티티 삭제 로직 후 경과 시간 : " + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
 
 
 
@@ -1601,13 +1656,19 @@ public class WorldMap {
                     //월드맵의 모든 Entity 객체를 전체 클라이언트에게 Broadcasting.
                     broadcastingWorldSnapshot();
 
+                    System.out.println( "중계 로직 후 경과 시간 : " + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000000001d));
+
+
                     //로직처리시 걸린 시간.
                     elapsedLogicTime = System.nanoTime() - startLogicTime;  //nano sec 단위.
 
                     // [1sec 1초] = [1,000ms 천 밀리세컨드] = [1,000,000us 백만 마이크로세컨드] = [1,000,000,000ns 10억 나노세컨드];
 
                     //ns를 ms로 변환.
-                    double msElapsedLogicTime = (double) elapsedLogicTime * 0.000001d; //100만으로 나눔.
+                    double msElapsedLogicTime = (double) elapsedLogicTime * 0.000000001d; //100만으로 나눔.
+
+                    System.out.println("한 로직 실행하는 데 총 걸린 시간 : " + String.format("%.3f", msElapsedLogicTime));
+
                     long sleepTime = tickRate - Math.round(msElapsedLogicTime); //반올림
                     if (sleepTime > 0) {
                         //System.out.println("elapsedLogicTime = " + String.format("%.3f", msElapsedLogicTime) + " ms  /  sleepTime = " + sleepTime + " ms");
@@ -1776,12 +1837,11 @@ public class WorldMap {
 
                             entity.characterComponent.skillPoint--;
 
-                            System.out.println("스킬 슬롯 번호 : " + slot.slotNum);
 
                         }
                         else{
-                            // 스킬 습득 불가능..
-                            System.out.println("스킬 습득 불가능이다");
+
+                            //System.out.println("스킬 습득 불가능");
                         }
                     }
                     else{
@@ -1796,8 +1856,6 @@ public class WorldMap {
                         SkillSlot slot = new SkillSlot(event.skillSlotNum, newSkill);
 
                         entity.skillSlotComponent.skillSlotList.add(slot);
-
-                        System.out.println("스킬 슬롯 번호 : " + slot.slotNum);
 
                     }
 
@@ -1815,8 +1873,7 @@ public class WorldMap {
                         if(isPossible){
 
                             SkillFactory.upgradeSkill(this, event);
-                            System.out.println("스킬 업그레이드 함 ");
-                        }
+                                                    }
                         else{
                             // 스킬 업그레이드 못함..
                         }
@@ -1841,12 +1898,10 @@ public class WorldMap {
                 //일반공격이 행해졌을 때.
                 case ActionType.ActionUseAttack: {
 
-                    System.out.println("ActionUseAttack  호출함");
                     //Entity의 AttackComponent 정보의 일반공격의 공격력, 사거리등을 가져와서 공격행위를 한다.
                     //Entity의 종류에 따라서 근거리/원거리로 나뉘어지고, 근거리라면 타겟의 데미지 히스토리 추가.
                     //원거리라면 투사체 생성후 FlyingObject 생성 요청 큐에 삽입.
                     ActionUseAttack event = (ActionUseAttack) action;
-                    System.out.println("타겟 : " + event.targetEntityID);
 
                     SkillFactory.doAttack(this, event);
                     break;
@@ -2007,17 +2062,13 @@ public class WorldMap {
                 /* 건설 관련 케이스 */
                 case ActionType.ACTION_INSTALL_BUILDING:
 
-                    System.out.println("액션 인스톨 빌딩");
-
                     ActionInstallBuilding installEvent = (ActionInstallBuilding) action;
 
                     /* 건설 가능 여부를 판단한다 */
 
-                    System.out.println("건물 건설 가능 여부 판단 ");
                     resultCode = buildSystem.isAbleToInstall(installEvent);
                     boolean isAbleToInstall = (resultCode == NotificationType.SUCCESS) ? true : false;
 
-                    System.out.println("가능??  : " + isAbleToInstall);
                     /* 건설 가능한 경우 처리를 한다 */
                     if(isAbleToInstall){
 
@@ -2043,15 +2094,12 @@ public class WorldMap {
                     /* 업그레이드 가능한 경우 처리를 한다 */
                     if(isAbleToUpgradeBuilding){
 
-                        System.out.println("건물 업글이 가능합니다");
-
                         // 업글처리
                         buildSystem.upgradeBuilding(event);
                     }
                     else{
 
                         // 업글 불가능하다고 통지
-                        System.out.println("건물 업글이 불가능함");
 
                     }
                     break;
@@ -2104,19 +2152,6 @@ public class WorldMap {
                 } else if (target instanceof MonsterEntity) {
                     MonsterEntity data = (MonsterEntity) target;
                     monsterEntity.put(target.entityID, data);
-                    System.out.println("몬스터 앤티티  : " + data);
-                    if(data == null ){
-                        System.out.println("널이라니..");
-                    }
-
-                    System.out.println("몬스터 앤티티  : " + target);
-                    if(data == null ){
-                        System.out.println("널ㅇㅇ이라니..");
-                    }
-
-                    System.out.println("몬스터 앤티티목록 사이즈 : " + monsterEntity.size());
-
-
                     entityMappingList.put(target.entityID, EntityType.MonsterEntity);
                     worldEntityData.monsterData.add(getMonsterDataFromEntity(data));
                 } else if (target instanceof AttackTurretEntity) {
@@ -2150,7 +2185,6 @@ public class WorldMap {
                     entityMappingList.put(target.entityID, EntityType.FlyingObjectEntity);
                     worldEntityData.flyingObjectData.add(getFlyingObjectDataFromEntity(data));
 
-                    System.out.println("생성하려는 Entity는 투사체");
                 }
             }
 
@@ -2182,7 +2216,6 @@ public class WorldMap {
             if (worldEntityData.flyingObjectData.size() > 0) {
                 server_to_client.createWorldMapFlyingObjectEntityInfo(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.flyingObjectData);
 
-                System.out.println("투사체 생성 중계" );
             }
 
             //다 송신하였으면 재사용을 위해 clear처리!
@@ -2610,9 +2643,6 @@ public class WorldMap {
 
         entity.hpComponent = new HPComponent();
         entity.hpComponent.currentHP = characterData.currentHP;
-
-        System.out.println("캐릭터 앤티티 생성 - 현재 체력 - 데이터 : " + characterData.currentHP);
-        System.out.println("캐릭터 앤티티 생성 - 현재 체력 - 앤티티 : " + characterData.currentHP);
 
         entity.hpComponent.maxHP = characterData.maxHP;
         entity.hpComponent.recoveryRateHP = characterData.recoveryRateHP;
@@ -3161,29 +3191,16 @@ public class WorldMap {
 
         data.entityID = entity.entityID;
 
-        System.out.println("투사체의 entityID : " + entity.entityID);
-
         data.posX = entity.positionComponent.position.x();
         data.posY = entity.positionComponent.position.y();
         data.posZ = entity.positionComponent.position.z();
 
-        System.out.println("투사체의 위치 X: " + entity.positionComponent.position.x());
-        System.out.println("투사체의 위치 Y : " + entity.positionComponent.position.y());
-        System.out.println("투사체의 위치 Z : " + entity.positionComponent.position.z());
-
         data.userEntityID = entity.flyingObjectComponent.userEntityID;
-        System.out.println("투사체의 유저 앤티티ID : " + entity.flyingObjectComponent.userEntityID);
 
         data.createdSkillType = entity.flyingObjectComponent.createdSkillType;
         data.directionX = entity.flyingObjectComponent.direction.x();
         data.directionY = entity.flyingObjectComponent.direction.y();
         data.directionZ = entity.flyingObjectComponent.direction.z();
-
-        System.out.println("투사체의 스킬타입 : " + entity.flyingObjectComponent.createdSkillType);
-        System.out.println("투사체의 방향 X : " + entity.flyingObjectComponent.direction.x());
-        System.out.println("투사체의 방향 Y : " + entity.flyingObjectComponent.direction.y());
-        System.out.println("투사체의 방향 Z : " + entity.flyingObjectComponent.direction.z());
-
 
 
         return data;
@@ -3268,7 +3285,7 @@ public class WorldMap {
             int entityID = character.entityID;
             PlayerGameScore gameScore = playerGameScoreList.get(entityID);
 
-            if(true){
+            if(false){
 
                 System.out.println("플레이어 캐릭터 ID : " + character.entityID);
                 System.out.println("몬스터에게 입힌 총 데미지 : " + gameScore.givenDamageAmount);
@@ -3291,13 +3308,7 @@ public class WorldMap {
             // 왜 죽은 횟수에 +1 해줬냐면, 캐릭터가 한 번도 죽지 않았을 경우 나누기 0이 되어 값이.. 무한대가 나온다고 해야하나..
             // 일단 이걸 피하기 위해서.
 
-            //gameScore.finalScore = 330814;
-
             gameScores.add(gameScore);
-
-            System.out.println("파이널 스코어 : " + gameScore.finalScore);
-
-            System.out.println("=============================== + \n");
 
         }
 
@@ -3350,7 +3361,6 @@ public class WorldMap {
             PlayerGameScore gameScore = playerGameScoreList.get(entityID);
 
             int level = characterEntity.get(entityID).characterComponent.level;
-            System.out.println("googleToken : " + tokenID);
 
             int charType = characterEntity.get(entityID).characterComponent.characterType;
 
@@ -3383,7 +3393,6 @@ public class WorldMap {
             SkillSlotComponent skills = character.skillSlotComponent;
 
             JsonObject skillSet = new JsonObject();
-            System.out.println("스킬슬롯 사이즈 : " + skills.skillSlotList.size());
             for(int i=0; i<skills.skillSlotList.size(); i++){
 
                 System.out.println(i);
@@ -3391,13 +3400,14 @@ public class WorldMap {
                 SkillSlot currentSKill = skills.skillSlotList.get(i);
                 //currentSKill = SkillFactory.findSkillSlotBySlotNum(i+1, character);
                 if(currentSKill == null){
-                    System.out.println("널인 스킬 슬롯,,");
                     currentSKill = new SkillSlot(i+1, new SkillInfo(SkillType.NONE));
 
                 }
                 else{
+/*
                     System.out.println("슬롯 번호 : " + currentSKill.slotNum);
                     System.out.println("스킬 레벨 : " + currentSKill.skillLevel);
+*/
                 }
 
                 JsonObject skill = new JsonObject();
@@ -3418,7 +3428,7 @@ public class WorldMap {
 
         }
 
-        System.out.println(players);
+        //System.out.println(players);
 
 
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -3471,7 +3481,7 @@ public class WorldMap {
 
         resultJsonStr = gson.toJson(gameResult);
 
-        System.out.println(resultJsonStr);
+        //System.out.println(resultJsonStr);
 
         return resultJsonStr;
     }
@@ -3511,13 +3521,13 @@ public class WorldMap {
 
                             @Override
                             public void onThrowable(Throwable t) {
-                                System.out.println("오류?");
+                                //System.out.println("오류?");
                                 super.onThrowable(t);
                             }
 
                             @Override
                             public State onStatusReceived(HttpResponseStatus status) throws Exception {
-                                System.out.println("상태 코드 : " + status);
+                                //System.out.println("상태 코드 : " + status);
                                 return super.onStatusReceived(status);
                             }
                         });
@@ -3556,13 +3566,13 @@ public class WorldMap {
 
                             @Override
                             public void onThrowable(Throwable t) {
-                                System.out.println("오류?");
+                                //System.out.println("오류?");
                                 super.onThrowable(t);
                             }
 
                             @Override
                             public State onStatusReceived(HttpResponseStatus status) throws Exception {
-                                System.out.println("상태 코드 : " + status);
+                                //System.out.println("상태 코드 : " + status);
                                 return super.onStatusReceived(status);
                             }
                         });
@@ -3590,8 +3600,6 @@ public class WorldMap {
         String requestInfoStr = "";
         Gson gson = new Gson();
 
-        System.out.println("요청할 플레이어 수 : " + playerInfo.size());
-
         JsonObject gameResult = new JsonObject();
         gameResult.addProperty("count", playerInfo.size());
 
@@ -3604,9 +3612,6 @@ public class WorldMap {
 
             String tokenID = tokenEntry.getKey();
             int characterType = tokenEntry.getValue().characterType;
-
-            System.out.println("플레이어 " + userNum + "의 tokenID : " + tokenID);
-            System.out.println("플레이어 " + userNum + "의 캐릭터 타입 : " + characterType);
 
             int dbCharType = 0;
             switch (characterType){
@@ -3628,7 +3633,7 @@ public class WorldMap {
             String numStr = userNum + "";
             gameResult.add(numStr, player);
 
-            System.out.println("플레이어 " + userNum +"의 JS : " + player);
+            //System.out.println("플레이어 " + userNum +"의 JS : " + player);
 
         }
 
@@ -3646,16 +3651,9 @@ public class WorldMap {
      */
     public CharDataFromJS parsePlayerInfoJSonToData(JsonObject playerInfo){
 
-        if(playerInfo == null){
-            System.out.println("널입니다");
-        }
-        else{
-            System.out.println("널 아님");
-        }
-
         CharDataFromJS charData = new CharDataFromJS(playerInfo.getAsJsonObject("guardianINFO"));
 
-        System.out.println(playerInfo);
+        //System.out.println(playerInfo);
 
         return charData;
     }
@@ -3679,8 +3677,6 @@ public class WorldMap {
         entity.characterComponent.characterType = characterData.guardianType;
         entity.attribute = characterData.elemental;
         entity.attribute++;
-
-        System.out.println("캐릭터 타입 : " + entity.characterComponent.characterType);
 
         entity.characterComponent.level = 3;
         entity.characterComponent.exp = 0;
@@ -3765,7 +3761,6 @@ public class WorldMap {
     /** 2020 02 28 정글몹 지정 하드코딩함 권령희 */
     public void setJungleMonsterSetting(){
 
-        System.out.println("정글몹 스폰지점 갯수 : " + jungleMonsterSlots.size());
         for(int i=0; i<jungleMonsterSlots.size(); i++){
 
             JungleMonsterSlot slot = jungleMonsterSlots.get(i);
@@ -3846,8 +3841,6 @@ public class WorldMap {
 
             }
 
-            System.out.println("슬롯에 지정된 몹 타입 : " + slot.jungleMobType);
-
 
         }
     }
@@ -3925,7 +3918,8 @@ public class WorldMap {
             /** 파싱한 내용을, 위에서 구성한 게임결과 JS의 각 플레이어 정보에 덧붙임 */
             String updatedGameResultJS = addRewardInfoToGameResultJS(gameResultJS, rewardInfo);
 
-            System.out.println("클라이언트에 보내줄 게임결과 : " + updatedGameResultJS);
+            //System.out.println("클라이언트에 보내줄 게임결과 : " + updatedGameResultJS);
+            System.out.println("클라이언트에 게임 결과를 전송합니다.");
 
             /** 클라이언트에 결과 전송 */
             RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
@@ -4068,7 +4062,7 @@ public class WorldMap {
             /** 슬롯에, 정글몹의 정보를 세팅한다 */
             jungleSlot.setJungleMonsterInfo(monsterType, jungleInfo.regenTime * 60f);
 
-            System.out.println("슬롯" + i + "에 셋팅된 몬스터 타입 : " + jungleInfo.monsterName);
+            //System.out.println("슬롯" + i + "에 셋팅된 몬스터 타입 : " + jungleInfo.monsterName);
 
         }
 
@@ -4186,7 +4180,7 @@ public class WorldMap {
         /** 속성을 혼합한다 */
         int teamElemental = ElementalType.getMixedElemental(elementalList);
 
-        System.out.println("팀 속성 : " + teamElemental);
+        //System.out.println("팀 속성 : " + teamElemental);
 
         /** 캐릭터들에 할당 */
         for(CharacterEntity character : characterEntity.values()){
@@ -4313,15 +4307,12 @@ public class WorldMap {
 
         }
 
-        //minTypeNum = 1;
-        //maxTypeNum = 4;
-
 
         /* 총 마릿수만큼 반복한다 */
         int randomMobType = 0;
         for(int i=1; i<=totalMonsterCount; i++){
 
-            System.out.println(waveCount + "번째 웨이브의" + i + "번째 몬스터를 뽑습니다. ");
+            //System.out.println(waveCount + "번째 웨이브의" + i + "번째 몬스터를 뽑습니다. ");
 
             /* 랜덤으로 몹 종류 뽑기를 수행 */
             randomMobType = (int)( (Math.random() * (maxTypeNum - minTypeNum) + 1) + minTypeNum );
@@ -4339,9 +4330,9 @@ public class WorldMap {
                 waveArmyList.put(randomMobType, 1);
             }
 
-            System.out.println("몹 타입 " + randomMobType + "을 뽑았습니다., " +
+        /*    System.out.println("몹 타입 " + randomMobType + "을 뽑았습니다., " +
                     "해당 타입 마릿 수 : " + waveArmyList.get(randomMobType) + "마리");
-
+*/
         }
 
 

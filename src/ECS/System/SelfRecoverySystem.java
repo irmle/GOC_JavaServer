@@ -47,16 +47,12 @@ public class SelfRecoverySystem {
         }
         else{   /* 쿨타임이 끝났다면 */
 
-            System.out.println("자가회복 버프를 추가합니다");
-
             /* 모든 캐릭터에 대해 처리한다 */
             for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
                 /* 캐릭터 정보 */
                 CharacterEntity character = characterEntity.getValue();
                 int characterID = character.entityID;
-
-                System.out.println("캐릭터 타입 : " + character.characterComponent.characterType);
 
                 /** 죽은 사람은 제외한다 */
                 float currentHP = character.hpComponent.currentHP;
@@ -108,7 +104,7 @@ public class SelfRecoverySystem {
 
         /** 시스템 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
         BuffInfo effectInfo = systemEffectList.get(type).get(effectName);
-        effectInfo.printEffectInfo();
+        //effectInfo.printEffectInfo();
 
         /** 효과의 지속시간을 구한다 (필요하다면) */
         /*
@@ -256,14 +252,14 @@ public class SelfRecoverySystem {
                 /* 캐릭터의 회복 값을 가져와 적용한다 */
                 effectValue = getProperEffectValue(type, effectInfo.effectTypeName, effectType, character);
 
-                System.out.println("효과파람 생성 매서드 ; 스탯 타입 ");
+                //System.out.println("효과파람 생성 매서드 ; 스탯 타입 ");
                 break;
 
             default :
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }

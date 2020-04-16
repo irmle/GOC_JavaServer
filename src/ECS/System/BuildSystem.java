@@ -79,16 +79,14 @@ public class BuildSystem {
                         /* 설치하고자 하는 건물 Entity를 생성해준다 */
                         int newBuildingEntityID = createBuilding(currentBuildSlot);
 
-                        System.out.println("새로 설치하는 건물 ID : " + newBuildingEntityID);
+                        //System.out.println("새로 설치하는 건물 ID : " + newBuildingEntityID);
 
                         currentBuildSlot.setBuildingEntityID(newBuildingEntityID);
-
-                        //setMapInfoByInstalling(currentBuildSlot); installBuilding() 에서 처리하는걸로 바꿈
 
                     }
                     else {                      /* 업그레이드 */
 
-                        System.out.println("업그레이드하는 건물 ID : " + buildingEntityID);
+                        //System.out.println("업그레이드하는 건물 ID : " + buildingEntityID);
 
 
                     }
@@ -115,7 +113,7 @@ public class BuildSystem {
 
                 case BuildSlotState.BUILDING:
 
-                    System.out.println("건설중... 건물 ID : " + currentBuildSlot.getBuildingEntityID());
+                    //System.out.println("건설중... 건물 ID : " + currentBuildSlot.getBuildingEntityID());
 
                     boolean isFinished = ( currentBuildSlot.getRemainBuildTime() <= 0f ) ? true : false;
                     if(isFinished){
@@ -161,7 +159,7 @@ public class BuildSystem {
 
                     if(upgraded){
 
-                        System.out.println("건물 업글 완료 처리를 합니다. ");
+                        //System.out.println("건물 업글 완료 처리를 합니다. ");
 
                         AttackComponent attackComponent;
                         DefenseComponent defenseComponent;
@@ -180,13 +178,13 @@ public class BuildSystem {
                                 /* attack */
                                 attackComponent = attackTurret.attackComponent;
 
-                                System.out.println("업글 전 데미지 : " + attackComponent.attackDamage);
+                                //System.out.println("업글 전 데미지 : " + attackComponent.attackDamage);
 
                                 attackComponent.attackDamage = attackTurretInfo.attackDamage;
                                 attackComponent.attackRange = attackTurretInfo.attackRange;
                                 attackComponent.attackSpeed = attackTurretInfo.attackSpeed;
 
-                                System.out.println("업글 후 데미지 : " + attackComponent.attackDamage);
+                                //System.out.println("업글 후 데미지 : " + attackComponent.attackDamage);
 
                                 /* defense */
                                 defenseComponent = attackTurret.defenseComponent;
@@ -195,15 +193,15 @@ public class BuildSystem {
                                 /* hp */
                                 hpComponent = attackTurret.hpComponent;
 
-                                System.out.println("업글 전 체력 : " + hpComponent.maxHP);
+                                //System.out.println("업글 전 체력 : " + hpComponent.maxHP);
                                 hpComponent.maxHP = attackTurretInfo.maxHp;
                                 hpComponent.currentHP = hpComponent.maxHP;
                                 hpComponent.recoveryRateHP = attackTurretInfo.recoveryRateHP;
 
-                                System.out.println("업글 후 체력 : " + hpComponent.maxHP);
+                                //System.out.println("업글 후 체력 : " + hpComponent.maxHP);
 
 
-                                System.out.println("혹시 공격 못하나?? : " + attackTurret.conditionComponent.isDisableAttack);
+                                //System.out.println("혹시 공격 못하나?? : " + attackTurret.conditionComponent.isDisableAttack);
 
 
                                 break;
@@ -254,7 +252,7 @@ public class BuildSystem {
                 case BuildSlotState.DESTROYED :
 
                     currentBuildSlot.emptySlot();
-                    System.out.println("슬롯의 건물이 파괴되었습니다. 슬롯을 비웁니다.");
+                    //System.out.println("슬롯의 건물이 파괴되었습니다. 슬롯을 비웁니다.");
                     /* 앤티티 파괴 요청 큐에 넣기 */
 
                     break;
@@ -361,8 +359,8 @@ public class BuildSystem {
         CharacterEntity user = worldMap.characterEntity.get(event.builderEntityID);
 
 
-        System.out.println("건설이벤트 정보 - 슬롯 번호 : " + event.buildSlotNum);
-        System.out.println("건설이벤트 정보 - 건설 타입 : " + event.buildType);
+        //System.out.println("건설이벤트 정보 - 슬롯 번호 : " + event.buildSlotNum);
+        //System.out.println("건설이벤트 정보 - 건설 타입 : " + event.buildType);
 
         /* 유효한 슬롯 번호인가 ? */
         BuildSlot slot = findBuildSlotBySlotNum(event.buildSlotNum);
@@ -378,7 +376,6 @@ public class BuildSystem {
         boolean isEmptySlot = false;
         if(isValidSlot){    // 존재하는 슬롯이 아니라면 의미가 없으므로
             isEmptySlot = slot.isEmpySlot() ? true : false;
-            System.out.println("비어있나?? : " + isEmptySlot);
         }
 
         /* 건설 비용을 지불할 수 있는가? */
@@ -387,8 +384,6 @@ public class BuildSystem {
         int userGold = user.characterComponent.getCurrentGold();
         int buildPrice = getBuildPrice(event.buildType);
         ableToPay = (userGold >= buildPrice) ? true : false;
-        // 임시로
-        ableToPay = true;
 
 
         /* 건설(최초 설치) 가능 여부 최종 판단 */
@@ -400,25 +395,20 @@ public class BuildSystem {
 
             if(!isValidSlot){
                 resultCode = NotificationType.ERR_BUILD_INSTALL_INVALID_SLOT;
-                System.out.println("슬롯이 올바르지 않음..??");
             }
             else if(!isValidBuildType){
                 resultCode = NotificationType.ERR_BUILD_INSTALL_INVALID_TERRAIN;
-                System.out.println("올바른 지형이 아님 ");
             }
             else if(!isEmptySlot){
                 resultCode = NotificationType.ERR_BUILD_INSTALL_NOT_EMPTY_SLOT;
-                System.out.println("슬롯이 비어있지 않음");
             }
             else {
                 resultCode = NotificationType.ERR_BUILD_INSTALL_LACK_MONEY;
-                System.out.println("돈이 없음");
             }
 
 
         }
 
-        System.out.println("가능 여부 판단 코드 : " + resultCode);
         return resultCode;
     }
 
@@ -440,8 +430,6 @@ public class BuildSystem {
         int payment = getBuildPrice(buildType);
         boolean paymentSuccess = ( builder.characterComponent.payGold(payment) == true ) ? true : false;
 
-        // 임시
-        paymentSuccess = true;
 
         if(paymentSuccess) { // 지불 처리에 성공했다면
 
@@ -490,8 +478,6 @@ public class BuildSystem {
 
     public BuildSlot findBuildSlotByEntityID(int targetID){
 
-        System.out.println("검색하려는 건물 ID : " + targetID);
-
         BuildSlot buildSlot = null;
 
         BuildSlot slot;
@@ -499,12 +485,8 @@ public class BuildSystem {
 
             slot = worldMap.buildSlotList.get(i);
 
-            System.out.println("현재 슬롯의 건물 ID : " + slot.getBuildingEntityID());
-
             if(slot.getBuildingEntityID() == targetID){
                 buildSlot = slot;
-
-                System.out.println("슬롯을 찾았습니다");
 
                 break;
             }
@@ -600,25 +582,11 @@ public class BuildSystem {
 
                 AttackTurretEntity newATurret = AttackTurretFactory.createAttackTurret(TurretType.ATTACK_TURRET_DEFAULT);
 
-                if(newATurret.conditionComponent == null){
-                    System.out.println("어택터렛 빌드 시스템에서 create 한 직후인데 널임");
-                }
-                else{
-                    System.out.println("어택터렛 빌드 시스템에서 create 한 직후인데 널 아님 ");
-                }
-
-                System.out.println("터렛타입.... : " + newATurret.turretComponent.turretType);
-
                 newATurret.entityID = newBuildingEntityID;
                 newATurret.positionComponent.position.set( buildSlot.mapPosition.getCenterPositionFromMapArea());
                 newATurret.buffActionHistoryComponent.conditionHistory.add(stateBuff);
 
                 buildSlot.setBuildingEntityID(newBuildingEntityID);
-
-                System.out.println("TURRET_ATTACK 생성! "
-                        + newATurret.positionComponent.position.x() +"/"
-                        + newATurret.positionComponent.position.y() +"/"
-                        + newATurret.positionComponent.position.z());
 
 
                 worldMap.requestCreateQueue.add(newATurret);
@@ -635,11 +603,6 @@ public class BuildSystem {
                 newBTurret.buffActionHistoryComponent.conditionHistory.add(stateBuff);
 
                 buildSlot.setBuildingEntityID(newBuildingEntityID);
-
-                System.out.println("TURRET_ATTACK 생성! "
-                        + newBTurret.positionComponent.position.x() +"/"
-                        + newBTurret.positionComponent.position.y() +"/"
-                        + newBTurret.positionComponent.position.z());
 
 
                 worldMap.requestCreateQueue.add(newBTurret);
@@ -664,7 +627,7 @@ public class BuildSystem {
                 slot.mapPosition.canMove = false;*/
 
                 slot.mapPosition.setComponentType(MapComponents.BARRIER);
-                slot.mapPosition.setMapInfoMovable(false);
+                //slot.mapPosition.setMapInfoMovable(false);
                 break;
 
             case BuildType.TURRET_ATTACK:
@@ -704,13 +667,11 @@ public class BuildSystem {
                 case EntityType.AttackTurretEntity :
                     turret = worldMap.attackTurretEntity.get(turretEntityID);
                     currentTurretComponent = ((AttackTurretEntity)turret).turretComponent;
-                    System.out.println("터렛타입.... : " + currentTurretComponent.turretType);
                     break;
 
                 case EntityType.BuffTurretEntity :
                     turret = worldMap.buffTurretEntity.get(turretEntityID);
                     currentTurretComponent = ((BuffTurretEntity)turret).turretComponent;
-                    System.out.println("터렛타입.... : " + currentTurretComponent.turretType);
                     break;
             }
         }
@@ -720,7 +681,6 @@ public class BuildSystem {
         boolean isNotBeingBuilt = false;
         if(isValidTurret){
 
-            System.out.println("존재하는 건물 Entity 임");
             BuildSlot buildSlot = findBuildSlotByEntityID(turretEntityID);  // 터렛이 놓인 건설슬롯을 찾는다.
             isNotBeingBuilt = (buildSlot.getSlotState() == BuildSlotState.IDLE ) ? true : false;
         }
@@ -729,35 +689,23 @@ public class BuildSystem {
         boolean isAbleTurretType = false;
         if(isNotBeingBuilt){
 
-            System.out.println("업글 가능한 슬롯 상태임");
             int currentTurretType = currentTurretComponent.turretType;
             isAbleTurretType = isValidUpgradeType(currentTurretType, turretType);
 
-            System.out.println("현재 터렛 타입 : " + currentTurretType);
-            System.out.println("건물 업글이 불가능함" + turretType);
         }
 
         /* 지불 가능한가??  */
         boolean isAbleToPay = false;
         if(isAbleTurretType){
 
-            System.out.println("지정된 타입으로의 업글이 가능함 ");
             int upgradePrice = getUpgradePrice(turretType);
             int userGold = user.characterComponent.getCurrentGold();
             isAbleToPay = (userGold >= upgradePrice) ? true : false;
-
-            /** 2020 02 29 */
-            //시연용으로 추가된 임시 변수. 골드가 0이어도 항상 성공하도록 수정
-            isAbleToPay = true;
-
-            System.out.println("업글 비용 : " + upgradePrice);
-            System.out.println("유저 골드" + userGold);
         }
 
         /* 최종 판정 */
         if(isAbleToPay){
 
-            System.out.println("업글비용 지불 가능");
             isAble = true;
         }
 
@@ -1027,18 +975,11 @@ public class BuildSystem {
             int userGold = user.characterComponent.getCurrentGold();
             isAbleToPay = (userGold >= upgradePrice) ? true : false;
 
-            /** 2020 02 29 */
-            //시연용으로 추가된 임시 변수. 골드가 0이어도 항상 성공하도록 수정
-            isAbleToPay = true;
-
-            System.out.println("업글 비용 : " + upgradePrice);
-            System.out.println("유저 골드" + userGold);
         }
 
         /* 최종 판정 */
         if(isAbleToPay){
 
-            System.out.println("업글비용 지불 가능");
             isAble = true;
         }
 
@@ -1078,7 +1019,14 @@ public class BuildSystem {
          * -- 상점 업그레이드도 추가되면, 걔네들 수치를 반영하기 위한 처리도 추가해줄 것
          */
         barricade.defenseComponent.defense += getBarricadeUpgradeDefenseValue(barricadeComponent.upgradeLevel);
-        barricade.hpComponent.maxHP += getBarricadeUpgradeHpValue(barricadeComponent.upgradeLevel);
+        barricade.hpComponent.originalMaxHp += getBarricadeUpgradeHpValue(barricadeComponent.upgradeLevel);
+        barricade.hpComponent.maxHP = barricade.hpComponent.originalMaxHp;
+        barricade.hpComponent.currentHP += getBarricadeUpgradeHpValue(barricadeComponent.upgradeLevel);
+        if(barricade.hpComponent.currentHP > barricade.hpComponent.maxHP){
+            barricade.hpComponent.currentHP = barricade.hpComponent.maxHP;
+        }
+
+
 
 
         // 바리케이드가 업그레이드 되었음을, 모든 유저에게 중계한다.

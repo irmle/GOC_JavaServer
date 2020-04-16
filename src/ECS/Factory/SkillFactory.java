@@ -1736,7 +1736,7 @@ public class SkillFactory {
         SkillInfo skillInfo = skillToUse.skillinfo;
         SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
-        System.out.println("스킬 정보 : " + skillInfo.skillName);
+        //System.out.println("스킬 정보 : " + skillInfo.skillName);
 
 
         /** 시전자가 스킬을 사용할 수 있는 상태인지 판별한다 */
@@ -1757,10 +1757,6 @@ public class SkillFactory {
 
             Vector3 skillDirection  = event.skillDirection;     // 필요!
             float skillDistanceRate = event.skillDistanceRate;    // 필요!
-
-            System.out.println("스킬이 시전된 방향 : " + skillDirection.x() + ", " + skillDirection.y() + ", " + skillDirection.z() + ", ");
-
-            System.out.println("스킬 거리 비율(?) : " + skillDistanceRate);
 
 
 
@@ -1962,10 +1958,12 @@ public class SkillFactory {
 
         SkillInfo skillInfo = skillToUse.skillinfo;
         SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
+/*
 
         System.out.println("클라가 보낸 슬롯 넘버 : " + event.skillSlotNum);
         System.out.println("스킬 슬롯 : " + skillToUse.slotNum);
         System.out.println("스킬 타입 : " + skillType);
+*/
 
 
         /** 시전자가 스킬을 사용할 수 있는 상태인지 판별한다 */
@@ -1980,7 +1978,7 @@ public class SkillFactory {
 
         if(isAbleToUseSkill) {  /* 스킬을 사용할 수 있는 상태라면 */
 
-            System.out.println("스킬사용 가능합니다.");
+            //System.out.println("스킬사용 가능합니다.");
 
             /** 투사체 및 오브젝트 등을 생성하기 위해 필요한 데이터 계산 */
 
@@ -2030,9 +2028,6 @@ public class SkillFactory {
 
             // 장판이 펼쳐질 지점 구해야 함.
             startPosition = (Vector3) positionComponent.position.clone();
-
-            System.out.println("시작(시전자 위치) : "
-                    + startPosition.x() + ", " + startPosition.y() + ", " + startPosition.z() + ", ");
 
             direction = skillDirection;
 
@@ -2123,15 +2118,11 @@ public class SkillFactory {
             /**  생성요청 큐에 넣기  */
             worldMap.requestCreateQueue.add(skillObjectEntity);
 
-            System.out.println("스킬 오브젝트 생성 요청함 : " + worldMap.requestCreateQueue.size());
-
             /** 스킬 쿨타임 및 시전자쪽에 필요한 처리 */    // 뭔가 명확하게 정리가 잘 안되네
 
             /* 스킬 쿨타임을 초기화한다 */
             //skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
             skillToUse.remainCoolTime = currentLevelSkillInfo.coolTime;
-
-            System.out.println("스킬 쿨타임 초기화: " + skillToUse.remainCoolTime);
 
             /* 시전자 상태 업데이트 */
             BuffAction userBuffAfterSkillUse = new BuffAction();
@@ -2151,8 +2142,6 @@ public class SkillFactory {
 
             // 2020 04 02
             //skillUser.buffActionHistoryComponent.conditionHistory.add(userBuffAfterSkillUse);
-
-            System.out.println("스킬 시전자 상태 업데이트 함. ");
 
             // 중계가 필요하다면 중계처리를 하고.
             //공격모션 중계
@@ -2179,8 +2168,6 @@ public class SkillFactory {
         ConditionComponent userCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
 
-        System.out.println("유저 찾음");
-
 
         /** 시전자 스킬슬롯에서, 시전하려는 스킬을 담고있는 슬롯을 찾는다 */
         SkillSlot skillToUse = null;    // 찾으려는 스킬을 담을 슬롯.
@@ -2190,8 +2177,6 @@ public class SkillFactory {
         SkillSlot slot = null;  // 아래 올바른 스킬 슬롯을 찾기 위해 사용하는 임시 슬롯.
         for(int i=0; i<skillUser.skillSlotComponent.skillSlotList.size(); i++){
 
-            System.out.println("스킬 찾는중...");
-
             slot = skillUser.skillSlotComponent.skillSlotList.get(i);
             if(slot.slotNum == event.skillSlotNum){
                 skillType = slot.skillinfo.skillType;
@@ -2200,12 +2185,8 @@ public class SkillFactory {
             }
         }
 
-        System.out.println("스킬 검색함.");
-
         SkillInfo skillInfo = skillToUse.skillinfo;
         SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
-
-        System.out.println("스킬 정보 : " + skillInfo.skillName);
 
 
 
@@ -2218,8 +2199,6 @@ public class SkillFactory {
 
 
         if(isAlbeToUSeSkill){   /* 스킬 시전이 가능하다 */
-
-            System.out.println("스킬 시전 가능.");
 
             /** 투사체 및 오브젝트 등을 생성하기 위해 필요한 데이터 계산 */
 
@@ -2268,8 +2247,6 @@ public class SkillFactory {
 
             /** 타겟을 지정한다 */
             /** 공격 범위 내에서 가장 가까운 타겟을 찾는다 */
-
-            System.out.println("타겟을 검색함");
 
             float minDistance = currentLevelSkillInfo.attackRange;
             int targetID = -1;
@@ -2323,13 +2300,8 @@ public class SkillFactory {
                     = new FlyingObjectEntity(positionComponent, flyingObjectComponent);
             flyingObjectEntity.entityID = publishedEntityID;
 
-            System.out.println("투사체 생성함");
-
-
             /** 생성요청 큐에 넣기 */
             worldMap.requestCreateQueue.add(flyingObjectEntity);
-
-            System.out.println("생성 요청 큐에 넣었고");
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
@@ -2661,14 +2633,7 @@ public class SkillFactory {
             /* 장판 위치 계산하기 */
             direction.setSpeed(skillDistanceRate * currentLevelSkillInfo.range);
 
-            System.out.println("스킬 거리 비율 : " + skillDistanceRate);
-            System.out.println("스킬 장판 시작 위치 : " + startPosition.x() + ", " + startPosition.y() + ", " + startPosition.z() );
-            System.out.println("스킬 방향 스피드 : " + skillDistanceRate * currentLevelSkillInfo.range);
-            System.out.println("스킬 정보 - range : " + currentLevelSkillInfo.range);
-
             startPosition.movePosition(startPosition, direction);
-
-            System.out.println("스킬 장판 시작 위치(연산 후) : " + startPosition.x() + ", " + startPosition.y() + ", " + startPosition.z() );
 
 
             /* Skill Object BuffAction */
@@ -2785,7 +2750,6 @@ public class SkillFactory {
                 skillType = slot.skillinfo.skillType;
                 skillToUse = slot;
 
-                System.out.println("스킬 슬롯 찾음 : " + skillToUse.skillinfo.skillName + ", " + skillToUse.slotNum);
                 break;
             }
         }
@@ -2864,8 +2828,6 @@ public class SkillFactory {
 
 
             /** 공격 범위(반원)에 들어가는 타겟을 찾는다. */
-
-            System.out.println("공격 각도에 들어가는 타겟을 찾습니다.");
 
             for(int i=0; i<targetListByDistance.size(); i++){
 
@@ -3144,8 +3106,6 @@ public class SkillFactory {
 
             /**  생성요청 큐에 넣기  */
             worldMap.requestCreateQueue.add(flyingObjectEntity);
-            System.out.println("생성자 큐에 찌르기 투사체 정보 집어넣음");
-
 
             /**********************************************************************************************************/
 
@@ -3182,7 +3142,6 @@ public class SkillFactory {
         }
         else{
             /* 스킬 시전이 불가능한 상태. */
-            System.out.println("스킬 사용이 불가능하다고 판단 ");
 
         }
 
@@ -3275,8 +3234,6 @@ public class SkillFactory {
             startPosition = (Vector3) positionComponent.position.clone();
             //startPosition.set(startPosition.x(), 2f, startPosition.z());
 
-            System.out.println("시작(시전자 위치) : "
-                    + startPosition.x() + ", " + startPosition.y() + ", " + startPosition.z() + ", ");
 
             direction = skillDirection;
 
@@ -3469,7 +3426,7 @@ public class SkillFactory {
             directions.add(-30d);
 
             /* 생성될 투사체 갯수만큼 반복한다 */
-            System.out.println("멀티 샷 생성할 투사체 갯수 : " + beCreatedFlyingObjectCount);
+            //System.out.println("멀티 샷 생성할 투사체 갯수 : " + beCreatedFlyingObjectCount);
             for(int i=0; i<beCreatedFlyingObjectCount; i++){
 
                 /* position component */
@@ -3612,8 +3569,6 @@ public class SkillFactory {
             slot = skillSlots.get(i);
             if(slot.slotNum == slotNum){
 
-                System.out.println("스킬을 이미 배운 상태. 동일한 슬롯번호의 슬롯이존재함");
-
                 slotIsEmpty = false;
                 break;
             }
@@ -3626,8 +3581,7 @@ public class SkillFactory {
         if(slotIsEmpty){
 
             int userLevel = user.characterComponent.level;
-            System.out.println("유저레벨 : " + userLevel);
-            
+
             switch (slotNum) {
 
                 case 1:
@@ -3649,7 +3603,7 @@ public class SkillFactory {
 
         }
         else{
-            System.out.println("스킬슬롯이 비어있지 않음");
+            //System.out.println("스킬슬롯이 비어있지 않음");
         }
 
         /** 2020 01 23 목 새벽 추가 */
@@ -3672,13 +3626,13 @@ public class SkillFactory {
                     isAbleCharType = ((22 <= skillType) && (skillType <= 30)) ? true : false;
                     break;
                 default:
-                    System.out.println("직업과 스킬이 일치하지 않습니다");
+                    //System.out.println("직업과 스킬이 일치하지 않습니다");
                     break;
             }
 
         }
         else{
-            System.out.println("스킬습득 가능한 레벨이 아님 ");
+            //System.out.println("스킬습득 가능한 레벨이 아님 ");
         }
 
 
@@ -3707,7 +3661,7 @@ public class SkillFactory {
 
         }
         else{
-            System.out.println("스킬과 직업이 일치하지 않음 ");
+            //.out.println("스킬과 직업이 일치하지 않음 ");
         }
 
         /****************************/
@@ -3721,7 +3675,7 @@ public class SkillFactory {
             enoughSkillPoint = (userSkillPoint >= 1) ? true : false;
         }
         else{
-            System.out.println("현재 단계 슬롯에서 습득가능한 스킬이 아님");
+            //System.out.println("현재 단계 슬롯에서 습득가능한 스킬이 아님");
         }
 
         isPossible = (enoughSkillPoint && ableLevel && slotIsEmpty && isAbleCharType && isAbleSkillType) ? true : false;
@@ -3780,7 +3734,7 @@ public class SkillFactory {
             int userSkillPoint = user.characterComponent.skillPoint;
             enoughSkillPoint = (userSkillPoint >= 1) ? true : false;
 
-            System.out.println("남은 스킬 포인트 : " + userSkillPoint);
+            //System.out.println("남은 스킬 포인트 : " + userSkillPoint);
         }
 
         isPossible = (enoughSkillPoint && ableSkillLevel && slotIsNotEmpty) ? true : false;
@@ -3817,7 +3771,7 @@ public class SkillFactory {
         /* 스킬 포인트 감소 */
         user.characterComponent.skillPoint--;
 
-        System.out.println("남은 스킬 포인트 : " + user.characterComponent.skillPoint);
+        //System.out.println("남은 스킬 포인트 : " + user.characterComponent.skillPoint);
 
         /* 스킬레벨 증가 */
         slot.skillLevel++;
@@ -4819,7 +4773,7 @@ public class SkillFactory {
         MonsterEntity targetMob = worldMap.monsterEntity.get(event.targetEntityID);
         if(targetMob == null){  // 놀랍다 이게 복붙이 되다니
 
-            System.out.println("엥 몹이 널인데?????????");
+            //System.out.println("엥 몹이 널인데?????????");
             return;
 
         }
@@ -5624,8 +5578,6 @@ public class SkillFactory {
             BuffAction defense = createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
             character.buffActionHistoryComponent.conditionHistory.add(defense);
 
-            System.out.println("효과 줬음..");
-
         }
 
 
@@ -6259,7 +6211,7 @@ public class SkillFactory {
      */
     public static void useSkill_archerHeadShot(WorldMap worldMap, ActionUseSkill event){
 
-        System.out.println("해드샷 사용 ");
+//        System.out.println("해드샷 사용 ");
 
         /* 스킬 사용에 필요한 정보들을 찾는다 ; 슬롯, 유저, 스킬정보 등등 */
         CharacterEntity skillUser = worldMap.characterEntity.get(event.userEntityID);
@@ -6598,9 +6550,6 @@ public class SkillFactory {
 
         // 투사체가 날아갈 방향 ; 논타겟임
         Vector3 direction = event.skillDirection;
-
-        System.out.println("폭시 투사체 생성시 방향 : " + event.skillDirection.x() + ", " +
-                event.skillDirection.y() + ", " + event.skillDirection.z() + ", ");
 
 
 
@@ -7034,8 +6983,6 @@ public class SkillFactory {
 
                     if(boolParams.get(j).value == true){
                         boolParams.remove(j--);
-
-                        System.out.println("디버프 지움");
                     }
                 }
 
@@ -7049,7 +6996,6 @@ public class SkillFactory {
 
                     if(floatParams.get(j).value < 0){
                         boolParams.remove(j--);
-                        System.out.println("디버프 지움");
                     }
                 }
             }
@@ -7080,7 +7026,6 @@ public class SkillFactory {
 
                 userBuffList.remove(buff);
                 i--;
-                System.out.println("버프 삭제함 ");
             }
         }
 
@@ -7243,8 +7188,6 @@ public class SkillFactory {
             /* 투사체 준비 */
             FlyingObjectComponent flyingObjComponent = initFlyingObjInfo_ArcherFire(attacker);
 
-            System.out.println("궁수 난사 타겟 지정됨 : 몬스터 " + monster.entityID);
-
             /* 타게팅 가능한 경우, 해당 몹을 타겟으로 하는 투사체를 생성 */
             int flyingObjectEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
 
@@ -7283,8 +7226,6 @@ public class SkillFactory {
 
 
             worldMap.requestCreateQueue.add(flyingObject);
-
-            System.out.println("ㅇㅇㅇㅇㅇ");
 
             RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
             server_to_client.motionCharacterDoAttack(TARGET, RMI_Context.Reliable_Public_AES256, attacker.entityID, monster.entityID);
@@ -7346,8 +7287,6 @@ public class SkillFactory {
      * 헤드샷이 적용된 평타 처리
      */
     public static void doAttack_onArcherHeadShot(WorldMap worldMap, CharacterEntity attacker, ActionUseAttack event){
-
-        System.out.println("헤드샷 적용된 두어택 ");
 
 
         /** 스킬 사용에 필요한 정보들을 찾는다 ; 슬롯, 유저, 스킬정보 등등 */
@@ -7666,13 +7605,12 @@ public class SkillFactory {
 
             /* 지속시간 값을 구해야 한다면, 시전자의 스킬 레벨 값에 맞는 적용시간 값을 가져와 적용한다 */
             effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
-            System.out.println("스킬레벨정보에서 지속 시간 가져옴 : " + effectDurationTime);
+            //System.out.println("스킬레벨정보에서 지속 시간 가져옴 : " + effectDurationTime);
         }
         else{
 
             /* 지속시간 값을 별도로 구해 줄 필요가 없다면, 기존에 들어있는 값을 가져와 그대로 적용하면 된다. */
             effectDurationTime = effectInfo.effectDurationTime;
-            System.out.println("그냥ㄴ 그대로 씀 : " + effectDurationTime);
         }
 
 
@@ -7811,7 +7749,7 @@ public class SkillFactory {
                 /* 스킬 시전자의 공격력 값을 가져와 적용한다 */
                 effectValue = skillUser.attackComponent.attackDamage;
 
-                System.out.println("효과파람 생성 매서드 ; 공격력 타입 ");
+                //System.out.println("효과파람 생성 매서드 ; 공격력 타입 ");
                 break;
 
             case "스킬" :
@@ -7819,7 +7757,7 @@ public class SkillFactory {
                 /* 스킬 시전자의 해당 스킬 레벨을 참고해, 레벨에 맞는 스킬데미지값을 가져와 적용한다 */
                 effectValue = getProperEffectValue(skillType, effectInfo.effectTypeName, effectType, skillLevel);
 
-                System.out.println("효과파람 생성 매서드 ; 스킬 타입 ; " + effectInfo.effectTypeName);
+                //System.out.println("효과파람 생성 매서드 ; 스킬 타입 ; " + effectInfo.effectTypeName);
                 break;
 
             default :
@@ -7847,7 +7785,7 @@ public class SkillFactory {
 
 
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }
@@ -7907,8 +7845,6 @@ public class SkillFactory {
 
             case ConditionType.criticalChanceRate :
 
-                System.out.println("크리티컬 확률! ");
-
                 effectValue = skillInfo.criticalChanceRate;
                 if(skillType == SkillType.ARCHER_CRITICAL_HIT){
 
@@ -7919,8 +7855,6 @@ public class SkillFactory {
 
             /* 미친;zz 크리티컬 */
             case ConditionType.criticalDamageRate :
-
-                System.out.println("크리티컬 데미지! ");
 
                 effectValue = skillInfo.criticalDamageRate;
                 break;

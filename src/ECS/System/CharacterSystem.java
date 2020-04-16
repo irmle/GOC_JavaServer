@@ -55,10 +55,10 @@ public class CharacterSystem {
             /** 2020 02 19 변경, 이동될 위치를 구하는 부분은 기존과 똑같음. */
             boolean isMovable = character.conditionComponent.isDisableMove ? false : true;
             if(isMovable){
-
+/*
                 System.out.println("이동 가능함");
                 System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
-
+*/
 
                 float MoveSpeed = character.velocityComponent.moveSpeed;
                 float moveSpeedBonus = character.conditionComponent.moveSpeedBonus;
@@ -88,15 +88,15 @@ public class CharacterSystem {
 
                 // 아래 값을 가지고, positionSystem에서 이동 가능 여부 등을 판단할 것이다.
                 worldMap.charNextPosList.put(character.entityID, changedPosition);
-                System.out.println("이동될 좌표 : " + changedPosition.x() + ", " + changedPosition.z() );
+                //System.out.println("이동될 좌표 : " + changedPosition.x() + ", " + changedPosition.z() );
 
             }
             else{   /* 이동이 불가능한 경우 */
 
                 character.velocityComponent.velocity.set(0,0,0);
-                System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
+                /*System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
                 System.out.println("이동불가능");
-
+*/
             }
 
 

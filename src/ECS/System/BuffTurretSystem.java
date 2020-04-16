@@ -137,7 +137,7 @@ public class BuffTurretSystem {
 
                 if(targetHasBuffAlready) { /** 대상이 이미 효과를 받고 있다면 */
 
-                    System.out.println("이미 버프포탑의 버프를 받고 있는 사용자");
+                    //System.out.println("이미 버프포탑의 버프를 받고 있는 사용자");
 
                     // buffInfo.remainTime = deltaTime;    // 버프 지속 남은 시간을 초기화해준다
                     //targetsBuffAction.remainTime = deltaTime;
@@ -146,7 +146,7 @@ public class BuffTurretSystem {
                 }
                 else{   /** 기존에 효과를 받고있지 않다면 */
 
-                    System.out.println("버프포탑의 버프를 새로 추가해줍니다 ");
+                    //System.out.println("버프포탑의 버프를 새로 추가해줍니다 ");
 
                     /* 대상의 버프 목록에 추가해준다. */
                     //BuffAction newBuff = (BuffAction) buffInfo.clone();

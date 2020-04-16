@@ -33,13 +33,13 @@ public class LevelUpSystem {
             /** 2019 12 22 일 새벽 변경*/
             // 레벨업 할 수 있는 조건이 여러번 충족될 경우를 대비해서..
 
-            System.out.println("캐릭터" + character.entityID + " 의 레벨업 판정을 시작합니다 ");
+            //System.out.println("캐릭터" + character.entityID + " 의 레벨업 판정을 시작합니다 ");
 
             while(true){
 
                 /** 2019 12 26 목 오후 추가.. */
                 // 막렙(현 15)인 경우 처리하지않고 PASS
-                System.out.println("현재 레벨 : " + characterComponent.level);
+                //System.out.println("현재 레벨 : " + characterComponent.level);
                 if(characterComponent.level == MAX_LEVEL){
                     break;
                 }
@@ -48,13 +48,10 @@ public class LevelUpSystem {
                 float needExpToLevelUp = GameDataManager.getMaxExpByLevel(characterComponent.level);
                 boolean isAbleToLevelUp = (characterComponent.exp >= needExpToLevelUp) ? true : false;
 
-                System.out.println("레벨업에 필요한 경험치량 : " + needExpToLevelUp);
-                System.out.println("현재 경험치량 : " + characterComponent.exp);
-
                 /* 레벨업이 가능하다면, 레벨업 처리를 한다. */
                 if(isAbleToLevelUp) {
 
-                    System.out.println("캐릭터" + character.entityID + " 가 레벨업합니다.");
+                    //System.out.println("캐릭터" + character.entityID + " 가 레벨업합니다.");
 
                     /** 1. 경험치 량 및 레벨 증감 처리를 한다 */
                     characterComponent.resetExpByLevelUp(needExpToLevelUp);
@@ -62,7 +59,6 @@ public class LevelUpSystem {
 
                     /** 2. 스킬포인트를 추가한다 */
                     characterComponent.increaseSkillPointByLevelUp();
-                    System.out.println("캐릭터" + character.entityID + "의 스킬포인트 : " + characterComponent.skillPoint);
 
                     /** 3. 스탯 증감 처리를 한다 */  // 아 이거 별도 매서드 두기 좀 애매하네..
                     CharacterLevelUpInfo levelUpInfo = GameDataManager.getLevelUpInfo(characterComponent.characterType);

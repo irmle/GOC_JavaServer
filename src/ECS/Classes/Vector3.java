@@ -116,12 +116,12 @@ public class Vector3 implements Cloneable {
         // 시작(시전자) 위치에서 타겟 위치로의 백터
         Vector3 toTargetVec = Vector3.getTargetDirection(startPos, targetPos);
 
-        System.out.println("시작 -> 타겟 백터 : " + toTargetVec.x() + ", " + toTargetVec.y() + ", " + toTargetVec.z());
+        //System.out.println("시작 -> 타겟 백터 : " + toTargetVec.x() + ", " + toTargetVec.y() + ", " + toTargetVec.z());
 
         // 위 벡터와 직선 방향 벡터의 외적
         Vector3 cross = Vector3.getCrossProduct(toTargetVec, vector);
 
-        System.out.println("시작 -> 타겟 백터와 직선백터의 외적 : " + cross.x() + ", " + cross.y() + ", " + cross.z());
+        //System.out.println("시작 -> 타겟 백터와 직선백터의 외적 : " + cross.x() + ", " + cross.y() + ", " + cross.z());
 
 
         //
@@ -145,10 +145,12 @@ public class Vector3 implements Cloneable {
         float length = source.length() * target.length();
         float calc = dot / length;
 
+/*
 
         System.out.println("내적 구하기 값 : "  + dot);
         System.out.println("길이 구하기 값 : "  + length);
         System.out.println("내적 / 길이 값 : "  + calc);
+*/
 
         //-1f ~ 1f의 범위를 넘어가면 안된다.
         if(calc > 1f)
@@ -167,16 +169,16 @@ public class Vector3 implements Cloneable {
         float dy = target.y - source.y;
         float dz = target.z - source.z;
 
-        System.out.println("target : " + target.x + ", " + target.x());
+        /*System.out.println("target : " + target.x + ", " + target.x());
         System.out.println("source : " + source.x + ", " + source.x());
 
         System.out.println("dx : " + dx);
         System.out.println("dy : " + dy);
         System.out.println("dz : " + dz);
-
+*/
         float result = (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
 
-        System.out.println("길이 : " + result);
+  //      System.out.println("길이 : " + result);
 
         if(result<0) //음수일 경우, 양수로 만들어 줄 것.
             result *= -1f;

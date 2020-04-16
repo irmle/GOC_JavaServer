@@ -95,7 +95,7 @@ public class Store {
             itemInfo = entry.getValue();
             itemList.put(itemInfo.itemType, itemInfo.itemCost);
 
-            System.out.println(itemInfo.itemName + "가격 : " + itemInfo.itemCost);
+            //System.out.println(itemInfo.itemName + "가격 : " + itemInfo.itemCost);
 
         }
     }
@@ -157,7 +157,7 @@ public class Store {
                 StoreUpgradeInfoPerLevel upgradeInfo = e.getValue();
                 upgradePriceTable.put(upgradeInfo.upgradeLevel, upgradeInfo.upgradeCost);
 
-                System.out.println(upgradeInfo.upgradeName + ", 레벨 " + upgradeInfo.upgradeLevel + " : " + upgradeInfo.upgradeCost);
+                //System.out.println(upgradeInfo.upgradeName + ", 레벨 " + upgradeInfo.upgradeLevel + " : " + upgradeInfo.upgradeCost);
             }
 
             upgradeInfoTable.put(entry.getKey(), upgradePriceTable);

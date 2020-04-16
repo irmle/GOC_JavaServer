@@ -66,13 +66,13 @@ public class SkillObjectSystem {
             /* 스킬 오브젝트의 버프 정보 */
             BuffAction buffInfo = skillObjectComponent.buffAction;
 
-            System.out.println("스킬 오브젝트의 지속 시간 : " + skillObjectComponent.skillObjectDurationTime);
+            //System.out.println("스킬 오브젝트의 지속 시간 : " + skillObjectComponent.skillObjectDurationTime);
 
             /** 스킬 오브젝트의 지속 여부를 판단한다 */
             if(skillObjectComponent.skillObjectDurationTime < 0f){  /* 오브젝트의 지속 시간이 끝났다면 */
 
                 /* 스킬 오브젝트를 삭제한다 */
-                System.out.println("스킬 오브젝트의 지속 시간이 다 되어, 오브젝트를 삭제합니다. ");
+              //  System.out.println("스킬 오브젝트의 지속 시간이 다 되어, 오브젝트를 삭제합니다. ");
 
                 /* 오브젝트 앤티티를 삭제하는 요청 큐에 추가 */
                 worldMap.requestDeleteQueue.add(skillObject.getValue());    // 여기는. 깊은 복사 필요 없나??
@@ -113,16 +113,16 @@ public class SkillObjectSystem {
             }
             else { /* 오브젝트의 지속 시간이 남았다면 */
 
-                System.out.println("스킬 오브젝트의 남은 지속시간을 업데이트합니다 ");
+                //System.out.println("스킬 오브젝트의 남은 지속시간을 업데이트합니다 ");
                 /* 오브젝트의 지속 시간을 깎는다 */
                 skillObjectComponent.skillObjectDurationTime -= deltaTime;
 
-                System.out.println("남은 지속시간 : " + skillObjectComponent.skillObjectDurationTime);
+                //System.out.println("남은 지속시간 : " + skillObjectComponent.skillObjectDurationTime);
 
                 /** 메테오 스킬의 경우 예외처리... ==>> 나중에, case문으로 대체할 것 */
                 if (skillObjectComponent.createdSkillType == SkillType.MAGICIAN_METEOR) {
 
-                    System.out.println("메테오의 지속시간이 남았습니다! ");
+                  //  System.out.println("메테오의 지속시간이 남았습니다! ");
 
 
                     /* 스킬레벨테이블에서, 스킬의 지속시간을 얻는다 */
@@ -131,10 +131,10 @@ public class SkillObjectSystem {
                     /* 판정,, (?) */
                     float elapsedTime = skillObjectComponent.skillObjectDurationTime - skillDuration;
 
-                    System.out.println("메테오 사용 후 경과 시간 : " + elapsedTime);
+                    //System.out.println("메테오 사용 후 경과 시간 : " + elapsedTime);
                     if (elapsedTime >= 0f) {
 
-                        System.out.println("아직 1초가 지나지 않아, 다음 오브젝트 처리로 넘어갑니다.");
+                        //System.out.println("아직 1초가 지나지 않아, 다음 오브젝트 처리로 넘어갑니다.");
                         continue;   // 아래 범위판정을 진행하지 않고, 다음 오브젝트로 건너뛴다.
                     }
 
@@ -143,7 +143,7 @@ public class SkillObjectSystem {
                 /** 전사 가렌E 스킬의 경우 예외처리 ; 장판의 위치를, 시전자의 위치로 변경한다  */
                 if (skillObjectComponent.createdSkillType == SkillType.KNIGHT_GARREN_E) {
 
-                    System.out.println("가렌E ; 장판(?)의 위치를 시전자의 위치로 변경합니다 ");
+                    //System.out.println("가렌E ; 장판(?)의 위치를 시전자의 위치로 변경합니다 ");
                     // 어 설마... 그냥 장판의 positionComponent를 시전자의 것과 공유해도 될라나?? 굳이 복사처리 안해주고..
 
                     /* 시전자 찾기 위치 */
@@ -215,11 +215,12 @@ public class SkillObjectSystem {
                                 continue;
                             }
 
-                            System.out.println("몬스터" + monster.entityID + " 타게팅 가능 ");
+                      /*      System.out.println("몬스터" + monster.entityID + " 타게팅 가능 ");
 
 
                             System.out.println("현재 거리 : " + currentDistance);
                             System.out.println("스킬오브젝트 범위 : " + skillObjectComponent.skillObjectRadius);
+                      */
                             /* 범위 거리 */
                             boolean targetIsOutOfRange
                                     = (currentDistance > (skillObjectComponent.skillObjectRadius)) ? true : false;
@@ -227,7 +228,7 @@ public class SkillObjectSystem {
                                 continue;
                             }
 
-                            System.out.println("몬스터" + monster.entityID + " 범위 내에 있음 ");
+                            //System.out.println("몬스터" + monster.entityID + " 범위 내에 있음 ");
 
                             /* 범위 각도 */
                             float betweenAngle =
@@ -240,7 +241,7 @@ public class SkillObjectSystem {
                                 continue;
                             }
 
-                            System.out.println("몬스터" + monster.entityID + " 범위각 내에 있음 ");
+                            //System.out.println("몬스터" + monster.entityID + " 범위각 내에 있음 ");
 
                             targetList.add(monster.entityID);
 
@@ -453,13 +454,13 @@ public class SkillObjectSystem {
                 }
                 else{   /* 기존에 효과를 받고있지 않다면 */
 
-                    System.out.println("스킬 오브젝트의 버프를 새로 추가합니다. ");
+                    //System.out.println("스킬 오브젝트의 버프를 새로 추가합니다. ");
 
 
                     /** 회오리 */
                     if(skillObjectComponent.createdSkillType == SkillType.KNIGHT_TORNADO){
 
-                        System.out.println("타겟에게 버프를 넣어줌");
+                      //  System.out.println("타겟에게 버프를 넣어줌");
 
                         CharacterEntity character = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
 
@@ -737,7 +738,7 @@ public class SkillObjectSystem {
                     }
                     else {
 
-                        System.out.println("스킬 오브젝트, 대상에게 버프를 새로 추가해 줌");
+                        //System.out.println("스킬 오브젝트, 대상에게 버프를 새로 추가해 줌");
 
                         if (doOldVersion){
 

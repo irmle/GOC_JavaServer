@@ -110,14 +110,14 @@ public class HpHistorySystem {
 
                     sum -= damageHistory.amount;
                     lastDamagedEntity = damageHistory.unitID;
-                    System.out.println("데미지를 받습니다 : " + damageHistory.amount);
+                    //System.out.println("데미지를 받습니다 : " + damageHistory.amount);
 
                     /** 2020 02 12 수 추가 */
                     worldMap.playerGameScoreList.get(character.entityID).getDamagedAmount += damageHistory.amount;
 
                 }
                 else{
-                    System.out.println("체력을 회복합니다 : " + damageHistory.amount);
+                    //System.out.println("체력을 회복합니다 : " + damageHistory.amount);
                     sum += damageHistory.amount;
                 }
 
@@ -251,7 +251,7 @@ public class HpHistorySystem {
                      */
                     if(worldMap.jungleMonsterSlotHashMap.containsKey(monster.entityID)){
 
-                        System.out.println("정글몹이다 ");
+                        //System.out.println("정글몹이다 ");
 
                         JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, monster.entityID);
                         if (slot.monsterState == JungleMobState.IDLE){
@@ -292,7 +292,7 @@ public class HpHistorySystem {
             // 일단 아래 코드가 동작하지 않도록 제어.. 사망 시스템 나중에 돌리자
             if(monsterIsDead){
 
-                System.out.println("몬스터가 죽었습니다..");
+                //System.out.println("몬스터가 죽었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int deadMonster = monster.entityID;
@@ -310,7 +310,7 @@ public class HpHistorySystem {
 
                 if(worldMap.jungleMonsterSlotHashMap.containsKey(monster.entityID)){
 
-                    System.out.println("정글몹이다 죽음 hp시스템 ");
+                    //System.out.println("정글몹이다 죽음 hp시스템 ");
 
                     JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, monster.entityID);
                     slot.setMonsterState(JungleMobState.DIED);
@@ -417,7 +417,7 @@ public class HpHistorySystem {
                 boolean result = worldMap.deathQueue.offer(barriDeath);
 
                 if (result == false) {    // queue.offer() 매서드가 실패 시 false를 리턴한다고 해서..
-                    System.out.println("사망자를 추가하는 과정에서 오류가 발생");
+                    //System.out.println("사망자를 추가하는 과정에서 오류가 발생");
                 }
             }
 
@@ -494,7 +494,7 @@ public class HpHistorySystem {
             // 일단 아래 코드가 동작하지 않도록 제어.. 사망 시스템 나중에 돌리자
             if(turretIsDestroyed){
 
-                System.out.println("공격포탑이 파괴되었습니다..");
+                //System.out.println("공격포탑이 파괴되었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int destroyedTurret = attackTurret.entityID;
@@ -506,7 +506,7 @@ public class HpHistorySystem {
                 boolean result = worldMap.deathQueue.offer(turretDeath);
 
                 if(result == false){    // queue.offer() 매서드가 실패 시 false를 리턴한다고 해서..
-                    System.out.println("사망자를 추가하는 과정에서 오류가 발생");
+                    //System.out.println("사망자를 추가하는 과정에서 오류가 발생");
                 }
             }
 
@@ -527,7 +527,7 @@ public class HpHistorySystem {
                 BuildSlot slot = worldMap.buildSystem.findBuildSlotByEntityID(attackTurret.entityID);
                 if(slot == null){
 
-                    System.out.println("널입니다");
+                    //System.out.println("널입니다");
 
                 }
                 else{
@@ -560,7 +560,7 @@ public class HpHistorySystem {
                 if(damageHistory.isDamage == true){
                     sum -= damageHistory.amount;
                     lastDamagedEntity = damageHistory.unitID;
-                    System.out.println("데미지를 받습니다 : " + damageHistory.amount);
+                    //System.out.println("데미지를 받습니다 : " + damageHistory.amount);
                 }
                 else{
                     sum += damageHistory.amount;
@@ -585,7 +585,7 @@ public class HpHistorySystem {
                 hpComponent.currentHP = hpComponent.maxHP;
             }
 
-            System.out.println("현재 체력 : " + hpComponent.currentHP);
+            //System.out.println("현재 체력 : " + hpComponent.currentHP);
 
             /* 사망여부 판정 2019 12 22 ver. */
 
@@ -595,7 +595,7 @@ public class HpHistorySystem {
             // 일단 아래 코드가 동작하지 않도록 제어.. 사망 시스템 나중에 돌리자
             if(turretIsDestroyed){
 
-                System.out.println("버프포탑이 파괴되었습니다..");
+                //System.out.println("버프포탑이 파괴되었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int destroyedTurret = buffTurret.entityID;
@@ -607,7 +607,7 @@ public class HpHistorySystem {
                 boolean result = worldMap.deathQueue.offer(turretDeath);
 
                 if(result == false){    // queue.offer() 매서드가 실패 시 false를 리턴한다고 해서..
-                    System.out.println("사망자를 추가하는 과정에서 오류가 발생");
+                    //System.out.println("사망자를 추가하는 과정에서 오류가 발생");
                 }
             }
 
@@ -679,7 +679,7 @@ public class HpHistorySystem {
             // 일단 아래 코드가 동작하지 않도록 제어.. 사망 시스템 나중에 돌리자
             if(crystalIsDestroyed){
 
-                System.out.println("크리스탈이 파괴되었습니다..");
+                //System.out.println("크리스탈이 파괴되었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int destroyedCrystal = crystal.entityID;
@@ -691,7 +691,7 @@ public class HpHistorySystem {
                 boolean result = worldMap.deathQueue.offer(crystalDeath);
 
                 if(result == false){    // queue.offer() 매서드가 실패 시 false를 리턴한다고 해서..
-                    System.out.println("사망자를 추가하는 과정에서 오류가 발생");
+                    //System.out.println("사망자를 추가하는 과정에서 오류가 발생");
                 }
             }
 

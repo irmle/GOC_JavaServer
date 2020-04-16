@@ -40,11 +40,11 @@ public class MpHistorySystem {
 
                 DamageHistory damageHistory = damageHistories.get(j);
                 if(damageHistory.isDamage == true){
-                    System.out.println("마력을 소모합니다 : " + damageHistory.amount);
+                    //System.out.println("마력을 소모합니다 : " + damageHistory.amount);
                     sum -= damageHistory.amount;
                 }
                 else{
-                    System.out.println("마력을 회복합니다 : " + damageHistory.amount);
+                    //System.out.println("마력을 회복합니다 : " + damageHistory.amount);
                     sum += damageHistory.amount;
                 }
             }

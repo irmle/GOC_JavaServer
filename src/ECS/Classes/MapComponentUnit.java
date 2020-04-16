@@ -73,6 +73,7 @@ public class MapComponentUnit implements Cloneable {
 
             mapInfo = occupyingTilesList.get(i);
             mapInfo.canMove = isMovable;
+
         }
     }
 

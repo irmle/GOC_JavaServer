@@ -171,7 +171,7 @@ public class AttackTurretFactory {
             attackTurretInfo = attackTurretInfoEntry.getValue();
             attackTurretInfoTable.put(attackTurretInfo.turretType, attackTurretInfo);
 
-            attackTurretInfo.printInfo();
+            //attackTurretInfo.printInfo();
 
         }
 
@@ -230,10 +230,10 @@ public class AttackTurretFactory {
                     buffActionHistoryComponent, hpHistoryComponent, conditionComponent);
 
             if(attackTurretEntity.conditionComponent == null){
-                System.out.println("어택터렛 팩토린데 널임 헐;; ");
+                //System.out.println("어택터렛 팩토린데 널임 헐;; ");
             }
             else{
-                System.out.println("어택터렛 팩토리인데 널 아님");
+                //System.out.println("어택터렛 팩토리인데 널 아님");
             }
 
 
@@ -251,7 +251,7 @@ public class AttackTurretFactory {
 
         newTurret = (AttackTurretEntity) ( attackTurretEntityTable.get(requestedTurretType) ).clone();
 
-        newTurret.attackComponent.printAttackInfo();
+        //newTurret.attackComponent.printAttackInfo();
 
 
         return newTurret;
@@ -270,9 +270,10 @@ public class AttackTurretFactory {
         /** 터렛 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
         BuffInfo effectInfo = turretAttackEffectInfoLIST.get(turretType).get(effectName);
 
-        System.out.println("이펙트 엔티티 ID : " + effectEntityID);
+        /*System.out.println("이펙트 엔티티 ID : " + effectEntityID);
         System.out.println("공격터렛의 공격 효과에 대한 출력. ");
-        effectInfo.printEffectInfo();
+        */
+        //effectInfo.printEffectInfo();
 
         /** 효과의 지속시간을 구한다 (필요하다면) */
         /*
@@ -411,14 +412,14 @@ public class AttackTurretFactory {
                 /* 터렛의 공격력 값을 가져와 적용한다 */
                 effectValue = attackTurret.attackComponent.attackDamage;
 
-                System.out.println("효과파람 생성 매서드 ; 공격력 타입 ;  " + effectValueStr);
+                //System.out.println("효과파람 생성 매서드 ; 공격력 타입 ;  " + effectValueStr);
                 break;
 
             default :
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }

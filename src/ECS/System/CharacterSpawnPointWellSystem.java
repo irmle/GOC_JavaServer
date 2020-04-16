@@ -55,8 +55,6 @@ public class CharacterSpawnPointWellSystem {
                 float currentDistance = 0f;
                 currentDistance = Vector3.distance(wellPoint, charPos);
 
-                System.out.println("우물과 캐릭터 간 거리 : " + currentDistance);
-
                 /** 대상이 범위에 있는지 판별한다 */
                 boolean isInTargetRange = false;
 
@@ -64,10 +62,6 @@ public class CharacterSpawnPointWellSystem {
                 if( (currentDistance < buffAreaRange) && (targetHP < character.hpComponent.maxHP)) {
                     isInTargetRange = true;
 
-                    if(isInTargetRange){
-
-                        System.out.println("우물에 의한 회복 버프를 받을 수 있음. ");
-                    }
                 }
 
                 /** 대상이 버프 적용 범위에 위치한다면 */
@@ -83,8 +77,6 @@ public class CharacterSpawnPointWellSystem {
                             SelfRecoverySystem.createSystemActionEffect(
                                     SystemEffectType.WELL, "마력회복 속도증가", character, character.entityID));
 
-
-                    System.out.println("우물 버프를 넣음.");
                 }
 
             }

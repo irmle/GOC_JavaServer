@@ -39,12 +39,12 @@ public class DeathSystem {
 
         for(int i=0; i<size; i++){
 
-            System.out.println("죽음 갯수 : " + size);
+            //System.out.println("죽음 갯수 : " + size);
             Death death = deaths.poll();
 
             /* 사망자 ID로, 사망자 객체 타입을 판단한다 */
             int entityType = worldMap.entityMappingList.get(death.deadEntityID);
-            System.out.println("킬러 : " + death.killerEntityID);
+            //System.out.println("킬러 : " + death.killerEntityID);
 
             switch (entityType){
 
@@ -96,7 +96,7 @@ public class DeathSystem {
 
     public void processCharacterDeath(Death death){
 
-        System.out.println("캐릭터의 사망 처리를 시작합니다.");
+        //System.out.println("캐릭터의 사망 처리를 시작합니다.");
 
         /* 캐릭터 정보 */
         CharacterEntity character = worldMap.characterEntity.get(death.deadEntityID);
@@ -131,11 +131,11 @@ public class DeathSystem {
 
     public void processMonsterDeath(Death death){
 
-        System.out.println("몬스터의 사망 처리를 시작합니다.");
+        /*System.out.println("몬스터의 사망 처리를 시작합니다.");
 
         System.out.println("사망한 몬스터 ID : "  + death.deadEntityID);
         System.out.println("몬스터를 사망시킨 EntityID : "  + death.killerEntityID);
-
+*/
 
         /* 몬스터를 살해한 Entity의 정보를 찾는다 */
         Entity killer = null;
@@ -161,39 +161,39 @@ public class DeathSystem {
 
 
         //killerEntityType = EntityType.CharacterEntity;
-        System.out.println("킬러 앤티티타입 : " + killerEntityType);
+        //System.out.println("킬러 앤티티타입 : " + killerEntityType);
 
         /* 죽은 몬스터 정보를 찾는다 */
         MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
         int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
         int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
-                System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
+          //      System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
         Reward reward;
 
         /* 살해한 Entity의 타입에 따라 처리한다 */
+
         switch (killerEntityType) {
 
             case EntityType.CharacterEntity :
 
                 /* 몹을 죽인 캐릭터를 찾는다 */
                 killer = worldMap.characterEntity.get(death.killerEntityID);
-                int killerLevel = ((CharacterEntity) killer).characterComponent.level;
 
 
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
-                reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
+                //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
 
                 // 테스트용 빨리 만렙 만들기
-                boolean isTestMode = true;
+                boolean isTestMode = false;
                 if(isTestMode){   // 테스트
                     for(int i=0; i<100; i++){
-                        ((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
+                        //((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
                     }
                 }
                 else{   // 테스트가 아님
-                    ((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
+                    //((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
                 }
 
                 /** 2020 02 12 수 추가 */
@@ -217,9 +217,18 @@ public class DeathSystem {
                 CharacterEntity turretBuildUser = worldMap.characterEntity.get(buildUserEntityID);
                 int builderLevel = turretBuildUser.characterComponent.level;
 
+                /** 2020 04 15 */
+                killer = turretBuildUser;
+
+                /** 2020 02 12 수 추가 */
+                // 킬러 캐릭터의 스코어에 반영한다
+                worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount++;
+
+
+
                 /* 해당 유저에게 보상을 넣어준다 */
-                reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, monsterLevel);
-                turretBuildUser.rewardHistoryComponent.rewardHistory.add(reward);
+                //reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, monsterLevel);
+                //turretBuildUser.rewardHistoryComponent.rewardHistory.add(reward);
 
                 break;
 
@@ -240,9 +249,16 @@ public class DeathSystem {
                 int skillUserID = ((FlyingObjectEntity ) killer).flyingObjectComponent.userEntityID;
                 CharacterEntity skillUser = worldMap.characterEntity.get(skillUserID);
 
+                /** 2020 04 15 */
+                killer = skillUser;
+
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
-                reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
-                skillUser.rewardHistoryComponent.rewardHistory.add(reward);
+                //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
+                //skillUser.rewardHistoryComponent.rewardHistory.add(reward);
+
+                /** 2020 02 12 수 추가 */
+                // 킬러 캐릭터의 스코어에 반영한다
+                worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount++;
 
 
                 break;
@@ -257,16 +273,44 @@ public class DeathSystem {
 
         }
 
+
+        /** 2020 04 15 뉴 보상 처리 */
+
+        /* 보상 get */
+        reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
+
+        /* 경험치 N빵 */
+        reward.rewardExp /= (worldMap.characterEntity.size());
+        reward.rewardGold *= 100;
+
+        Reward rewardN;
+        for(CharacterEntity character : worldMap.characterEntity.values()){
+
+            rewardN = (Reward) reward.clone();
+
+            boolean isKiller = (character.entityID == killer.entityID) ? true : false;
+            if(!isKiller){
+
+                rewardN.rewardGold = 0;
+            }
+
+            character.rewardHistoryComponent.rewardHistory.add(reward);
+        }
+
+
+        System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
+
+
         /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
         worldMap.requestDeleteQueue.add(deadMonster);
 
-        System.out.println("몬스터 죽음 처리 완료");
+        //System.out.println("몬스터 죽음 처리 완료");
 
     }
 
     public void processBarricadeDeath(Death death){
 
-        System.out.println("바리케이드의 파괴 처리를 시작합니다.");
+        //System.out.println("바리케이드의 파괴 처리를 시작합니다.");
         /* 바리케이드 정보 */
         BarricadeEntity barricade = worldMap.barricadeEntity.get(death.deadEntityID);
         /* 바리케이드의 상태를 변경한다 */
@@ -281,7 +325,7 @@ public class DeathSystem {
 
     public void processAttackTurretDeath(Death death){
 
-        System.out.println("공격포탑의 파괴 처리를 시작합니다.");
+        //System.out.println("공격포탑의 파괴 처리를 시작합니다.");
 
         /* 포탑 정보 */
         AttackTurretEntity attackTurret = worldMap.attackTurretEntity.get(death.deadEntityID);
@@ -301,7 +345,7 @@ public class DeathSystem {
 
     public void processBuffTurretDeath(Death death){
 
-        System.out.println("버프포탑의 파괴 처리를 시작합니다.");
+        //System.out.println("버프포탑의 파괴 처리를 시작합니다.");
         /* 포탑 정보 */
         BuffTurretEntity buffTurret = worldMap.buffTurretEntity.get(death.deadEntityID);
         /* 포탑의 상태를 변경한다 */
@@ -331,11 +375,13 @@ public class DeathSystem {
      * @param death
      */
     public void processJungleMonsterDeath(Death death){
+/*
 
         System.out.println("정글 몬스터의 사망 처리를 시작합니다.");
 
         System.out.println("사망한 몬스터 ID : "  + death.deadEntityID);
         System.out.println("몬스터를 사망시킨 EntityID : "  + death.killerEntityID);
+*/
 
 
         /* 몬스터를 살해한 Entity의 정보를 찾는다 */
@@ -362,14 +408,14 @@ public class DeathSystem {
 
 
         //killerEntityType = EntityType.CharacterEntity;
-        System.out.println("킬러 앤티티타입 : " + killerEntityType);
+//        System.out.println("킬러 앤티티타입 : " + killerEntityType);
 
         /* 죽은 몬스터 정보를 찾는다 */
         MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
         int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
         int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
-        System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
+  //      System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
         /**
          * 2020 02 28
@@ -377,9 +423,6 @@ public class DeathSystem {
          */
         JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, deadMonster.entityID);
         slot = worldMap.jungleMonsterSlotHashMap.get(deadMonster.entityID);
-        if(slot == null){
-            System.out.println("널임;");
-        }
         //slot.setMonsterState(JungleMobState.DIED);
 
 
@@ -475,10 +518,12 @@ public class DeathSystem {
 
         }
 
+        System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
+
         /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
         worldMap.requestDeleteQueue.add(deadMonster);
 
-        System.out.println("몬스터 죽음 처리 완료");
+    //    System.out.println("몬스터 죽음 처리 완료");
 
     }
 

@@ -113,7 +113,7 @@ public class DamageHistorySystem {
      */
     public void updateCharacterDamage() {
 
-        System.out.println("캐릭터 뎀 처리");
+        //System.out.println("캐릭터 뎀 처리");
 
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
@@ -219,7 +219,7 @@ public class DamageHistorySystem {
 
     public void updateMonsterDamage(){
 
-        System.out.println("몹뎀 처리");
+        //System.out.println("몹뎀 처리");
 
 
         for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : worldMap.monsterEntity.entrySet()) {
@@ -718,16 +718,16 @@ public class DamageHistorySystem {
             flatDamage = maxDam;
         }
 
-        System.out.println("최대 데미지 : " + maxDam);
-        System.out.println("최소 데미지 : " + minDam);
-        System.out.println("기대 데미지 : " + flatDamageExp);
-        System.out.println("평뎀뽑 & 보정 : " + flatDamage);
+        //System.out.println("최대 데미지 : " + maxDam);
+        //System.out.println("최소 데미지 : " + minDam);
+        //System.out.println("기대 데미지 : " + flatDamageExp);
+        //System.out.println("평뎀뽑 & 보정 : " + flatDamage);
 
         flatDamage = ( flatDamage + attackerCondition.attackDamageBonus ) * attackerCondition.attackDamageRate;
 
-        System.out.println("공격자 공격보너스 : " + attackerCondition.attackDamageBonus);
-        System.out.println("공격자 데미지비율 : " + attackerCondition.attackDamageRate);
-        System.out.println("상태적용 평뎀 : " + flatDamage);
+        //System.out.println("공격자 공격보너스 : " + attackerCondition.attackDamageBonus);
+        //System.out.println("공격자 데미지비율 : " + attackerCondition.attackDamageRate);
+        //System.out.println("상태적용 평뎀 : " + flatDamage);
 
 
         /** 공식에 따라 평타 데미지값을 도출 */
@@ -735,10 +735,10 @@ public class DamageHistorySystem {
         finalFlatDamage = (int)( flatDamage * 100 / (100 + TARGET_DEFENSE) );
 
 
-        System.out.println("타겟 방어력 : " + TARGET_DEFENSE);
-        System.out.println("최종 평댐 : " + finalFlatDamage);
+        //System.out.println("타겟 방어력 : " + TARGET_DEFENSE);
+        //System.out.println("최종 평댐 : " + finalFlatDamage);
 
-        System.out.println("");
+        //System.out.println("");
 
         return finalFlatDamage;
     }
@@ -804,9 +804,9 @@ public class DamageHistorySystem {
         criticalDamage = flatDamage * (100 + attackerAttack.criticalDamage) * 0.01f;
         finalCriticalDamage = (int) ( criticalDamage * attackerCondiiton.criticalDamageRate );
 
-        System.out.println("크리티컬 뎀 데미지 적용 : " + criticalDamage);
-        System.out.println("최종 크리뎀 : " + finalCriticalDamage);
-        System.out.println("");
+        //System.out.println("크리티컬 뎀 데미지 적용 : " + criticalDamage);
+        //System.out.println("최종 크리뎀 : " + finalCriticalDamage);
+        //System.out.println("");
 
         return finalCriticalDamage;
     }
@@ -820,18 +820,18 @@ public class DamageHistorySystem {
 
         float attributedDamage = 0f;
 
-        System.out.println("공격자 속성 : " + attackerAttrType);
-        System.out.println("타겟 속성 : " + targetAttrType);
+        //System.out.println("공격자 속성 : " + attackerAttrType);
+        //System.out.println("타겟 속성 : " + targetAttrType);
 
         int synastry = attrTablePerAttacker.get(attackerAttrType).get(targetAttrType);
         float synastryRate = ( 100f + damageRatePerSynastry.get(synastry) ) ;
 
         attributedDamage = damage * synastryRate * 0.01f;
 
-        System.out.println("속성간 상성 적용 비율 : " + synastryRate);
-        System.out.println("최종 속성뎀 : " + attributedDamage);
+        //System.out.println("속성간 상성 적용 비율 : " + synastryRate);
+        //System.out.println("최종 속성뎀 : " + attributedDamage);
 
-        System.out.println("=============================");
+        //System.out.println("=============================");
 
         return attributedDamage;
     }

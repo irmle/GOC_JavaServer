@@ -55,17 +55,17 @@ public class PositionSystem {
             boolean isMovable = worldMap.charNextPosList.containsKey(character.entityID) ? true : false;
             if(isMovable){
 
-                System.out.println("이동 가능하므,, 포지션 시스템 ");
-
                 /* 이동할 위치를 가져온다 */
                 Vector3 movedPos = worldMap.charNextPosList.get(character.entityID);
                 MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
 
+/*
                 System.out.println("최종목적 좌표 : " + movedPos.x() + ", "
                         + movedPos.z() );
 
                 System.out.println("최종목적 타일 : " + movedTile.arrayX + ", "
                         + movedTile.arrayY );
+*/
 
                 /* 이동 단위 벡터를 구한다 */
                 //Vector3 unitVec3 = (Vector3) movedPos.clone();
@@ -73,8 +73,10 @@ public class PositionSystem {
                 unitVec3 = unitVec3.normalize();
                 unitVec3.setSpeed(deltaTime);   // 흠..
 
+/*
                 System.out.println("단위벡터  : " + unitVec3.x() + ", "
                         + unitVec3.z() );
+*/
 
                 /* 이동 가능한 지점 혹은 목표지점에 도달할 때 까지 반복 */
                 while (true){
@@ -85,16 +87,20 @@ public class PositionSystem {
 
                     /* 위 좌표의 타일을 검사한다 */
                     MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
+/*
                     System.out.println("현재이동된 좌표 : " + currentPos.x() + ", "
                             + currentPos.z() );
                     System.out.println("타일 좌표 : " + currentTile.arrayX + ", "
                             + currentTile.arrayY );
+*/
 
                     /** 벽 등 이동 불가능한 타일인 경우  */
                     if(currentTile.canMove == false){
+/*
                         System.out.println("이동 불가능한 지점에 다다라서 멈춤");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
                                 + character.positionComponent.position.z() );
+*/
                        break;
                     }
 
@@ -114,9 +120,11 @@ public class PositionSystem {
 
                         character.positionComponent.position.set(currentTile.getPixelPosition());
 
+/*
                         System.out.println("경계 타일에 다다라서 멈춤");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
                                 + character.positionComponent.position.z() );
+*/
 
                         break;
                     }
@@ -132,9 +140,11 @@ public class PositionSystem {
 
                         character.positionComponent.position.set(movedPos);
 
+/*
                         System.out.println("목적지 타일에 다다라서 멈춤");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
                                 + character.positionComponent.position.z() );
+*/
 
                         break;
                     }
@@ -143,11 +153,12 @@ public class PositionSystem {
 
                         character.positionComponent.position.set(currentPos);
 
-
+/*
                         System.out.println("목적지 타일에 다다르지 않아 계속함");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
                                 + character.positionComponent.position.z() );
                         // 벽을 만나거나, 경계에 도달하거나 목적지에 도달할 때 까지 반복한다
+*/
 
                     }
                 }

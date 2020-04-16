@@ -155,7 +155,7 @@ public class RewardFactory {
     public static int calculateRewardGoldByLevel(int currentLevel){
 
         final float GOLD_WEIGHT_VALUE = GameDataManager.balanceDataInfoList.get(BalanceDataType.REWARD_GOLD_PER_MONSTER_LEVEL).weightValue;
-        final float GOLD_ADJUSTMENT_VALUE = GameDataManager.balanceDataInfoList.get(BalanceDataType.REWARD_GOLD_PER_MONSTER_LEVEL).weightValue;
+        final float GOLD_ADJUSTMENT_VALUE = GameDataManager.balanceDataInfoList.get(BalanceDataType.REWARD_GOLD_PER_MONSTER_LEVEL).adjustmentValue;
 
         double calculGold = (GOLD_WEIGHT_VALUE * Math.pow(currentLevel, 2) + GOLD_ADJUSTMENT_VALUE );
         int gold = (int) Math.ceil(calculGold);
@@ -171,7 +171,7 @@ public class RewardFactory {
         for(int i=1; i<=rewardInfoByMobLevelTable.size(); i++){
 
             RewardInfo info = rewardInfoByMobLevelTable.get(i);
-            System.out.println("레벨" + i + "의 보상 경험치 : " + info.exp + ", 보상 골드 : " + info.gold);
+            //System.out.println("레벨" + i + "의 보상 경험치 : " + info.exp + ", 보상 골드 : " + info.gold);
         }
 
     }
@@ -219,7 +219,7 @@ public class RewardFactory {
                 rewardBuffList.add(
                         createJungleBuffEffect(deadEntityType, "최대체력증가", deadEntityID) );
 
-                System.out.println("리자드 죽임");
+                //System.out.println("리자드 죽임");
 
                 break;
 
@@ -229,7 +229,7 @@ public class RewardFactory {
                 rewardBuffList.add(
                         createJungleBuffEffect(deadEntityType, "최대마력증가", deadEntityID) );
 
-                System.out.println("요정 죽임");
+                //System.out.println("요정 죽임");
                 break;
 
             case JungleMobType.DRAGON :
@@ -245,7 +245,7 @@ public class RewardFactory {
                         createJungleBuffEffect(deadEntityType, "이동속도증가", deadEntityID) );
 
 
-                System.out.println("드래곤 죽임");
+                //System.out.println("드래곤 죽임");
                 break;
 
             case JungleMobType.DEVIL :
@@ -261,7 +261,7 @@ public class RewardFactory {
                         createJungleBuffEffect(deadEntityType, "방어력증가", deadEntityID) );
 
 
-                System.out.println("악마 죽임");
+                //System.out.println("악마 죽임");
                 break;
 
         }
@@ -452,7 +452,7 @@ public class RewardFactory {
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }

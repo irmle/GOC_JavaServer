@@ -429,7 +429,7 @@ public class MonsterFactory {
 
             monsterEntity.attribute = monsterInfo.monsterElemental;
 
-            System.out.println("몬스터 속성 : " + monsterInfo.monsterElemental);
+            //System.out.println("몬스터 속성 : " + monsterInfo.monsterElemental);
 
             /** 목록에 추가 */
 
@@ -721,7 +721,7 @@ public class MonsterFactory {
         /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
         resetJungleMonsterStatByLevel(newJungleMob, level);
 
-        System.out.println("정그르몹.. 생성된거 맞나??");
+        //System.out.println("정그르몹.. 생성된거 맞나??");
 
         return newJungleMob;
 
@@ -880,14 +880,14 @@ public class MonsterFactory {
                 /* 공격자 몬스터의 공격력 값을 가져와 적용한다 */
                 effectValue = monster.attackComponent.attackDamage;
 
-                System.out.println("효과파람 생성 매서드 ; 공격력 타입 ");
+                //System.out.println("효과파람 생성 매서드 ; 공격력 타입 ");
                 break;
 
             default :
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }
@@ -952,9 +952,10 @@ public class MonsterFactory {
 
         /** 레벨에 따른 스탯 값 적용하기 */
 
-        System.out.println("레벨 : " + level);
+        /*System.out.println("레벨 : " + level);
         System.out.println("오리진체력 : " + monsterHP.originalMaxHp);
         System.out.println("레벨별 체력증가 비율 : " + monsterInfo.hpIncrValue);
+        */
         if(level == 1)
             return;
 
@@ -971,11 +972,13 @@ public class MonsterFactory {
 
         /* 방어력 */
         monsterDefense.defense += monsterInfo.defenseIncrValue * (level-1);
+/*
 
         System.out.println("몬스터 레벨 : " + level);
         System.out.println("몬스터 체력 : " + monsterHP.originalMaxHp);
         System.out.println("몬스터 공격력 : " + monsterAttack.attackDamage);
         System.out.println("몬스터 방어력 : " + monsterDefense.defense);
+*/
 
 
 

@@ -349,9 +349,6 @@ public class BuffTurretFactory {
 
         /** 터렛 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
         BuffInfo effectInfo = turretBuffEffectInfoLIST.get(turretType).get(effectName);
-        System.out.println("이펙트 엔티티 ID : " + effectEntityID);
-        System.out.println("버프터렛의 효과에 대한 출력. ");
-        effectInfo.printEffectInfo();
 
         /** 효과의 지속시간을 구한다 (필요하다면) */
         /*
@@ -490,7 +487,7 @@ public class BuffTurretFactory {
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }

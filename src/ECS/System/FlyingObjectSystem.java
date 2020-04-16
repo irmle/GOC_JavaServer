@@ -68,8 +68,6 @@ public class FlyingObjectSystem {
 
                 case EntityType.CharacterEntity :
 
-                    System.out.println("캐릭맞음? ");
-
                     attackTurret = null;
                     skillUser = worldMap.characterEntity.get(flyingObjectComponent.userEntityID);
                     skillType = flyingObjectComponent.createdSkillType;
@@ -93,9 +91,7 @@ public class FlyingObjectSystem {
                     skillUser = null;
                     skillType = flyingObjectComponent.createdSkillType;
                     attackTurret = worldMap.attackTurretEntity.get(flyingObjectComponent.userEntityID);
-                    if(attackTurret == null){
-                        System.out.println("널;");
-                    }
+
                     skillSlot = null;
                     skillLevel = 1;
 
@@ -132,14 +128,12 @@ public class FlyingObjectSystem {
             /* 타겟이 존재하는 타게팅 투사체의 경우 타겟ID에 따라 처리한다 */
             if (hasTarget) {  /* 타게팅인 경우 */
 
-                System.out.println("타게팅 투사체다. ");
-
                 int targetEntityID = flyingObjectComponent.targetEntityID;
 
                 short targetEntityType;
 
                 if (!worldMap.entityMappingList.containsKey(targetEntityID)) {
-                    System.out.println("투사체의 타겟이 존재하지 않음. 투사체 파괴");
+//                    System.out.println("투사체의 타겟이 존재하지 않음. 투사체 파괴");
                     worldMap.requestDeleteQueue.add(flyingObject);
                     return;
                 }
@@ -221,7 +215,7 @@ public class FlyingObjectSystem {
 
                         float movedDeltaDistance = speed * deltaTime;
 
-                        System.out.println("movedDeltaDistance = " + movedDeltaDistance);
+  //                      System.out.println("movedDeltaDistance = " + movedDeltaDistance);
 
                         Vector3 targetPos = (Vector3)targetEntity.positionComponent.position.clone();
                         targetPos.set(targetPos.x(), 1.5f, targetPos.z());
@@ -325,7 +319,7 @@ public class FlyingObjectSystem {
 
                                     SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
 
-                                    System.out.println("헤드샷 버프 삭제함");
+    //                                System.out.println("헤드샷 버프 삭제함");
 
                                 }
                                 else{
@@ -368,9 +362,6 @@ public class FlyingObjectSystem {
                                     /** 2020 04 02 */
 
                                     // 그 외 모든 타게팅 투사체 충돌 데미지 처리들.
-                                    if(skillUser == null){
-                                        System.out.println("투사체 유저가 널;");
-                                    }
 
                                     switch (createdEntityType){
 
@@ -403,7 +394,7 @@ public class FlyingObjectSystem {
                         //타겟의 위치를 향하여 이동한다.
                         else
                         {
-                            System.out.println("타겟을 향해 투사체 이동 ");
+      //                      System.out.println("타겟을 향해 투사체 이동 ");
                             //현재 투사체의 위치와 타겟의 위치를 향하는 크기가 1인 방향 벡터.
                             Vector3 direction = Vector3.normalizeVector(flyingObject.positionComponent.position, targetPos);
 
@@ -628,23 +619,23 @@ public class FlyingObjectSystem {
                 boolean hasArrived = false;
                 hasArrived = ( flyingObjectComponent.flyingObjectRemainDistance <= 0 ) ? true : false;
 
-                System.out.println("현재 투사체 남은 거리 : " + flyingObjectComponent.flyingObjectRemainDistance);
+        //        System.out.println("현재 투사체 남은 거리 : " + flyingObjectComponent.flyingObjectRemainDistance);
 
                 if (hasArrived) { /* 목적지에 다다른 경우 */
 
                     /* 삭제 처리 한다 */
                     worldMap.requestDeleteQueue.add(flyingObject);
-                    System.out.println("투사체" + flyingObject.entityID + "를 삭제합니다.");
+          //          System.out.println("투사체" + flyingObject.entityID + "를 삭제합니다.");
 
 
                     /** 찌르기 스킬의 경우 */
                     if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE){
 
-                        System.out.println("찌르기 스킬의 삭제 처리 ");
+            //            System.out.println("찌르기 스킬의 삭제 처리 ");
 
                         CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
 
-                        System.out.println("캐릭터 ID : " + character.entityID );
+              //          System.out.println("캐릭터 ID : " + character.entityID );
 
                         ArrayList<BuffAction> buffActionList = character.buffActionHistoryComponent.conditionHistory;
 
@@ -691,10 +682,10 @@ public class FlyingObjectSystem {
                     //Vector3 거리 = direction * flyingObject.flyingObject.flyingSpeed * deltaTime;
                     float temp = flyingObjectComponent.flyingSpeed * deltaTime;
 
-                    System.out.println("투사체 속도 : " + flyingObjectComponent.flyingSpeed);
+                /*    System.out.println("투사체 속도 : " + flyingObjectComponent.flyingSpeed);
                     System.out.println("단위 시간 : " + deltaTime);
                     System.out.println("이동 거리 : " + temp);
-                    //Vector3 moveDistance = new Vector3(direction.x() * temp, direction.y() * temp, direction.z() * temp );
+                */    //Vector3 moveDistance = new Vector3(direction.x() * temp, direction.y() * temp, direction.z() * temp );
                     //Vector3 moveDistance = new Vector3(direction.x() * temp, direction.y() * 0, direction.z() * temp );
 
                     Vector3 moveVector = direction.setSpeed(temp);
@@ -702,28 +693,24 @@ public class FlyingObjectSystem {
                     /* 좌표를 반영한다 */
                     // 기존 위치 + 이동할 거리. ??
                     flyingObjectPos.movePosition(flyingObjectPos, moveVector);
-                    System.out.println("투사체 남은 거리 업데이트함 : " + flyingObjectComponent.flyingObjectRemainDistance);
+                  /*  System.out.println("투사체 남은 거리 업데이트함 : " + flyingObjectComponent.flyingObjectRemainDistance);
                     System.out.println("이동할 거리 계산 : " + moveVector.length());
 
                     System.out.println("투사체 좌표 : " + flyingObjectPos.x() + ", "+ flyingObjectPos.y() + ", "+ flyingObjectPos.z());
 
-
+*/
                     /** 전사 찌르기 스킬 투사체의 경우 예외처리를 임시로 여기서 함 */
                     if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE) {
 
                         if (false){ // 이전 버전 {
 
-                            System.out.println("전사 찌르기 스킬입니다.. 투사체 처리");
+  //                          System.out.println("전사 찌르기 스킬입니다.. 투사체 처리");
 
                             /* 스킬 시전자의 좌표를 투사체와 같이 해준다. */
 
                             CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
 
-                            System.out.println("캐릭터 ID : " + character.entityID );
-
                             character.positionComponent.position.set((Vector3) flyingObjectPos.clone());
-
-                            System.out.println("캐릭터 좌표 : " + character.positionComponent.position.x() + ", "+ flyingObjectPos.y() + ", "+ flyingObjectPos.z());
 
                             CharacterData characterData = worldMap.getCharacterDataFromEntity(character);
 
@@ -775,16 +762,18 @@ public class FlyingObjectSystem {
 
                         Vector3 objectPos = flyingObject.positionComponent.position;
                         Vector3 mobPos = monster.positionComponent.position;
+/*
 
                         System.out.println("투사체" + flyingObject.entityID + " 위치 : " +
                                 objectPos.x() + "," + objectPos.y() + ", " + objectPos.z());
 
                         System.out.println("몹" + monster.entityID + " 위치 : " +
                                 mobPos.x() + "," + mobPos.y() + ", " + mobPos.z());
+*/
 
                         currentDistance = Vector3.distance(objectPos, mobPos);
 
-                        System.out.println("거리 : " + currentDistance);
+//                        System.out.println("거리 : " + currentDistance);
 
 
 
@@ -804,26 +793,26 @@ public class FlyingObjectSystem {
                                 Vector3 monsterDirection = Vector3.getTargetDirection(flyingObjectPos , monster.positionComponent.position);
 
                                 float betweenAngle = Vector3.getAngle(flyingDirection, monsterDirection);
-                                System.out.println("투사체와 대상의 사이각 : " + betweenAngle);
+  //                              System.out.println("투사체와 대상의 사이각 : " + betweenAngle);
 
                                 isInTargetRange = false;
                                 if((betweenAngle <= 90f)){
 
-                                    System.out.println("대상" + monster.entityID + "가 범위각도 내에 존재합니다.");
+    //                                System.out.println("대상" + monster.entityID + "가 범위각도 내에 존재합니다.");
                                     isInTargetRange = true;
                                 }
 
                             }
                             else{
                                 isInTargetRange = true;
-                                System.out.println("몬스터" + monster.entityID + "가 공격 범위 내에 있습니다.");
+      //                          System.out.println("몬스터" + monster.entityID + "가 공격 범위 내에 있습니다.");
                             }
 
                         }
 
-                        System.out.println("투사체 공격 범위 : " +
+        /*                System.out.println("투사체 공격 범위 : " +
                                 flyingObjectComponent.flyingObjectRadius);
-
+*/
 
 
 
@@ -834,7 +823,7 @@ public class FlyingObjectSystem {
                         /* 범위에 들어있다면, 범위 대상 중 가장 가까운 녀석인지 판별한다 */
                         if(isInTargetRange){
 
-                            System.out.println("몬스터" + monster.entityID + "를 타겟 목록에 추가합니다.");
+  //                          System.out.println("몬스터" + monster.entityID + "를 타겟 목록에 추가합니다.");
 
 
                             /** 여기다 해줘서 될 지 모르겠네.. 이미 버프를 받고있는 애들의 경우는 제외하기 */
@@ -874,7 +863,7 @@ public class FlyingObjectSystem {
                                         minDistance = currentDistance;
                                         targetID = monster.entityID;
 
-                                        System.out.println("몬스터" + monster.entityID + "를 가장 가까운 타겟으로 지정합니다.");
+    //                                    System.out.println("몬스터" + monster.entityID + "를 가장 가까운 타겟으로 지정합니다.");
                                     }
                                 }
 

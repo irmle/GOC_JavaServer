@@ -117,7 +117,7 @@ public class BuildSlot implements Cloneable{
 
     public void setBuildingType(int buildType){
         this.buildingType = buildType;
-        this.mapPosition.setMapInfoMovable(false);
+
     }
 
     public int getBuildingType(){

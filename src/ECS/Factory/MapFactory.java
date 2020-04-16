@@ -732,7 +732,7 @@ public class MapFactory implements Cloneable {
      */
     public static ArrayList<MapInfo> pathFind(WorldMap worldMap, MapInfo startPoint, MapInfo endPoint){
 
-        System.out.println("패스 파인딩 호출");
+        //System.out.println("패스 파인딩 호출");
         // System.out.println("출발 지점 : " + startPoint.arrayX + ", " + startPoint.arrayY);
         // System.out.println("도착 지점 : " + endPoint.arrayX + ", " + endPoint.arrayY);
 
@@ -764,7 +764,7 @@ public class MapFactory implements Cloneable {
             /* 꺼낸 노드가 목적 노드와 일치한다면 중단 */
             if(currentNode == endNode){ // 아.. 설마 endNode의 부모 설정을 안해줬나?? 아니 근데.. 애초에 열린 목록에 집어넣을 떄..
 
-                System.out.println("경로 다 찾음");
+                //System.out.println("경로 다 찾음");
                 break;
             }
 
@@ -881,7 +881,7 @@ public class MapFactory implements Cloneable {
                     }
 
                 }
-                System.out.println("닫힌 갯수 : " + closedNum);
+                //System.out.println("닫힌 갯수 : " + closedNum);
             }
 
 
@@ -917,7 +917,7 @@ public class MapFactory implements Cloneable {
 
     public static ArrayList<MapInfo> pathFindForJungle(WorldMap worldMap, MapInfo startPoint, MapInfo endPoint, int targetID){
 
-        System.out.println("패스 파인딩 호출");
+        //System.out.println("패스 파인딩 호출");
         // System.out.println("출발 지점 : " + startPoint.arrayX + ", " + startPoint.arrayY);
         // System.out.println("도착 지점 : " + endPoint.arrayX + ", " + endPoint.arrayY);
 
@@ -949,7 +949,7 @@ public class MapFactory implements Cloneable {
             /* 꺼낸 노드가 목적 노드와 일치한다면 중단 */
             if(currentNode == endNode){ // 아.. 설마 endNode의 부모 설정을 안해줬나?? 아니 근데.. 애초에 열린 목록에 집어넣을 떄..
 
-                System.out.println("경로 다 찾음");
+                //System.out.println("경로 다 찾음");
                 break;
             }
 
@@ -1066,7 +1066,7 @@ public class MapFactory implements Cloneable {
                     }
 
                 }
-                System.out.println("닫힌 갯수 : " + closedNum);
+                //System.out.println("닫힌 갯수 : " + closedNum);
             }
 
 

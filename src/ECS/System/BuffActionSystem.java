@@ -140,7 +140,7 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
+                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
@@ -176,7 +176,6 @@ public class BuffActionSystem {
                                             newCondition.isUnTargetable = true;
                                             break;
                                         case ConditionType.isTargetingInvincible :
-                                            System.out.println("무적이다... ");
                                             newCondition.isTargetingInvincible = true;
                                             break;
                                         case ConditionType.isArcherFireActivated :
@@ -379,15 +378,12 @@ public class BuffActionSystem {
                                         newCondition.isUnTargetable = true;
                                         break;
                                     case ConditionType.isTargetingInvincible :
-                                        System.out.println("무적이다... ");
                                         newCondition.isTargetingInvincible = true;
                                         break;
                                     case ConditionType.isArcherFireActivated :
                                         newCondition.isArcherFireActivated = true;
                                         break;
                                     case ConditionType.isArcherHeadShotActivated :
-
-                                        System.out.println("해드샷 활성화됨 ");
                                         newCondition.isArcherHeadShotActivated = true;
                                         break;
 
@@ -452,19 +448,15 @@ public class BuffActionSystem {
                                     newCondition.buffDurationRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.attackDamageRate:
-                                    System.out.println("공격댐 증가 : " + condition.value);
                                     newCondition.attackDamageRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.defenseRate:
-                                    System.out.println("방어 증가 : " + condition.value);
                                     newCondition.defenseRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.maxHPRate:
-                                    System.out.println("최대체력 증가 : " + condition.value);
                                     newCondition.maxHPRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.maxMPRate:
-                                    System.out.println("최대마나 증가 : " + condition.value);
                                     newCondition.maxMPRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.coolTimeReduceRate:
@@ -476,11 +468,9 @@ public class BuffActionSystem {
                                     break;
                                 // 2020 01 29 수 새벽 추가 권령희
                                 case ConditionType.criticalChanceRate :
-                                    System.out.println("크리티컬 확률 증가 : " + condition.value);
                                     newCondition.criticalChanceRate += (condition.value * 0.01);
                                     break;
                                 case ConditionType.criticalDamageRate :
-                                    System.out.println("크리티컬 데미지 증가 : " + condition.value);
                                     newCondition.criticalDamageRate += (condition.value * 0.01);
                                     break;
 
@@ -579,7 +569,7 @@ public class BuffActionSystem {
             System.out.println("archerFireActivated : " + character.conditionComponent.isArcherFireActivated);
             System.out.println("invincible : " + character.conditionComponent.isTargetingInvincible);*/
 
-            System.out.println("moveSpeedRate : " + character.conditionComponent.moveSpeedRate);
+            /*System.out.println("moveSpeedRate : " + character.conditionComponent.moveSpeedRate);
             System.out.println("attackSpeedRate : " + character.conditionComponent.attackSpeedRate);
             System.out.println("hpRecoveryRate : " + character.conditionComponent.hpRecoveryRate);
             System.out.println("mpRecoveryRate : " + character.conditionComponent.mpRecoveryRate);
@@ -608,7 +598,7 @@ public class BuffActionSystem {
             System.out.println("현재 이동속도  : " + character.velocityComponent.moveSpeed);
             System.out.println("현재 방어력  : " + character.defenseComponent.defense);
             System.out.println("현재 치뎀  : " + character.attackComponent.criticalDamage);
-            System.out.println("현재 치명확률   : " + character.attackComponent.criticalChance);
+            System.out.println("현재 치명확률   : " + character.attackComponent.criticalChance);*/
 
             /**************************/
 
@@ -643,22 +633,6 @@ public class BuffActionSystem {
                 if(buffAction.remainTime < 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-
-                    /*
-                    *//** 에어본 예외처리.. *//*
-                    if(worldMap.entityMappingList.get(buffAction.unitID) == EntityType.SkillObjectEntity){
-
-                        Vector3 monsterPos = monster.positionComponent.position;
-
-                        SkillObjectEntity skillObject = worldMap.skillObjectEntity.get(buffAction.unitID);
-
-                        if(skillObject.skillObjectComponent.createdSkillType == SkillType.KNIGHT_TORNADO){
-
-                            monsterPos.set(monsterPos.x(), 0f, monsterPos.z());
-                        }
-                    }*/
-
-
                     /**
                      * 에어본 효과를 받고있는 몬스터의 위치를 원상복귀 해준다.
                      */
@@ -688,7 +662,7 @@ public class BuffActionSystem {
                 else{
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
-                    System.out.println("버프가 지속중이므로, 상태에 반영합니다. ");
+                    //System.out.println("버프가 지속중이므로, 상태에 반영합니다. ");
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
 
@@ -1145,8 +1119,6 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    System.out.println("버프를 제거합니다.");
-
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
                     j--;    // 인덱스 제어.
@@ -1156,7 +1128,6 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
@@ -1530,7 +1501,7 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    System.out.println("버프를 제거합니다.");
+                    //System.out.println("버프를 제거합니다.");
 
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
@@ -1541,7 +1512,7 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
+                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
@@ -1911,7 +1882,7 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    System.out.println("버프를 제거합니다.");
+                    //System.out.println("버프를 제거합니다.");
 
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
@@ -2289,7 +2260,7 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    System.out.println("버프를 제거합니다.");
+                    //System.out.println("버프를 제거합니다.");
 
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
@@ -2300,7 +2271,7 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
+                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 

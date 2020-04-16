@@ -89,7 +89,7 @@ public class ItemSlotSystem {
                         /* 다음 상태로 전이 */
                         if(currentSlot.getItemCount() == 0){
                             currentSlot.setSlotState(ItemSlotState.END);
-                            System.out.println("아이템 갯수가 0이되었습니다. 쿨타임을 적용하지 않습니다.");
+                            //System.out.println("아이템 갯수가 0이되었습니다. 쿨타임을 적용하지 않습니다.");
                         }
                         else{
                             currentSlot.remainCoolTime = GameDataManager.ITEM_USE_COOLTIME;
@@ -103,7 +103,7 @@ public class ItemSlotSystem {
                         //System.out.println("남은 쿨타임 : " + currentSlot.remainCoolTime);
                         boolean isCoolTimeEnd = (currentSlot.remainCoolTime <= 0f) ? true : false;
                         if(isCoolTimeEnd){
-                            System.out.println("아이템 사용 쿨타임이 종료되었습니다.");
+                            //System.out.println("아이템 사용 쿨타임이 종료되었습니다.");
                             currentSlot.setSlotState(ItemSlotState.END);
                         }
                         else{
@@ -112,18 +112,18 @@ public class ItemSlotSystem {
                         break;
 
                     case ItemSlotState.END :
-                        System.out.println("END");
+                        //ystem.out.println("END");
                         if(currentSlot.getItemCount() == 0){
 
                             /* 슬롯을 비워주는 처리를 한다 */
-                            System.out.println("아이템 갯수가 0이되어, 슬롯 비우는 처리를 진행합니다.");
+                            //System.out.println("아이템 갯수가 0이되어, 슬롯 비우는 처리를 진행합니다.");
                             currentSlot.emptySlot();
 
                             /* 상태 전이 */
                             currentSlot.setSlotState(ItemSlotState.EMPTY);
                         }
                         else{
-                            System.out.println("슬롯 상태가 IDLE로 돌아갑니다, 남은 아이템 갯수 : " + currentSlot.itemCount);
+                            //System.out.println("슬롯 상태가 IDLE로 돌아갑니다, 남은 아이템 갯수 : " + currentSlot.itemCount);
                             // 쿨타임이 종료되었을 때 추가로 해줄 처리가 있다면 해주고
                             // 상태 전이
                             currentSlot.setSlotState(ItemSlotState.IDLE);
@@ -166,21 +166,21 @@ public class ItemSlotSystem {
 
 
         if(isAbleToUseItem){
-            System.out.println("아이템을 사용할 수 있습니다.");
+            //System.out.println("아이템을 사용할 수 있습니다.");
             resultCode =  NotificationType.SUCCESS;
         }
         else{
 
             if(userStateAbleUseItem == false){
-                System.out.println("아이템을 사용할 수 있는 상태가 아닙니다");
+                //System.out.println("아이템을 사용할 수 있는 상태가 아닙니다");
                 resultCode =  NotificationType.ERR_ITEM_USER_DISABLE_USING;
             }
             else if(isCoolTimeZero == false){
-                System.out.println("해당 아이템의 쿨타임이 아직 지나지 않았습니다.");
+                //System.out.println("해당 아이템의 쿨타임이 아직 지나지 않았습니다.");
                 resultCode =  NotificationType.ERR_ITEM_COOL_TIME_NOT_YET;
             }
             else if(isValidItem){
-                System.out.println("유효하지 않은 아이템입니다. 슬롯이 비어있거나, 갯수가 하나 이상이 아닙니다.");
+                //System.out.println("유효하지 않은 아이템입니다. 슬롯이 비어있거나, 갯수가 하나 이상이 아닙니다.");
                 resultCode =  NotificationType.ERR_ITEM_INVALID_ITEM;
             }
 
@@ -229,7 +229,7 @@ public class ItemSlotSystem {
      */
     public void applyItemBuff(CharacterEntity user, ItemInfo itemInfo){
 
-        System.out.println("아이템 " + itemInfo.itemName + "의 효과를 적용합니다. ");
+        //System.out.println("아이템 " + itemInfo.itemName + "의 효과를 적용합니다. ");
 
         BuffAction itemBuff = null;
 
@@ -462,7 +462,7 @@ public class ItemSlotSystem {
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
 
-                System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
+                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }

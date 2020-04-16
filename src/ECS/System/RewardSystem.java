@@ -87,13 +87,13 @@ public class RewardSystem {
                 expRate *= ( 1 +  expUpgradeInfo.effectValue * 0.01f );
             }
 
-            System.out.println("경험치 보상 비율 : " + expRate + ", 경험치 업글 레벨 : " + expUpgradeLevel);
+            //System.out.println("경험치 보상 비율 : " + expRate + ", 경험치 업글 레벨 : " + expUpgradeLevel);
 
             float goldRate = charCondition.goldGainRate;
             if(goldUpgradeLevel >= 1){
                 goldRate *= ( 1 +  goldUpgradeInfo.effectValue * 0.01f );
             }
-            System.out.println("골드 보상 비율 : " + goldRate + ", 골드 업글 레벨 : " + goldUpgradeLevel);
+            //System.out.println("골드 보상 비율 : " + goldRate + ", 골드 업글 레벨 : " + goldUpgradeLevel);
 
 
             /** 현 캐릭터의 보상 목록을 처리한다  */
@@ -124,9 +124,6 @@ public class RewardSystem {
                         finalRewardGold = currentReward.rewardGold * goldRate;
                         character.characterComponent.getGoldReward((int)finalRewardGold);   // 골드
 
-                        System.out.println("받은 경험치 : " + currentReward.rewardExp + ", 현재 경험치 : " + character.characterComponent.exp);
-                        System.out.println("받은 골드 : " + currentReward.rewardGold + ", 현재 골드 : " + character.characterComponent.gold);
-
                         // 누적
                         expSum += (float)finalRewardExp;
                         goldSum += (int)finalRewardGold;
@@ -152,8 +149,6 @@ public class RewardSystem {
                         finalRewardGold = currentReward.rewardGold * goldRate * 0.5f;
                         character.characterComponent.getGoldReward((int)finalRewardGold);   // 골드
 
-                        System.out.println("받은 경험치 : " + currentReward.rewardExp + ", 현재 경험치 : " + character.characterComponent.exp);
-                        System.out.println("받은 골드 : " + currentReward.rewardGold + ", 현재 골드 : " + character.characterComponent.gold);
 
                         // 누적
                         expSum += (float)finalRewardExp;
@@ -163,17 +158,12 @@ public class RewardSystem {
 
                     case RewardType.KILL_MONSTER_JUNGLE_MONSTER :
 
-                        System.out.println("정글몬스터 보상 처리 ");
-
                         // 경험치
                         finalRewardExp = currentReward.rewardExp * expRate;
                         character.characterComponent.getExpReward((float)finalRewardExp); // 경험치
                         // 골드
                         finalRewardGold = currentReward.rewardGold * goldRate;
                         character.characterComponent.getGoldReward((int)finalRewardGold);   // 골드
-
-                        System.out.println("받은 경험치 : " + currentReward.rewardExp + ", 현재 경험치 : " + character.characterComponent.exp);
-                        System.out.println("받은 골드 : " + currentReward.rewardGold + ", 현재 골드 : " + character.characterComponent.gold);
 
                         // 누적
                         expSum += (float)finalRewardExp;
@@ -183,14 +173,11 @@ public class RewardSystem {
                         //character.buffActionHistoryComponent.conditionHistory.add(currentReward.rewardBuff);
 
                         /** 2020 04 03 */
-                        System.out.println("버프보상 갯수 : " + currentReward.rewardBuff);
                         for (int j=0; j<currentReward.rewardBuff.size(); j++){
 
                             character.buffActionHistoryComponent.conditionHistory.add(
                                     currentReward.rewardBuff.get(j));
                         }
-
-                        System.out.println("정글몹 버프 보상 받았음 " );
 
                         break;
 
