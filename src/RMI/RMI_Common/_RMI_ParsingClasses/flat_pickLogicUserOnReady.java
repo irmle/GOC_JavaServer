@@ -43,18 +43,17 @@ public final class flat_pickLogicUserOnReady extends Table {
     }
 
     public static byte[] createflat_pickLogicUserOnReady(pickLogicUserOnReady data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicUserOnReady.createflat_pickLogicUserOnReady(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicUserOnReady getRootAsflat_pickLogicUserOnReady(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicUserOnReady result = new pickLogicUserOnReady(flat_pickLogicUserOnReady.getRootAsflat_pickLogicUserOnReady( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicUserOnReady result = new pickLogicUserOnReady(flat_pickLogicUserOnReady.getRootAsflat_pickLogicUserOnReady( buf ) );
+        buf = null;
         return result;
     }
 

@@ -46,18 +46,17 @@ public final class flat_motionCharacterCancelSkill extends Table {
     }
 
     public static byte[] createflat_motionCharacterCancelSkill(motionCharacterCancelSkill data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_motionCharacterCancelSkill.createflat_motionCharacterCancelSkill(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static motionCharacterCancelSkill getRootAsflat_motionCharacterCancelSkill(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        motionCharacterCancelSkill result = new motionCharacterCancelSkill(flat_motionCharacterCancelSkill.getRootAsflat_motionCharacterCancelSkill( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        motionCharacterCancelSkill result = new motionCharacterCancelSkill(flat_motionCharacterCancelSkill.getRootAsflat_motionCharacterCancelSkill( buf ) );
+        buf = null;
         return result;
     }
 

@@ -44,18 +44,17 @@ public final class flat_motionCharacterDoAttack extends Table {
     }
 
     public static byte[] createflat_motionCharacterDoAttack(motionCharacterDoAttack data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_motionCharacterDoAttack.createflat_motionCharacterDoAttack(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static motionCharacterDoAttack getRootAsflat_motionCharacterDoAttack(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        motionCharacterDoAttack result = new motionCharacterDoAttack(flat_motionCharacterDoAttack.getRootAsflat_motionCharacterDoAttack( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        motionCharacterDoAttack result = new motionCharacterDoAttack(flat_motionCharacterDoAttack.getRootAsflat_motionCharacterDoAttack( buf ) );
+        buf = null;
         return result;
     }
 

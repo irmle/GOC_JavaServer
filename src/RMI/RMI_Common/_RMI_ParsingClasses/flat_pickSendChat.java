@@ -50,18 +50,17 @@ public final class flat_pickSendChat extends Table {
     }
 
     public static byte[] createflat_pickSendChat(pickSendChat data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickSendChat.createflat_pickSendChat(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickSendChat getRootAsflat_pickSendChat(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickSendChat result = new pickSendChat(flat_pickSendChat.getRootAsflat_pickSendChat( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickSendChat result = new pickSendChat(flat_pickSendChat.getRootAsflat_pickSendChat( buf ) );
+        buf = null;
         return result;
     }
 

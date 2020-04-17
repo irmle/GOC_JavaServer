@@ -51,18 +51,17 @@ public final class flat_broadcastingStoreUpgradeBuffList extends Table {
     }
 
     public static byte[] createflat_broadcastingStoreUpgradeBuffList(broadcastingStoreUpgradeBuffList data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingStoreUpgradeBuffList.createflat_broadcastingStoreUpgradeBuffList(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingStoreUpgradeBuffList getRootAsflat_broadcastingStoreUpgradeBuffList(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingStoreUpgradeBuffList result = new broadcastingStoreUpgradeBuffList(flat_broadcastingStoreUpgradeBuffList.getRootAsflat_broadcastingStoreUpgradeBuffList( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        broadcastingStoreUpgradeBuffList result = new broadcastingStoreUpgradeBuffList(flat_broadcastingStoreUpgradeBuffList.getRootAsflat_broadcastingStoreUpgradeBuffList( buf ) );
+        buf = null;
         return result;
     }
 

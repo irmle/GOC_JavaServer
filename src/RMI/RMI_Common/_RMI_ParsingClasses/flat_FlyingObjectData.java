@@ -76,18 +76,17 @@ public final class flat_FlyingObjectData extends Table {
     }
 
     public static byte[] createflat_FlyingObjectData(FlyingObjectData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_FlyingObjectData.createflat_FlyingObjectData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static FlyingObjectData getRootAsflat_FlyingObjectData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        FlyingObjectData result = new FlyingObjectData(flat_FlyingObjectData.getRootAsflat_FlyingObjectData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        FlyingObjectData result = new FlyingObjectData(flat_FlyingObjectData.getRootAsflat_FlyingObjectData( buf ) );
+        buf = null;
         return result;
     }
 

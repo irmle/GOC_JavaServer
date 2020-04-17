@@ -4,7 +4,6 @@ import RMI.RMI_Common.*;
 import RMI.RMI_Common._RMI_ParsingClasses.*;
 import RMI.RMI_Classes.*;
 import RMI.RMI_Classes.RMI_InitClasses.*;
-
 import RMI.RMI_LogicMessages.*;
 import RMI._NettyHandlerClass.*;
 
@@ -20,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -66,70 +66,52 @@ public class RMI_ {
     //클라이언트와 처음으로 연결 되었을 때 호출되는 부분.
     public static void OnConnected(ChannelHandlerContext ctx)
     {
-        System.out.println("channelOnConnected : "+ctx.channel().remoteAddress());
-
-
         //접속제한수를 초과하지 않았는지 체크.
-        if(RMI_NettyServer.checkClient_Max_Connection() == false)
+        if(!RMI_NettyServer.checkClient_Max_Connection())
         {
-            System.out.println("접속자수 제한을 초과하였습니다.");
-
-            RMI_OverConnectionAnnounce overConnectionAnnounce = new RMI_OverConnectionAnnounce();
-            overConnectionAnnounce.maxConnection = RMI_NettyServer.getClient_Max_Connection();
-            byte[] data = overConnectionAnnounce.getBytes();
-
-            //접속자수 제한을 초과하였음을, 해당 클라이언트에게 송신 후, 연결을 끊는다.
-            ByteBuf RMI_OverConnectionAnnounce = alloc.directBuffer(data.length + 12);
-
-            RMI_OverConnectionAnnounce.writeIntLE(data.length); //길이값 지정.
-            RMI_OverConnectionAnnounce.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 측의 rmi_host_id지정
-            RMI_OverConnectionAnnounce.writeShortLE(RMI_Context.Reliable);
-            RMI_OverConnectionAnnounce.writeShortLE(RMI_Context.RMI_OverConnectionAnnounce);
-            RMI_OverConnectionAnnounce.writeBytes(data);
-
-            ctx.channel().writeAndFlush(RMI_OverConnectionAnnounce);
-
-
-            //접속제한을 초과한 클라이언트와의 연결을 끊는다.
-            ctx.channel().close();
-            return;
+            send_OverConnectionAnnounce(ctx);
         }
-
-        //연결 수립시 처리 담당.
-        OnConnected.OnConnected(ctx);
+        else
+        {
+            //System.out.println("연결 시도중");
+            //추후 UDP포트와의 Binding이 끝나면 OnConnected.OnConnected(RMI_ID); 가 호출됨.
+        }
     }
 
     //클라이언트와 연결이 끊겼을 때 호출되는 부분.
     public static void OnDisConnected(ChannelHandlerContext ctx)
     {
-        //연결 종료시 처리 담당.
-        OnDisconnected.OnDisconnected(ctx);
-
-        //접속 종료시, 등록된 RMI_ID를 해제.
-        RMI_ID.removeRMI_ID(ctx.channel());
-
         //접속 종료시, UDP 채널에 등록된 RMI_ID를 초기화.
         RMI_ID DisconnectID = ctx.channel().attr(TCP_InBoundHandler.getAttrKey()).get();
         if(DisconnectID != null)
         {
+            //연결 종료시 처리 담당.
+            OnDisconnected.OnDisconnected(DisconnectID);
+
+            //접속 종료시, 등록된 RMI_ID를 해제.
+            RMI_ID.removeRMI_ID(ctx.channel());
+
+            //UDP 연결 상태를 Disable로 바꿈
+            DisconnectID.isUDPConnectionAvailable = false;
+
             //TCP 채널 초기화!
-            ctx.channel().attr(TCP_InBoundHandler.getAttrKey()).set(RMI_ID.NONE);
+            ctx.channel().attr(TCP_InBoundHandler.getAttrKey()).set(null);
 
             //UDP 채널 반환!
             Channel udpChannel = DisconnectID.getUDP_Object();
-            udpChannel.attr(UDP_InBoundHandler.getAttrKey()).set(RMI_ID.NONE);
-            RMI_NettyServer.pushUDPChannel( ((InetSocketAddress)udpChannel.localAddress()).getPort() );
-            udpChannel.close();
+            udpChannel.attr(UDP_InBoundHandler.getAttrKey()).set(null);
+
+            RMI_NettyServer.pushUDPChannel( udpChannel );
 
             //최종적으로 접속 종료시 1감소.
             RMI_NettyServer.decrementUserConnection();
+
+            System.out.println("channelOnDisConnected : "+ctx.channel().remoteAddress());
         }
         else
         {
-            System.out.println("OnDisConnected DisconnectID==null");
+            //System.out.println("OnDisConnected DisconnectID == null\n유효하지 않은 패킷이 보내짐 : ["+ctx.channel().remoteAddress()+"]");
         }
-
-        System.out.println("channelOnDisConnected : "+ctx.channel().remoteAddress());
     }
 
 //=======================================================================================
@@ -295,27 +277,28 @@ public class RMI_ {
 
     //수신 로직.
     //암호화 키를 찾기위한 Object, byte[] 로부터 가져온 PacketType, ContextType, 그리고 RMI_Data를 가져옴.
-    public static void recvByte(int rmi_host_id, short rmi_ctx, short packetType, byte[] data, DatagramPacket UDP_Data, ChannelHandlerContext ctx_handler)
+    public static void recvByte(int rmi_host_id, short rmi_ctx, short packetType, byte[] data, InetSocketAddress UDP_Sender, ChannelHandlerContext ctx_handler)
     {
         //적절한 RMI_Context인지 확인.
-        if (!(0 < rmi_ctx && rmi_ctx <= RMI_Context.names.length))
+        if (!(RMI_Context.Reliable <= rmi_ctx && rmi_ctx <= RMI_Context.UnReliable_Public_AES256))
         {
-            if(UDP_Data == null)
+            if(UDP_Sender == null)
             {
-                System.out.println("rmi_ctx 비정상적인 TCP패킷 도달!");
-                System.out.println("rmi_ctx = " + (rmi_ctx)+ " / packetType = "+ (packetType));
-                ctx_handler.channel().close();
+                //비정상적인 데이터를 보냈으므로 IPBan처리
+                InetSocketAddress IllegalIPAddress = (InetSocketAddress)ctx_handler.channel().remoteAddress();
+                IPFilterHandler.addIPBanList(IllegalIPAddress);
+
+                //System.out.println("rmi_ctx 비정상적인 TCP패킷 도달!");
+                ctx_handler.close();
             }
             else
             {
-                System.out.println("rmi_ctx 비정상적인 UDP패킷 도달!");
-                System.out.println("rmi_ctx = " + (rmi_ctx)+ " / packetType = "+ (packetType));
-
-                //데이터그램 할당해제!
-                if (UDP_Data != null && UDP_Data.refCnt() > 0) {
-                    ReferenceCountUtil.release(UDP_Data, UDP_Data.refCnt());
-                }
+                //System.out.println("rmi_ctx 비정상적인 UDP패킷 도달!");
+                UDP_Sender = null;
             }
+
+            //System.out.println("rmi_ctx = " + (rmi_ctx)+ " / packetType = "+ (packetType));
+            data = null;
             return; //비정상 패킷이므로 차단.
         }
 
@@ -323,30 +306,31 @@ public class RMI_ {
         if (!(0 < packetType && packetType <= RMI_PacketType.names.length))
         {
             //RMI_Connection 관련 패킷인지 확인.
-            if(RMI_Context.RMI_ProtocolVersionCheck <= packetType && packetType <= RMI_Context.RMI_OverConnectionAnnounce)
+            if(RMI_ConnectionPacketType.RMI_ProtocolVersionCheck <= packetType && packetType <= RMI_ConnectionPacketType.RMI_OverConnectionAnnounce)
             {
                 //정상 패킷! 아무것도 하지 않는다.
             }
             else
             {
                 //비정상 패킷이므로 차단.
-                if(UDP_Data == null)
+                if(UDP_Sender == null)
                 {
-                    System.out.println("packetType 비정상적인 TCP패킷 도달!");
-                    System.out.println("rmi_ctx = " + (rmi_ctx)+ " / packetType = "+ (packetType));
-                    ctx_handler.channel().close();
+                    //비정상적인 데이터를 보냈으므로 IPBan처리
+                    InetSocketAddress IllegalIPAddress = (InetSocketAddress)ctx_handler.channel().remoteAddress();
+                    IPFilterHandler.addIPBanList(IllegalIPAddress);
+
+                    //System.out.println("packetType 비정상적인 TCP패킷 도달!");
+                    ctx_handler.close();
                 }
                 else
                 {
-                    System.out.println("packetType 비정상적인 UDP패킷 도달!");
-                    System.out.println("rmi_ctx = " + (rmi_ctx)+ " / packetType = "+ (packetType));
-
-                    //데이터그램 할당해제!
-                    if (UDP_Data != null && UDP_Data.refCnt() > 0) {
-                        ReferenceCountUtil.release(UDP_Data, UDP_Data.refCnt());
-                    }
+                    //System.out.println("packetType 비정상적인 UDP패킷 도달!");
+                    UDP_Sender = null;
                 }
-                return;
+
+                //System.out.println("packetType = "+ (packetType)+ " / rmi_ctx = " + (rmi_ctx));
+                data = null;
+                return; //비정상 패킷이므로 차단.
             }
         }
 
@@ -354,7 +338,7 @@ public class RMI_ {
 
         //이미 연결이 수립된 곳에서 보낸 패킷인지,
         //막 연결을 수립하려고 보낸 패킷인지 판별하는 부분.
-        if (UDP_Data == null) //TCP연결이라면
+        if (UDP_Sender == null) //TCP연결이라면
         {
             //RMI_ID_id = RMI_ID.findRMI_Connection(ctx_handler.channel());
 
@@ -374,11 +358,18 @@ public class RMI_ {
         if(RMI_ID_id == null || RMI_ID_id.equals(RMI_ID.NONE))
         {
             //TCP의 경우.
-            if(UDP_Data == null)
+            if(UDP_Sender == null)
             {
                 switch (packetType)
                 {
-                    case RMI_Context.RMI_ProtocolVersionCheck: //Protocol Version 체크시.
+                    case RMI_ConnectionPacketType.RMI_ProtocolVersionCheck: //Protocol Version 체크시.
+                        //접속제한수를 초과하지 않았는지 체크.
+                        if(!RMI_NettyServer.checkClient_Max_Connection())
+                        {
+                            //초과한 상태라면 핸드쉐이킹 과정을 중지한다.
+                            //이미 연결 끊김이 예약됨
+                            break;
+                        }
 
                         RMI_ProtocolVersionCheck recvData = null;
                         try
@@ -388,18 +379,22 @@ public class RMI_ {
                                     RMI__EncryptManager.decryptAES_256(data, "RMI_Connection_Protocol", "RMI_Connection_Protocol");
 
                             recvData = RMI_ProtocolVersionCheck.createRMI_ProtocolVersionCheck(recvPacket);
+                            recvPacket = null;
                         }
                         catch (Exception e)
                         {
                             System.out.println("Unknown Connection Data:RMI_ProtocolVersionCheck 비정상적인 TCP패킷 도달! from:"+ctx_handler.channel().remoteAddress());
-                            ctx_handler.channel().close();
+                            //비정상적인 데이터를 보냈으므로 IPBan처리
+                            IPFilterHandler.addIPBanList((InetSocketAddress)ctx_handler.channel().remoteAddress());
+                            ctx_handler.close();
                             break;
                         }
 
                         if(recvData != null && rmi_protocol_version != recvData.rmi_protocol_version)
                         {
                             System.out.println("접속한 클라이언트의 버전이 맞지 않습니다. 연결을 해제합니다. from:"+ctx_handler.channel().remoteAddress());
-                            ctx_handler.channel().close();
+                            ctx_handler.close();
+                            recvData = null;
                             break;
                         }//버전체크 종료.
 
@@ -408,25 +403,28 @@ public class RMI_ {
                         sendData.base64Encoded_publicKey = RMI__EncryptManager.getPublicKey();
                         //고정된 대칭키로 암호화!
                         byte[] sendData_ = RMI__EncryptManager.encryptAES_256(sendData.getBytes(), "RMI_Connection_Protocol", "RMI_Connection_Protocol");
-
-                        //보낼 데이터 만큼 DirectBuffer 할당.
-                        ByteBuf RMI_RSA_PublicKey = alloc.directBuffer(sendData_.length + 12);
+                        sendData = null;
+                        //보낼 데이터 만큼 directBuffer 할당.
+                        ByteBuf RMI_RSA_PublicKey = alloc.directBuffer(32768);
 
                         RMI_RSA_PublicKey.writeIntLE(sendData_.length); //길이값 지정.
                         RMI_RSA_PublicKey.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 측의 rmi_host_id지정
                         RMI_RSA_PublicKey.writeShortLE(RMI_Context.Reliable);
-                        RMI_RSA_PublicKey.writeShortLE(RMI_Context.RMI_RSA_PublicKey);
+                        RMI_RSA_PublicKey.writeShortLE(RMI_ConnectionPacketType.RMI_RSA_PublicKey);
                         RMI_RSA_PublicKey.writeBytes(sendData_);
 
-                        ctx_handler.channel().writeAndFlush(RMI_RSA_PublicKey);
                         //클라이언트에게 접속용 RSA 공개키 전송완료!!
+                        ctx_handler.writeAndFlush(RMI_RSA_PublicKey);
+                        sendData_ = null;
                         break;
-                    case RMI_Context.RMI_RSA_PublicKey: //서버로부터 RSA 공개키 데이터 수신시.
+                    case RMI_ConnectionPacketType.RMI_RSA_PublicKey: //서버로부터 RSA 공개키 데이터 수신시.
                         //서버에서는 호출될 일 없음. 클라이언트에서만 호출.
                         System.out.println("잘못된 패킷! 연결을 종료합니다. ["+ctx_handler.channel().remoteAddress()+"]");
-                        ctx_handler.channel().close();
+                        //비정상적인 데이터를 보냈으므로 IPBan처리
+                        IPFilterHandler.addIPBanList((InetSocketAddress)ctx_handler.channel().remoteAddress());
+                        ctx_handler.close();
                         break;
-                    case RMI_Context.RMI_Send_EncryptedAES_Key: //클라로부터, 서버가 보낸 공개키에 의해 암호화된 AES대칭키 데이터 수신시.
+                    case RMI_ConnectionPacketType.RMI_Send_EncryptedAES_Key: //클라로부터, 서버가 보낸 공개키에 의해 암호화된 AES대칭키 데이터 수신시.
 
                         RMI_Send_EncryptedAES_Key recvData1 = null;
                         try
@@ -436,15 +434,30 @@ public class RMI_ {
 
                             //복호화된 암호화키로 객체를 생성한다.
                             recvData1 = RMI_Send_EncryptedAES_Key.createRMI_Send_EncryptedAES_Key(recvPacket1);
+                            recvPacket1 = null;
                         }
                         catch (Exception e)
                         {
                             System.out.println("Unknown Connection Data:RMI_Send_EncryptedAES_Key 비정상적인 TCP패킷 도달! from:"+ctx_handler.channel().remoteAddress());
-                            ctx_handler.channel().close();
+                            //비정상적인 데이터를 보냈으므로 IPBan처리
+                            IPFilterHandler.addIPBanList((InetSocketAddress)ctx_handler.channel().remoteAddress());
+                            ctx_handler.close();
                         }
 
                         if(recvData1 != null)
                         {
+                            //RMI_ID에 TCP, UDP Channel 등록.
+                            Channel udpChannel = RMI_NettyServer.popUDPChannel();
+                            if(udpChannel == null)
+                            {
+                                send_OverConnectionAnnounce(ctx_handler);
+                                recvData1 = null;
+                                return;
+                            }
+
+                            //접속에 성공한 클라이언트수 증가.
+                            RMI_NettyServer.incrementUserConnection();
+
                             String aesKey = Base64.getEncoder().encodeToString(recvData1.RSAEncrypted_AESKey);
                             String aesIV = Base64.getEncoder().encodeToString(recvData1.RSAEncrypted_AESIV);
 
@@ -455,25 +468,17 @@ public class RMI_ {
                             //클라로부터 수신받은 암호화 키 세팅.
                             newRMI_ID.AESKey.setAESKey(aesKey, aesIV);
 
-                            //RMI_ID에 TCP, UDP Channel 등록.
-                            Channel udpChannel = RMI_NettyServer.popUDPChannel();
-                            if(udpChannel == null)
-                            {
-                                ctx_handler.channel().close();
-                                throw new NullPointerException("더이상 할당할 UDP채널이 존재하지 않음. 접속제한 초과");
-                            }
-
                             //channel의 AttrKey에 RMI_ID객체 등록!
                             ctx_handler.channel().attr(TCP_InBoundHandler.getAttrKey()).set(newRMI_ID);
                             udpChannel.attr(UDP_InBoundHandler.getAttrKey()).set(newRMI_ID);
 
+                            //RMI_ID_id = ctx_handler.channel().attr(TCP_InBoundHandler.getAttrKey()).get();
+
+
                             newRMI_ID.setUDP_Object(udpChannel);
                             newRMI_ID.setTCP_Object(ctx_handler.channel());
+                            newRMI_ID.setTCP_ObjectHandler(ctx_handler);
 
-                            // RMI_ID_id = ctx_handler.channel().attr(TCP_InBoundHandler.getAttrKey()).get();
-
-                            //접속 시도중인 클라이언트수 증가.
-                            RMI_NettyServer.incrementUserConnection();
 
                             //클라이언트로 보낼 데이터 세팅.
                             RMI_Send_EncryptedAccept_Data send_EncryptedAccept_Data = new RMI_Send_EncryptedAccept_Data();
@@ -488,48 +493,49 @@ public class RMI_ {
                             //할당된 UDP채널의 Port 지정.
                             send_EncryptedAccept_Data.UDP_InitPort = (short)((InetSocketAddress)udpChannel.localAddress()).getPort();
 
-
                             //송신할 byte[] 데이터!
                             byte[] plainData = send_EncryptedAccept_Data.getBytes();
 
                             //클라로부터 받은 대칭키로 이를 다시 암호화 한다!
                             byte[] encryptPacket = RMI__EncryptManager.encryptAES_256(plainData, newRMI_ID.AESKey.aesKey, newRMI_ID.AESKey.aesIV);
 
-                            //보낼 데이터 만큼 DirectBuffer 할당.
-                            ByteBuf RMI_Send_EncryptedAccept_Data = alloc.directBuffer(encryptPacket.length + 12);
+                            //보낼 데이터 만큼 directBuffer 할당.
+                            ByteBuf RMI_Send_EncryptedAccept_Data = alloc.directBuffer(32768);
 
                             RMI_Send_EncryptedAccept_Data.writeIntLE(encryptPacket.length); //길이값 지정.
                             RMI_Send_EncryptedAccept_Data.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 측의 rmi_host_id지정
                             RMI_Send_EncryptedAccept_Data.writeShortLE(RMI_Context.Reliable);
-                            RMI_Send_EncryptedAccept_Data.writeShortLE(RMI_Context.RMI_Send_EncryptedAccept_Data);
+                            RMI_Send_EncryptedAccept_Data.writeShortLE(RMI_ConnectionPacketType.RMI_Send_EncryptedAccept_Data);
                             RMI_Send_EncryptedAccept_Data.writeBytes(encryptPacket);
 
-                            ctx_handler.channel().writeAndFlush(RMI_Send_EncryptedAccept_Data);
+                            ctx_handler.writeAndFlush(RMI_Send_EncryptedAccept_Data);
 
+                            send_EncryptedAccept_Data = null;
+                            plainData = null;
                             //System.out.println("[Connection Procedure Complete]");
                         }
-                        else
-                        {
-                            System.out.println("RMI_Send_EncryptedAES_Key 파싱 에러. 연결을 종료함.");
-                            ctx_handler.channel().close();
-                        }
                         break;
-                    case RMI_Context.RMI_Send_EncryptedAccept_Data: //서버로부터 AES키 및 RMI_HostID, UDP initPort등의 정보를 수신시.
+                    case RMI_ConnectionPacketType.RMI_Send_EncryptedAccept_Data: //서버로부터 AES키 및 RMI_HostID, UDP initPort등의 정보를 수신시.
                         //서버에서는 호출될 일 없음. 클라이언트에서만 호출.
                         System.out.println("잘못된 패킷입니다! 연결을 종료합니다. ["+ctx_handler.channel().remoteAddress()+"]");
-                        ctx_handler.channel().close();
+                        //비정상적인 데이터를 보냈으므로 IPBan처리
+                        IPFilterHandler.addIPBanList((InetSocketAddress)ctx_handler.channel().remoteAddress());
+                        ctx_handler.close();
                         break;
-                    case RMI_Context.RMI_OverConnectionAnnounce: //최대 접속자수 제한을 초과한 경우.
+                    case RMI_ConnectionPacketType.RMI_OverConnectionAnnounce: //최대 접속자수 제한을 초과한 경우.
                         //서버에서는 호출될 일 없음. 클라이언트에서만 호출.
                         System.out.println("잘못된 패킷임! 연결을 종료합니다. ["+ctx_handler.channel().remoteAddress()+"]");
-                        ctx_handler.channel().close();
+                        //비정상적인 데이터를 보냈으므로 IPBan처리
+                        IPFilterHandler.addIPBanList((InetSocketAddress)ctx_handler.channel().remoteAddress());
+                        ctx_handler.close();
                         break;
                     default: //잘못된 값이 왔을 경우, 연결 차단!
                         System.out.println("잘못된 패킷! 연결을 종료합니다. ["+ctx_handler.channel().remoteAddress()+"]");
-                        ctx_handler.channel().close();
+                        //비정상적인 데이터를 보냈으므로 IPBan처리
+                        IPFilterHandler.addIPBanList((InetSocketAddress)ctx_handler.channel().remoteAddress());
+                        ctx_handler.close();
                         break;
                 }
-                return;
             }
             //UDP
             else
@@ -539,29 +545,21 @@ public class RMI_ {
                 //System.out.println("Invalidate Connection UDP 비정상적인 UDP패킷 도달!");
                 //System.out.println("rmi_ctx = " + RMI_Context.name(rmi_ctx)+ " / packetType = "+ RMI_PacketType.name(packetType));
 
-                /*//비정상적인 UDP패킷이 도달하였다면 BanList에 추가하여 차단한다!
-                if(!UserManager.getUDPBanList().contains(UDP_Data.sender()))
-                    UserManager.getUDPBanList().add(UDP_Data.sender());
-                */
-
-
-                //데이터그램 객체를 버퍼 풀로 반환!
-                if (UDP_Data != null && UDP_Data.refCnt() > 0) {
-                    ReferenceCountUtil.release(UDP_Data, UDP_Data.refCnt());
-                }
-
-                return;
+                //비정상적인 UDP패킷이 도달하였다면 BanList에 추가하여 차단한다!
+                IPFilterHandler.addIPBanList(UDP_Sender);
             }
+            data = null;
+            return;
         }//처음 접속한 유저, RMI 통신을 위한 키교환 과정 진행 부분.
 
         //기존에 접속중인 유저중.
         else
         {
-            if(UDP_Data != null)
+            if(UDP_Sender != null)
             {
                 switch (packetType)
                 {
-                    case RMI_Context.RMI_UDP_ConnectionConfirm:
+                    case RMI_ConnectionPacketType.RMI_UDP_ConnectionConfirm:
 
                         RMI_UDP_ConnectionConfirm recvUDP = null;
                         RMI_ID remote = RMI_ID.findRMI_HOST_ID(rmi_host_id);
@@ -571,58 +569,62 @@ public class RMI_ {
                             try
                             {
                                 recvUDP = RMI_UDP_ConnectionConfirm.createRMI_UDP_ConnectionConfirm(udpCheck);
+
+                                udpCheck = null;
                             }
                             catch (Exception e)
                             {
                                 System.out.println("RMI_UDP_ConnectionConfirm 파싱중 에러!");
 
-                                //네티 Channel의 AttrKey에 등록된 RMI_ID 확인.
+                                /*//네티 Channel의 AttrKey에 등록된 RMI_ID 확인.
                                 RMI_ID disconnectID = ctx_handler.channel().attr(UDP_InBoundHandler.getAttrKey()).get();
+
                                 //데이터 오류시 연결 해제.
-                                disconnectID.getTCP_Object().close();
+                                if(disconnectID != null)
+                                    disconnectID.getTCP_Object().close();*/
                             }
 
-                            if(recvUDP != null && (InetSocketAddress)remote.getUDP_Object().remoteAddress() == null)
+                            if(recvUDP != null && remote.getUDP_Object() != null /*&& remote.getUDP_Object().remoteAddress() == null*/)
                             {
-                                remote.getUDP_Object().connect(UDP_Data.sender());
+                                recvUDP = null;
+                                if(remote.isUDPConnectionAvailable)
+                                    return;
 
-                                System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
+                                remote.setUDP_ObjectHandler(ctx_handler);
+
+                                remote.getUDP_Object().connect(UDP_Sender);
+
+                                //System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
                                 //System.out.println("포트 바인딩 : "+remote.getUDP_Object().remoteAddress() + " / 로컬:"+remote.getUDP_Object().localAddress());
                                 //remote.getUDP_Object().close();
                                 //System.out.println("close 포트 바인딩 : "+remote.getUDP_Object().remoteAddress()+ " / 로컬:"+remote.getUDP_Object().localAddress());
+
+                                System.out.println("channelOnConnected : "+remote.getTCP_Object().remoteAddress());
+
+                                //UDP 연결 상태를 Enable로 바꿈
+                                remote.isUDPConnectionAvailable = true;
+
+                                //연결 수립시 처리 담당.
+                                OnConnected.OnConnected(remote);
                             }
                         }
-                        else
-                        {
-                            System.out.println("RMI_ID remote = RMI_ID.findRMI_HOST_ID(rmi_host_id) => null 임.");
-                        }
-
-                        //데이터그램 객체를 버퍼 풀로 반환!
-                        if (UDP_Data != null && UDP_Data.refCnt() > 0) {
-                            ReferenceCountUtil.release(UDP_Data, UDP_Data.refCnt());
-                        }
+                        data = null;
                         return;
+
+                    default:
+
+                        break;
                 }
             }
         }
 
-
-        //데이터그램 객체를 버퍼 풀로 반환!
-        if (UDP_Data != null && UDP_Data.refCnt() > 0) {
-            ReferenceCountUtil.release(UDP_Data, UDP_Data.refCnt());
-        }
-
-        //System.out.println( "recv Data = " + (data.length + 12) );
-        //System.out.println("rmi_host_id = "+RMI_ID_id.rmi_host_id+" / rmi_ctx = " + rmi_ctx + " / packetType = " + packetType);
-
         //도착한 패킷 수신처리 부분.
         client_to_server.recvRMI_Method(RMI_ID_id, rmi_ctx, packetType, data);
-
-        //System.out.println("Recv data = "+data.length+" bytes");
     }
 
 //================================================================================
 //직접적으로 네트워크 송수신 함수 부분과 접하는 지점.
+
 
 
 
@@ -679,5 +681,33 @@ public class RMI_ {
         return date.format(currentDate);
     }
 
+    //접속제한이 초과되었을때, 해당 유저에게 초과되었음을 알리는 메시지 전송후 채널 닫음.
+    static void send_OverConnectionAnnounce(ChannelHandlerContext ctx)
+    {
+        System.out.println("OverConnectionAnnounce ");
+
+        RMI_OverConnectionAnnounce overConnectionAnnounce = new RMI.RMI_Classes.RMI_InitClasses.RMI_OverConnectionAnnounce();
+        overConnectionAnnounce.maxConnection = RMI_NettyServer.getClient_Max_Connection();
+        byte[] overConnection_data = overConnectionAnnounce.getBytes();
+
+        //접속자수 제한을 초과하였음을, 해당 클라이언트에게 송신 후, 연결을 끊는다.
+        ByteBuf RMI_OverConnectionAnnounce = alloc.directBuffer(32768);;
+
+        RMI_OverConnectionAnnounce.writeIntLE(overConnection_data.length); //길이값 지정.
+        RMI_OverConnectionAnnounce.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 측의 rmi_host_id지정
+        RMI_OverConnectionAnnounce.writeShortLE(RMI_Context.Reliable);
+        RMI_OverConnectionAnnounce.writeShortLE(RMI_ConnectionPacketType.RMI_OverConnectionAnnounce);
+        RMI_OverConnectionAnnounce.writeBytes(overConnection_data);
+
+        //송신하는 부분.
+        ctx.writeAndFlush(RMI_OverConnectionAnnounce);
+
+        //채널 종료하는 부분.
+        ctx.executor()
+                .schedule( new RMI_OverConnectionTask(ctx), 1000, TimeUnit.MILLISECONDS );
+
+        overConnection_data = null;
+        overConnectionAnnounce = null;
+    }
 }
 

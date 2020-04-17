@@ -40,18 +40,17 @@ public final class flat_StartWave extends Table {
     }
 
     public static byte[] createflat_StartWave(StartWave data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_StartWave.createflat_StartWave(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static StartWave getRootAsflat_StartWave(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        StartWave result = new StartWave(flat_StartWave.getRootAsflat_StartWave( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        StartWave result = new StartWave(flat_StartWave.getRootAsflat_StartWave( buf ) );
+        buf = null;
         return result;
     }
 

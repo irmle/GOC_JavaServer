@@ -58,18 +58,17 @@ public final class flat_LoadingPlayerData extends Table {
     }
 
     public static byte[] createflat_LoadingPlayerData(LoadingPlayerData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_LoadingPlayerData.createflat_LoadingPlayerData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static LoadingPlayerData getRootAsflat_LoadingPlayerData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        LoadingPlayerData result = new LoadingPlayerData(flat_LoadingPlayerData.getRootAsflat_LoadingPlayerData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        LoadingPlayerData result = new LoadingPlayerData(flat_LoadingPlayerData.getRootAsflat_LoadingPlayerData( buf ) );
+        buf = null;
         return result;
     }
 

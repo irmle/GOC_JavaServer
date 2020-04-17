@@ -51,18 +51,19 @@ public final class flat_broadcastingBarricadeSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingBarricadeSnapshot(broadcastingBarricadeSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingBarricadeSnapshot.createflat_broadcastingBarricadeSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingBarricadeSnapshot getRootAsflat_broadcastingBarricadeSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingBarricadeSnapshot result = new broadcastingBarricadeSnapshot(flat_broadcastingBarricadeSnapshot.getRootAsflat_broadcastingBarricadeSnapshot( readData.nioBuffer() ) );
-        readData.release();
+
+        ByteBuffer readData = wrap(data);
+        broadcastingBarricadeSnapshot result = new broadcastingBarricadeSnapshot(flat_broadcastingBarricadeSnapshot.getRootAsflat_broadcastingBarricadeSnapshot( readData ) );
+        readData = null;
         return result;
     }
 

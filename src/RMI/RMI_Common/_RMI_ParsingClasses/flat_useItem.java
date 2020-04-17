@@ -52,18 +52,17 @@ public final class flat_useItem extends Table {
     }
 
     public static byte[] createflat_useItem(useItem data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_useItem.createflat_useItem(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static useItem getRootAsflat_useItem(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        useItem result = new useItem(flat_useItem.getRootAsflat_useItem( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        useItem result = new useItem(flat_useItem.getRootAsflat_useItem( buf ) );
+        buf = null;
         return result;
     }
 

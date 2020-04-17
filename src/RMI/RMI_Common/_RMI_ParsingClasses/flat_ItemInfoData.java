@@ -40,18 +40,17 @@ public final class flat_ItemInfoData extends Table {
     }
 
     public static byte[] createflat_ItemInfoData(ItemInfoData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_ItemInfoData.createflat_ItemInfoData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static ItemInfoData getRootAsflat_ItemInfoData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        ItemInfoData result = new ItemInfoData(flat_ItemInfoData.getRootAsflat_ItemInfoData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        ItemInfoData result = new ItemInfoData(flat_ItemInfoData.getRootAsflat_ItemInfoData( buf ) );
+        buf = null;
         return result;
     }
 

@@ -316,18 +316,17 @@ public final class flat_MonsterData extends Table {
     }
 
     public static byte[] createflat_MonsterData(MonsterData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_MonsterData.createflat_MonsterData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static MonsterData getRootAsflat_MonsterData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        MonsterData result = new MonsterData(flat_MonsterData.getRootAsflat_MonsterData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        MonsterData result = new MonsterData(flat_MonsterData.getRootAsflat_MonsterData( buf ) );
+        buf = null;
         return result;
     }
 

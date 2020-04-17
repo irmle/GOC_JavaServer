@@ -52,18 +52,17 @@ public final class flat_requestStoreUpgradeBuff extends Table {
     }
 
     public static byte[] createflat_requestStoreUpgradeBuff(requestStoreUpgradeBuff data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_requestStoreUpgradeBuff.createflat_requestStoreUpgradeBuff(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static requestStoreUpgradeBuff getRootAsflat_requestStoreUpgradeBuff(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        requestStoreUpgradeBuff result = new requestStoreUpgradeBuff(flat_requestStoreUpgradeBuff.getRootAsflat_requestStoreUpgradeBuff( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        requestStoreUpgradeBuff result = new requestStoreUpgradeBuff(flat_requestStoreUpgradeBuff.getRootAsflat_requestStoreUpgradeBuff( buf ) );
+        buf = null;
         return result;
     }
 

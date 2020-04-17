@@ -40,18 +40,17 @@ public final class flat_userCharacterRespawn extends Table {
     }
 
     public static byte[] createflat_userCharacterRespawn(userCharacterRespawn data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userCharacterRespawn.createflat_userCharacterRespawn(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userCharacterRespawn getRootAsflat_userCharacterRespawn(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userCharacterRespawn result = new userCharacterRespawn(flat_userCharacterRespawn.getRootAsflat_userCharacterRespawn( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userCharacterRespawn result = new userCharacterRespawn(flat_userCharacterRespawn.getRootAsflat_userCharacterRespawn( buf ) );
+        buf = null;
         return result;
     }
 

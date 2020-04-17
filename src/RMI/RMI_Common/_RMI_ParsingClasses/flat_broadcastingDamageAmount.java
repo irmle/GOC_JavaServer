@@ -48,18 +48,19 @@ public final class flat_broadcastingDamageAmount extends Table {
     }
 
     public static byte[] createflat_broadcastingDamageAmount(broadcastingDamageAmount data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingDamageAmount.createflat_broadcastingDamageAmount(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingDamageAmount getRootAsflat_broadcastingDamageAmount(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingDamageAmount result = new broadcastingDamageAmount(flat_broadcastingDamageAmount.getRootAsflat_broadcastingDamageAmount( readData.nioBuffer() ) );
-        readData.release();
+
+        ByteBuffer readData = wrap(data);
+        broadcastingDamageAmount result = new broadcastingDamageAmount(flat_broadcastingDamageAmount.getRootAsflat_broadcastingDamageAmount( readData ) );
+        readData = null;
         return result;
     }
 

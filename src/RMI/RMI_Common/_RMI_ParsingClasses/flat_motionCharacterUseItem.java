@@ -46,18 +46,17 @@ public final class flat_motionCharacterUseItem extends Table {
     }
 
     public static byte[] createflat_motionCharacterUseItem(motionCharacterUseItem data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_motionCharacterUseItem.createflat_motionCharacterUseItem(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static motionCharacterUseItem getRootAsflat_motionCharacterUseItem(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        motionCharacterUseItem result = new motionCharacterUseItem(flat_motionCharacterUseItem.getRootAsflat_motionCharacterUseItem( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        motionCharacterUseItem result = new motionCharacterUseItem(flat_motionCharacterUseItem.getRootAsflat_motionCharacterUseItem( buf ) );
+        buf = null;
         return result;
     }
 

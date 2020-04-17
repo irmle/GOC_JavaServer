@@ -48,18 +48,17 @@ public final class flat_stopUsingSkill extends Table {
     }
 
     public static byte[] createflat_stopUsingSkill(stopUsingSkill data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_stopUsingSkill.createflat_stopUsingSkill(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static stopUsingSkill getRootAsflat_stopUsingSkill(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        stopUsingSkill result = new stopUsingSkill(flat_stopUsingSkill.getRootAsflat_stopUsingSkill( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        stopUsingSkill result = new stopUsingSkill(flat_stopUsingSkill.getRootAsflat_stopUsingSkill( buf ) );
+        buf = null;
         return result;
     }
 

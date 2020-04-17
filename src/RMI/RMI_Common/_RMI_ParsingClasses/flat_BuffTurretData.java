@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_BuffTurretData extends Table {
   public static flat_BuffTurretData getRootAsflat_BuffTurretData(ByteBuffer _bb) { return getRootAsflat_BuffTurretData(_bb, new flat_BuffTurretData()); }
@@ -276,18 +275,17 @@ public final class flat_BuffTurretData extends Table {
     }
 
     public static byte[] createflat_BuffTurretData(BuffTurretData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_BuffTurretData.createflat_BuffTurretData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static BuffTurretData getRootAsflat_BuffTurretData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        BuffTurretData result = new BuffTurretData(flat_BuffTurretData.getRootAsflat_BuffTurretData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        BuffTurretData result = new BuffTurretData(flat_BuffTurretData.getRootAsflat_BuffTurretData( buf ) );
+        buf = null;
         return result;
     }
 

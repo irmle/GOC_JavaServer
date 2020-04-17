@@ -40,18 +40,17 @@ public final class flat_pingCheck_Request extends Table {
     }
 
     public static byte[] createflat_pingCheck_Request(pingCheck_Request data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pingCheck_Request.createflat_pingCheck_Request(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pingCheck_Request getRootAsflat_pingCheck_Request(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pingCheck_Request result = new pingCheck_Request(flat_pingCheck_Request.getRootAsflat_pingCheck_Request( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pingCheck_Request result = new pingCheck_Request(flat_pingCheck_Request.getRootAsflat_pingCheck_Request( buf ) );
+        buf = null;
         return result;
     }
 

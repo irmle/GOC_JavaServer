@@ -44,18 +44,17 @@ public final class flat_DestroyEntityData extends Table {
     }
 
     public static byte[] createflat_DestroyEntityData(DestroyEntityData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_DestroyEntityData.createflat_DestroyEntityData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static DestroyEntityData getRootAsflat_DestroyEntityData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        DestroyEntityData result = new DestroyEntityData(flat_DestroyEntityData.getRootAsflat_DestroyEntityData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        DestroyEntityData result = new DestroyEntityData(flat_DestroyEntityData.getRootAsflat_DestroyEntityData( buf ) );
+        buf = null;
         return result;
     }
 

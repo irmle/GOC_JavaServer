@@ -47,18 +47,17 @@ public final class flat_errorMatching extends Table {
     }
 
     public static byte[] createflat_errorMatching(errorMatching data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_errorMatching.createflat_errorMatching(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static errorMatching getRootAsflat_errorMatching(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        errorMatching result = new errorMatching(flat_errorMatching.getRootAsflat_errorMatching( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        errorMatching result = new errorMatching(flat_errorMatching.getRootAsflat_errorMatching( buf ) );
+        buf = null;
         return result;
     }
 

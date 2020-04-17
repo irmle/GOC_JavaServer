@@ -40,18 +40,17 @@ public final class flat_userFailedInstallBuilding extends Table {
     }
 
     public static byte[] createflat_userFailedInstallBuilding(userFailedInstallBuilding data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userFailedInstallBuilding.createflat_userFailedInstallBuilding(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userFailedInstallBuilding getRootAsflat_userFailedInstallBuilding(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userFailedInstallBuilding result = new userFailedInstallBuilding(flat_userFailedInstallBuilding.getRootAsflat_userFailedInstallBuilding( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userFailedInstallBuilding result = new userFailedInstallBuilding(flat_userFailedInstallBuilding.getRootAsflat_userFailedInstallBuilding( buf ) );
+        buf = null;
         return result;
     }
 

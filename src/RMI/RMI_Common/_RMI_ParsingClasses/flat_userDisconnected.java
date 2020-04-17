@@ -40,18 +40,17 @@ public final class flat_userDisconnected extends Table {
     }
 
     public static byte[] createflat_userDisconnected(userDisconnected data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userDisconnected.createflat_userDisconnected(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userDisconnected getRootAsflat_userDisconnected(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userDisconnected result = new userDisconnected(flat_userDisconnected.getRootAsflat_userDisconnected( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userDisconnected result = new userDisconnected(flat_userDisconnected.getRootAsflat_userDisconnected( buf ) );
+        buf = null;
         return result;
     }
 

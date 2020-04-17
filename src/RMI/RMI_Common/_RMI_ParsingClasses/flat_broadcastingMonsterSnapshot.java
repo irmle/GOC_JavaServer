@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_broadcastingMonsterSnapshot extends Table {
   public static flat_broadcastingMonsterSnapshot getRootAsflat_broadcastingMonsterSnapshot(ByteBuffer _bb) { return getRootAsflat_broadcastingMonsterSnapshot(_bb, new flat_broadcastingMonsterSnapshot()); }
@@ -51,18 +50,17 @@ public final class flat_broadcastingMonsterSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingMonsterSnapshot(broadcastingMonsterSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingMonsterSnapshot.createflat_broadcastingMonsterSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingMonsterSnapshot getRootAsflat_broadcastingMonsterSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingMonsterSnapshot result = new broadcastingMonsterSnapshot(flat_broadcastingMonsterSnapshot.getRootAsflat_broadcastingMonsterSnapshot( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        broadcastingMonsterSnapshot result = new broadcastingMonsterSnapshot(flat_broadcastingMonsterSnapshot.getRootAsflat_broadcastingMonsterSnapshot( buf ) );
+        buf = null;
         return result;
     }
 

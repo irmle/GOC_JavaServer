@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_broadcastingSkillObjectSnapshot extends Table {
   public static flat_broadcastingSkillObjectSnapshot getRootAsflat_broadcastingSkillObjectSnapshot(ByteBuffer _bb) { return getRootAsflat_broadcastingSkillObjectSnapshot(_bb, new flat_broadcastingSkillObjectSnapshot()); }
@@ -51,18 +50,17 @@ public final class flat_broadcastingSkillObjectSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingSkillObjectSnapshot(broadcastingSkillObjectSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingSkillObjectSnapshot.createflat_broadcastingSkillObjectSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingSkillObjectSnapshot getRootAsflat_broadcastingSkillObjectSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingSkillObjectSnapshot result = new broadcastingSkillObjectSnapshot(flat_broadcastingSkillObjectSnapshot.getRootAsflat_broadcastingSkillObjectSnapshot( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        broadcastingSkillObjectSnapshot result = new broadcastingSkillObjectSnapshot(flat_broadcastingSkillObjectSnapshot.getRootAsflat_broadcastingSkillObjectSnapshot( buf ) );
+        buf = null;
         return result;
     }
 

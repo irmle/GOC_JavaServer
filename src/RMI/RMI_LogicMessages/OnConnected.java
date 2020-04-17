@@ -8,7 +8,7 @@ package RMI.RMI_LogicMessages;
 
 public class OnConnected {
 
-    public static void OnConnected(ChannelHandlerContext ctx)
+    public static void OnConnected(RMI_ID connectID)
     {
 
     }

@@ -40,18 +40,17 @@ public final class flat_EndWave extends Table {
     }
 
     public static byte[] createflat_EndWave(EndWave data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_EndWave.createflat_EndWave(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static EndWave getRootAsflat_EndWave(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        EndWave result = new EndWave(flat_EndWave.getRootAsflat_EndWave( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        EndWave result = new EndWave(flat_EndWave.getRootAsflat_EndWave( buf ) );
+        buf = null;
         return result;
     }
 

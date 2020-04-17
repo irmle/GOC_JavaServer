@@ -51,18 +51,19 @@ public final class flat_broadcastingBuildSlotSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingBuildSlotSnapshot(broadcastingBuildSlotSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingBuildSlotSnapshot.createflat_broadcastingBuildSlotSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingBuildSlotSnapshot getRootAsflat_broadcastingBuildSlotSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingBuildSlotSnapshot result = new broadcastingBuildSlotSnapshot(flat_broadcastingBuildSlotSnapshot.getRootAsflat_broadcastingBuildSlotSnapshot( readData.nioBuffer() ) );
-        readData.release();
+
+        ByteBuffer readData = wrap(data);
+        broadcastingBuildSlotSnapshot result = new broadcastingBuildSlotSnapshot(flat_broadcastingBuildSlotSnapshot.getRootAsflat_broadcastingBuildSlotSnapshot( readData ) );
+        readData = null;
         return result;
     }
 

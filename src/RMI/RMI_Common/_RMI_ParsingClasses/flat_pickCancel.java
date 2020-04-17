@@ -43,18 +43,17 @@ public final class flat_pickCancel extends Table {
     }
 
     public static byte[] createflat_pickCancel(pickCancel data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickCancel.createflat_pickCancel(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickCancel getRootAsflat_pickCancel(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickCancel result = new pickCancel(flat_pickCancel.getRootAsflat_pickCancel( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickCancel result = new pickCancel(flat_pickCancel.getRootAsflat_pickCancel( buf ) );
+        buf = null;
         return result;
     }
 

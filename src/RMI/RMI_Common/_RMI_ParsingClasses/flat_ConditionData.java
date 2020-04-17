@@ -52,18 +52,17 @@ public final class flat_ConditionData extends Table {
     }
 
     public static byte[] createflat_ConditionData(ConditionData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_ConditionData.createflat_ConditionData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static ConditionData getRootAsflat_ConditionData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        ConditionData result = new ConditionData(flat_ConditionData.getRootAsflat_ConditionData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        ConditionData result = new ConditionData(flat_ConditionData.getRootAsflat_ConditionData( buf ) );
+        buf = null;
         return result;
     }
 

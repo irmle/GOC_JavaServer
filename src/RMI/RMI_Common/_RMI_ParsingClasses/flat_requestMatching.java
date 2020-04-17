@@ -47,18 +47,17 @@ public final class flat_requestMatching extends Table {
     }
 
     public static byte[] createflat_requestMatching(requestMatching data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_requestMatching.createflat_requestMatching(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static requestMatching getRootAsflat_requestMatching(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        requestMatching result = new requestMatching(flat_requestMatching.getRootAsflat_requestMatching( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        requestMatching result = new requestMatching(flat_requestMatching.getRootAsflat_requestMatching( buf ) );
+        buf = null;
         return result;
     }
 

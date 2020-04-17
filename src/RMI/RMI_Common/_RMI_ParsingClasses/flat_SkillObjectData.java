@@ -76,18 +76,17 @@ public final class flat_SkillObjectData extends Table {
     }
 
     public static byte[] createflat_SkillObjectData(SkillObjectData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_SkillObjectData.createflat_SkillObjectData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static SkillObjectData getRootAsflat_SkillObjectData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        SkillObjectData result = new SkillObjectData(flat_SkillObjectData.getRootAsflat_SkillObjectData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        SkillObjectData result = new SkillObjectData(flat_SkillObjectData.getRootAsflat_SkillObjectData( buf ) );
+        buf = null;
         return result;
     }
 

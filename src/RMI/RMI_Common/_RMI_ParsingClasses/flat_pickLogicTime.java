@@ -40,18 +40,17 @@ public final class flat_pickLogicTime extends Table {
     }
 
     public static byte[] createflat_pickLogicTime(pickLogicTime data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicTime.createflat_pickLogicTime(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicTime getRootAsflat_pickLogicTime(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicTime result = new pickLogicTime(flat_pickLogicTime.getRootAsflat_pickLogicTime( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicTime result = new pickLogicTime(flat_pickLogicTime.getRootAsflat_pickLogicTime( buf ) );
+        buf = null;
         return result;
     }
 

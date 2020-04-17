@@ -51,18 +51,17 @@ public final class flat_destroyWorldMapEntityInfo extends Table {
     }
 
     public static byte[] createflat_destroyWorldMapEntityInfo(destroyWorldMapEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_destroyWorldMapEntityInfo.createflat_destroyWorldMapEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static destroyWorldMapEntityInfo getRootAsflat_destroyWorldMapEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        destroyWorldMapEntityInfo result = new destroyWorldMapEntityInfo(flat_destroyWorldMapEntityInfo.getRootAsflat_destroyWorldMapEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        destroyWorldMapEntityInfo result = new destroyWorldMapEntityInfo(flat_destroyWorldMapEntityInfo.getRootAsflat_destroyWorldMapEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

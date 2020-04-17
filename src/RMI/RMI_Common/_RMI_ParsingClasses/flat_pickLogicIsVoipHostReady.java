@@ -47,18 +47,17 @@ public final class flat_pickLogicIsVoipHostReady extends Table {
     }
 
     public static byte[] createflat_pickLogicIsVoipHostReady(pickLogicIsVoipHostReady data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicIsVoipHostReady.createflat_pickLogicIsVoipHostReady(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicIsVoipHostReady getRootAsflat_pickLogicIsVoipHostReady(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicIsVoipHostReady result = new pickLogicIsVoipHostReady(flat_pickLogicIsVoipHostReady.getRootAsflat_pickLogicIsVoipHostReady( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicIsVoipHostReady result = new pickLogicIsVoipHostReady(flat_pickLogicIsVoipHostReady.getRootAsflat_pickLogicIsVoipHostReady( buf ) );
+        buf = null;
         return result;
     }
 

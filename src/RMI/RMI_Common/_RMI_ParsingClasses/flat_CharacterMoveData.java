@@ -72,18 +72,17 @@ public final class flat_CharacterMoveData extends Table {
     }
 
     public static byte[] createflat_CharacterMoveData(CharacterMoveData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_CharacterMoveData.createflat_CharacterMoveData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static CharacterMoveData getRootAsflat_CharacterMoveData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        CharacterMoveData result = new CharacterMoveData(flat_CharacterMoveData.getRootAsflat_CharacterMoveData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        CharacterMoveData result = new CharacterMoveData(flat_CharacterMoveData.getRootAsflat_CharacterMoveData( buf ) );
+        buf = null;
         return result;
     }
 

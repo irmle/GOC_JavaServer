@@ -4,9 +4,8 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import RMI.RMI_Classes.RMI__EncryptManager.*;
-
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 
 //기본적으로 RMI_ID는 단일 지정!
 public class RMI_ID {
@@ -43,13 +42,22 @@ public class RMI_ID {
     //고유 Unique_ID; //캐릭터 고유 id등을 지정할 것.
     public int unique_id;
 
+
+    //TCP의 경우 Channel에 직접쓰는것 보다, ChannelHandlerContext에 쓰는것이 퍼포먼스적으로 더 낫기때문에 추가된 변수.
+    //UDP의 경우 ChannelHandlerContext를 사용할 수 없으므로 기존의 방식을 유지.
+
     //대상 소켓 접근자
+    private ChannelHandlerContext socketTCPHandler; //클라이언트or서버 channelHandler
+    private ChannelHandlerContext socketUDPHandler; //클라이언트or서버 channelHandler
+
     private Channel socketTCP; //클라이언트or서버 channel
     private Channel socketUDP; //클라이언트or서버 channel
 
     //RMI ID별로 가지고있는 Key정보.
-    public EncryptKeyInfo AESKey;
+    public RMI__EncryptManager.EncryptKeyInfo AESKey;
 
+    //UDP연결작업이 완료되었는지 여부.
+    public boolean isUDPConnectionAvailable;
 
 
     public RMI_ID(int rmi_host_id, int unique_id, Channel socketTCP, Channel socketUDP) {
@@ -57,7 +65,8 @@ public class RMI_ID {
         this.unique_id = unique_id;
         this.socketTCP = socketTCP;
         this.socketUDP = socketUDP;
-        this.AESKey = new EncryptKeyInfo();
+        this.AESKey = new RMI__EncryptManager.EncryptKeyInfo();
+        this.isUDPConnectionAvailable = false;
     }
 
     public static void resetRMI_ID()
@@ -100,53 +109,34 @@ public class RMI_ID {
         return values.toArray(arr);
     }
 
-/*    public static RMI_ID[] getArray_Map(Collection<CharacterEntity> values)
+    public ChannelHandlerContext getTCP_ObjectHandler()
     {
-        LinkedList<CharacterEntity> data = new LinkedList<>(values);
-        RMI_ID[] arr = new RMI_ID[data.size()];
-
-        int size = data.size();
-        for (int i = 0; i < size; i++)
-        {
-            arr[i] = findRMI_UNIQUE_ID(data.poll().entityID);
-
-            if(arr[i] == null)
-                arr[i] = RMI_ID.NONE;
-        }
-        return arr;
+        return this.socketTCPHandler;
     }
 
-    public static RMI_ID[] getArray_Map_excludeSelf(RMI_ID excludeID, Collection<CharacterData> values)
+    public ChannelHandlerContext getUDP_ObjectHandler()
     {
-        LinkedList<CharacterData> data = new LinkedList<>(values);
-
-        RMI_ID[] arr = new RMI_ID[data.size()];
-
-        int size = data.size();
-        for (int i = 0; i < size; i++)
-        {
-            CharacterData thisData = data.poll();
-            if(thisData.entityID == excludeID.unique_id)
-            {
-                arr[i] = RMI_ID.NONE;
-                continue;
-            }
-            arr[i] = findRMI_UNIQUE_ID(thisData.entityID);
-
-            if(arr[i] == null)
-                arr[i] = RMI_ID.NONE;
-        }
-        return arr;
-    }*/
+        return this.socketUDPHandler;
+    }
 
 
     public Channel getTCP_Object()
     {
         return this.socketTCP;
     }
+
     public Channel getUDP_Object()
     {
         return this.socketUDP;
+    }
+
+    public void setTCP_ObjectHandler(ChannelHandlerContext obj)
+    {
+        this.socketTCPHandler = obj;
+    }
+    public void setUDP_ObjectHandler(ChannelHandlerContext obj)
+    {
+        this.socketUDPHandler = obj;
     }
 
     public void setTCP_Object(Channel obj)
@@ -174,13 +164,13 @@ public class RMI_ID {
         return newRMI_ID;
     }
 
-    /*public static void setUniqueID(int unique_id, RMI_ID rmi_ID)
+    public static void setUniqueID(int unique_id, RMI_ID rmi_ID)
     {
         rmi_ID.unique_id = unique_id;
         if (RMI_UNIQUE_ID_List.containsKey(unique_id))
             System.out.println("RMI_Unique_ID : 이미 같은 Key가 존재함. 덮어씌움");
         RMI_UNIQUE_ID_List.put(unique_id, rmi_ID);
-    }*/
+    }
 
     public static void setHostID(int rmi_host_id, RMI_ID rmi_ID)
     {
@@ -193,15 +183,15 @@ public class RMI_ID {
 
     public static RMI_ID findRMI_Connection(Channel connection) {
         if (!RMI_CONNECTION_List.containsKey(connection))
-            System.out.println("findRMI_Connection : 새로운 유저가 접속함!");
+            System.out.println("findRMI_Connection : Key가 존재하지 않음!");
         return RMI_CONNECTION_List.get(connection);
     }
 
-    /*public static RMI_ID findRMI_UNIQUE_ID(int unique_id) {
+    public static RMI_ID findRMI_UNIQUE_ID(int unique_id) {
         if (!RMI_UNIQUE_ID_List.containsKey(unique_id))
             System.out.println("RMI_Unique_ID : Key가 존재하지 않음!");
         return RMI_UNIQUE_ID_List.get(unique_id);
-    }*/
+    }
 
     public static RMI_ID findRMI_HOST_ID(int rmi_host_id) {
         if (!RMI_HOST_ID_List.containsKey(rmi_host_id))

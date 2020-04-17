@@ -43,18 +43,17 @@ public final class flat_pickLogicUserOnDisconnected extends Table {
     }
 
     public static byte[] createflat_pickLogicUserOnDisconnected(pickLogicUserOnDisconnected data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicUserOnDisconnected.createflat_pickLogicUserOnDisconnected(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicUserOnDisconnected getRootAsflat_pickLogicUserOnDisconnected(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicUserOnDisconnected result = new pickLogicUserOnDisconnected(flat_pickLogicUserOnDisconnected.getRootAsflat_pickLogicUserOnDisconnected( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicUserOnDisconnected result = new pickLogicUserOnDisconnected(flat_pickLogicUserOnDisconnected.getRootAsflat_pickLogicUserOnDisconnected( buf ) );
+        buf = null;
         return result;
     }
 

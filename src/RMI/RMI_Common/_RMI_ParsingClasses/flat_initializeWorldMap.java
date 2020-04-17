@@ -171,18 +171,17 @@ public final class flat_initializeWorldMap extends Table {
     }
 
     public static byte[] createflat_initializeWorldMap(initializeWorldMap data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_initializeWorldMap.createflat_initializeWorldMap(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static initializeWorldMap getRootAsflat_initializeWorldMap(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        initializeWorldMap result = new initializeWorldMap(flat_initializeWorldMap.getRootAsflat_initializeWorldMap( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        initializeWorldMap result = new initializeWorldMap(flat_initializeWorldMap.getRootAsflat_initializeWorldMap( buf ) );
+        buf = null;
         return result;
     }
 

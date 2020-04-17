@@ -44,18 +44,17 @@ public final class flat_userCharacterDefeat extends Table {
     }
 
     public static byte[] createflat_userCharacterDefeat(userCharacterDefeat data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userCharacterDefeat.createflat_userCharacterDefeat(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userCharacterDefeat getRootAsflat_userCharacterDefeat(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userCharacterDefeat result = new userCharacterDefeat(flat_userCharacterDefeat.getRootAsflat_userCharacterDefeat( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userCharacterDefeat result = new userCharacterDefeat(flat_userCharacterDefeat.getRootAsflat_userCharacterDefeat( buf ) );
+        buf = null;
         return result;
     }
 

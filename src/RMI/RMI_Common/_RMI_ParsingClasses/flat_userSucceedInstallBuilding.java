@@ -44,18 +44,17 @@ public final class flat_userSucceedInstallBuilding extends Table {
     }
 
     public static byte[] createflat_userSucceedInstallBuilding(userSucceedInstallBuilding data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userSucceedInstallBuilding.createflat_userSucceedInstallBuilding(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userSucceedInstallBuilding getRootAsflat_userSucceedInstallBuilding(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userSucceedInstallBuilding result = new userSucceedInstallBuilding(flat_userSucceedInstallBuilding.getRootAsflat_userSucceedInstallBuilding( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userSucceedInstallBuilding result = new userSucceedInstallBuilding(flat_userSucceedInstallBuilding.getRootAsflat_userSucceedInstallBuilding( buf ) );
+        buf = null;
         return result;
     }
 

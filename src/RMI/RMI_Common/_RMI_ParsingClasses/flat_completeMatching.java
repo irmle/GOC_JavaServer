@@ -51,18 +51,17 @@ public final class flat_completeMatching extends Table {
     }
 
     public static byte[] createflat_completeMatching(completeMatching data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_completeMatching.createflat_completeMatching(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static completeMatching getRootAsflat_completeMatching(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        completeMatching result = new completeMatching(flat_completeMatching.getRootAsflat_completeMatching( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        completeMatching result = new completeMatching(flat_completeMatching.getRootAsflat_completeMatching( buf ) );
+        buf = null;
         return result;
     }
 

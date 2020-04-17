@@ -51,18 +51,17 @@ public final class flat_createWorldMapSkillObjectEntityInfo extends Table {
     }
 
     public static byte[] createflat_createWorldMapSkillObjectEntityInfo(createWorldMapSkillObjectEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_createWorldMapSkillObjectEntityInfo.createflat_createWorldMapSkillObjectEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static createWorldMapSkillObjectEntityInfo getRootAsflat_createWorldMapSkillObjectEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        createWorldMapSkillObjectEntityInfo result = new createWorldMapSkillObjectEntityInfo(flat_createWorldMapSkillObjectEntityInfo.getRootAsflat_createWorldMapSkillObjectEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        createWorldMapSkillObjectEntityInfo result = new createWorldMapSkillObjectEntityInfo(flat_createWorldMapSkillObjectEntityInfo.getRootAsflat_createWorldMapSkillObjectEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

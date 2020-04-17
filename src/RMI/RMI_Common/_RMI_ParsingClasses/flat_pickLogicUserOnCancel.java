@@ -43,18 +43,17 @@ public final class flat_pickLogicUserOnCancel extends Table {
     }
 
     public static byte[] createflat_pickLogicUserOnCancel(pickLogicUserOnCancel data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicUserOnCancel.createflat_pickLogicUserOnCancel(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicUserOnCancel getRootAsflat_pickLogicUserOnCancel(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicUserOnCancel result = new pickLogicUserOnCancel(flat_pickLogicUserOnCancel.getRootAsflat_pickLogicUserOnCancel( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicUserOnCancel result = new pickLogicUserOnCancel(flat_pickLogicUserOnCancel.getRootAsflat_pickLogicUserOnCancel( buf ) );
+        buf = null;
         return result;
     }
 

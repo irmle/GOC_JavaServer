@@ -40,18 +40,17 @@ public final class flat_userFailedUpgradeBuilding extends Table {
     }
 
     public static byte[] createflat_userFailedUpgradeBuilding(userFailedUpgradeBuilding data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userFailedUpgradeBuilding.createflat_userFailedUpgradeBuilding(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userFailedUpgradeBuilding getRootAsflat_userFailedUpgradeBuilding(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userFailedUpgradeBuilding result = new userFailedUpgradeBuilding(flat_userFailedUpgradeBuilding.getRootAsflat_userFailedUpgradeBuilding( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userFailedUpgradeBuilding result = new userFailedUpgradeBuilding(flat_userFailedUpgradeBuilding.getRootAsflat_userFailedUpgradeBuilding( buf ) );
+        buf = null;
         return result;
     }
 

@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_broadcastingLoadingProgress extends Table {
   public static flat_broadcastingLoadingProgress getRootAsflat_broadcastingLoadingProgress(ByteBuffer _bb) { return getRootAsflat_broadcastingLoadingProgress(_bb, new flat_broadcastingLoadingProgress()); }
@@ -51,18 +50,17 @@ public final class flat_broadcastingLoadingProgress extends Table {
     }
 
     public static byte[] createflat_broadcastingLoadingProgress(broadcastingLoadingProgress data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingLoadingProgress.createflat_broadcastingLoadingProgress(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingLoadingProgress getRootAsflat_broadcastingLoadingProgress(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingLoadingProgress result = new broadcastingLoadingProgress(flat_broadcastingLoadingProgress.getRootAsflat_broadcastingLoadingProgress( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        broadcastingLoadingProgress result = new broadcastingLoadingProgress(flat_broadcastingLoadingProgress.getRootAsflat_broadcastingLoadingProgress( buf ) );
+        buf = null;
         return result;
     }
 

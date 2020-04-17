@@ -51,18 +51,17 @@ public final class flat_createWorldMapCharacterEntityInfo extends Table {
     }
 
     public static byte[] createflat_createWorldMapCharacterEntityInfo(createWorldMapCharacterEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_createWorldMapCharacterEntityInfo.createflat_createWorldMapCharacterEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static createWorldMapCharacterEntityInfo getRootAsflat_createWorldMapCharacterEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        createWorldMapCharacterEntityInfo result = new createWorldMapCharacterEntityInfo(flat_createWorldMapCharacterEntityInfo.getRootAsflat_createWorldMapCharacterEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        createWorldMapCharacterEntityInfo result = new createWorldMapCharacterEntityInfo(flat_createWorldMapCharacterEntityInfo.getRootAsflat_createWorldMapCharacterEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

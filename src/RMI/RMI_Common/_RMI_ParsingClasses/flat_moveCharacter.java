@@ -46,18 +46,17 @@ public final class flat_moveCharacter extends Table {
     }
 
     public static byte[] createflat_moveCharacter(moveCharacter data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_moveCharacter.createflat_moveCharacter(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static moveCharacter getRootAsflat_moveCharacter(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        moveCharacter result = new moveCharacter(flat_moveCharacter.getRootAsflat_moveCharacter( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        moveCharacter result = new moveCharacter(flat_moveCharacter.getRootAsflat_moveCharacter( buf ) );
+        buf = null;
         return result;
     }
 

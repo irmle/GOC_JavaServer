@@ -51,18 +51,19 @@ public final class flat_broadcastingCrystalSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingCrystalSnapshot(broadcastingCrystalSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingCrystalSnapshot.createflat_broadcastingCrystalSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingCrystalSnapshot getRootAsflat_broadcastingCrystalSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingCrystalSnapshot result = new broadcastingCrystalSnapshot(flat_broadcastingCrystalSnapshot.getRootAsflat_broadcastingCrystalSnapshot( readData.nioBuffer() ) );
-        readData.release();
+
+        ByteBuffer readData = wrap(data);
+        broadcastingCrystalSnapshot result = new broadcastingCrystalSnapshot(flat_broadcastingCrystalSnapshot.getRootAsflat_broadcastingCrystalSnapshot( readData ) );
+        readData = null;
         return result;
     }
 

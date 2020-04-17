@@ -52,18 +52,17 @@ public final class flat_installBarricade extends Table {
     }
 
     public static byte[] createflat_installBarricade(installBarricade data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_installBarricade.createflat_installBarricade(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static installBarricade getRootAsflat_installBarricade(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        installBarricade result = new installBarricade(flat_installBarricade.getRootAsflat_installBarricade( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        installBarricade result = new installBarricade(flat_installBarricade.getRootAsflat_installBarricade( buf ) );
+        buf = null;
         return result;
     }
 

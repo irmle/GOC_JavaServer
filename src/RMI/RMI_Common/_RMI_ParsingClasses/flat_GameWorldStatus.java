@@ -40,18 +40,17 @@ public final class flat_GameWorldStatus extends Table {
     }
 
     public static byte[] createflat_GameWorldStatus(GameWorldStatus data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_GameWorldStatus.createflat_GameWorldStatus(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static GameWorldStatus getRootAsflat_GameWorldStatus(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        GameWorldStatus result = new GameWorldStatus(flat_GameWorldStatus.getRootAsflat_GameWorldStatus( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        GameWorldStatus result = new GameWorldStatus(flat_GameWorldStatus.getRootAsflat_GameWorldStatus( buf ) );
+        buf = null;
         return result;
     }
 

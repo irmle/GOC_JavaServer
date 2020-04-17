@@ -264,18 +264,17 @@ public final class flat_CrystalData extends Table {
     }
 
     public static byte[] createflat_CrystalData(CrystalData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_CrystalData.createflat_CrystalData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static CrystalData getRootAsflat_CrystalData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        CrystalData result = new CrystalData(flat_CrystalData.getRootAsflat_CrystalData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        CrystalData result = new CrystalData(flat_CrystalData.getRootAsflat_CrystalData( buf ) );
+        buf = null;
         return result;
     }
 

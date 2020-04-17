@@ -40,18 +40,17 @@ public final class flat_userFailedUseItem extends Table {
     }
 
     public static byte[] createflat_userFailedUseItem(userFailedUseItem data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userFailedUseItem.createflat_userFailedUseItem(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userFailedUseItem getRootAsflat_userFailedUseItem(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userFailedUseItem result = new userFailedUseItem(flat_userFailedUseItem.getRootAsflat_userFailedUseItem( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userFailedUseItem result = new userFailedUseItem(flat_userFailedUseItem.getRootAsflat_userFailedUseItem( buf ) );
+        buf = null;
         return result;
     }
 

@@ -47,18 +47,17 @@ public final class flat_EndGame extends Table {
     }
 
     public static byte[] createflat_EndGame(EndGame data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_EndGame.createflat_EndGame(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static EndGame getRootAsflat_EndGame(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        EndGame result = new EndGame(flat_EndGame.getRootAsflat_EndGame( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        EndGame result = new EndGame(flat_EndGame.getRootAsflat_EndGame( buf ) );
+        buf = null;
         return result;
     }
 

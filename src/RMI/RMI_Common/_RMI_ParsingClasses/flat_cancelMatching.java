@@ -43,18 +43,17 @@ public final class flat_cancelMatching extends Table {
     }
 
     public static byte[] createflat_cancelMatching(cancelMatching data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_cancelMatching.createflat_cancelMatching(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static cancelMatching getRootAsflat_cancelMatching(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        cancelMatching result = new cancelMatching(flat_cancelMatching.getRootAsflat_cancelMatching( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        cancelMatching result = new cancelMatching(flat_cancelMatching.getRootAsflat_cancelMatching( buf ) );
+        buf = null;
         return result;
     }
 

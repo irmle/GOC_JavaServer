@@ -51,18 +51,17 @@ public final class flat_createWorldMapBarricadeEntityInfo extends Table {
     }
 
     public static byte[] createflat_createWorldMapBarricadeEntityInfo(createWorldMapBarricadeEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_createWorldMapBarricadeEntityInfo.createflat_createWorldMapBarricadeEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static createWorldMapBarricadeEntityInfo getRootAsflat_createWorldMapBarricadeEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        createWorldMapBarricadeEntityInfo result = new createWorldMapBarricadeEntityInfo(flat_createWorldMapBarricadeEntityInfo.getRootAsflat_createWorldMapBarricadeEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        createWorldMapBarricadeEntityInfo result = new createWorldMapBarricadeEntityInfo(flat_createWorldMapBarricadeEntityInfo.getRootAsflat_createWorldMapBarricadeEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

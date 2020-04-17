@@ -51,18 +51,17 @@ public final class flat_createWorldMapCrystalDataEntityInfo extends Table {
     }
 
     public static byte[] createflat_createWorldMapCrystalDataEntityInfo(createWorldMapCrystalDataEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_createWorldMapCrystalDataEntityInfo.createflat_createWorldMapCrystalDataEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static createWorldMapCrystalDataEntityInfo getRootAsflat_createWorldMapCrystalDataEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        createWorldMapCrystalDataEntityInfo result = new createWorldMapCrystalDataEntityInfo(flat_createWorldMapCrystalDataEntityInfo.getRootAsflat_createWorldMapCrystalDataEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        createWorldMapCrystalDataEntityInfo result = new createWorldMapCrystalDataEntityInfo(flat_createWorldMapCrystalDataEntityInfo.getRootAsflat_createWorldMapCrystalDataEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

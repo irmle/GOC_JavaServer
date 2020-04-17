@@ -24,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import sun.security.pkcs.PKCS8Key;
 
+
 //암호화, 복호화를 전담할 암호화 매니저.
 public class RMI__EncryptManager {
 
@@ -74,7 +75,6 @@ public class RMI__EncryptManager {
     }
 
 
-
     private static String RSA_PublicKey_base64 = null;
     private static String RSA_PrivateKey_base64 = null;
 
@@ -106,8 +106,7 @@ public class RMI__EncryptManager {
         switch (rmi_ctx) {
             case RMI_Context.Reliable: //plain Data
                 //평문은 아무것도 안함.
-                processed = data;
-                break;
+                return data;
             case RMI_Context.Reliable_Public_AES128: //AES-128-CBC //공용 대칭키 사용. 같은데이터를 여러명에게 보낼때.
                 keys = RMI__EncryptManager.Public_AESKeys;
                 if (isEncrypt)
@@ -125,8 +124,7 @@ public class RMI__EncryptManager {
 
             case RMI_Context.UnReliable: //plain Data
                 //평문은 아무것도 안함.
-                processed = data;
-                break;
+                return data;
             case RMI_Context.UnReliable_Public_AES128: //AES-128-CBC //공용 대칭키 사용. 같은데이터를 여러명에게 보낼때.
                 keys = RMI__EncryptManager.Public_AESKeys;
                 if (isEncrypt)
@@ -142,8 +140,11 @@ public class RMI__EncryptManager {
                     processed = RMI__EncryptManager.decryptAES_256(data, keys.aesKey, keys.aesIV);
                 break;
             default:
+
+                //잘못 지정되었을 경우, 평문처리한다.
+                processed = data;
                 System.out.println("RMI_EncryptMethod_Arr, 공용 RMI_Context값 에러! => " + RMI_Context.name(rmi_ctx));
-                throw new IllegalArgumentException("RMI_ID[] (범위) 로 보낼시, RMI_Context 는 Reliable/UnReliable Public_AES128, 256만 지정 가능합니다.");
+                throw new IllegalArgumentException("RMI_ID[] (범위) 로 보낼시, RMI_Context 는 Reliable/UnReliable Public_AES128/256만 지정 가능합니다.");
         }
         return processed;
     }
@@ -153,12 +154,12 @@ public class RMI__EncryptManager {
         //키 호출.
         EncryptKeyInfo keys;
         byte[] processed = null;
+
         switch (rmi_ctx) {
             //TCP
             case RMI_Context.Reliable: //plain Data
                 //평문은 아무것도 안함.
-                processed = data;
-                break;
+                return data;
             case RMI_Context.Reliable_AES128: //AES-128-CBC
                 keys = rmi_id.AESKey;
                 if(rmi_id.unique_id == RMI_ID.ALL.unique_id)
@@ -204,8 +205,7 @@ public class RMI__EncryptManager {
             //UDP
             case RMI_Context.UnReliable: //plain Data
                 //평문은 아무것도 안함.
-                processed = data;
-                break;
+                return data;
             case RMI_Context.UnReliable_AES128: //AES-128-CBC
                 keys = rmi_id.AESKey;
                 if(rmi_id.unique_id == RMI_ID.ALL.unique_id)
@@ -252,6 +252,7 @@ public class RMI__EncryptManager {
                 throw new IllegalArgumentException("올바른 RMI_Context 값을 지정하십시오 : " + rmi_ctx);
 
         }
+
         return processed;
     }
 
@@ -265,6 +266,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return encryptData;
     }
@@ -278,6 +280,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return encryptData;
     }
@@ -291,6 +294,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return plainData;
     }
@@ -304,6 +308,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return plainData;
     }
@@ -318,6 +323,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return keypair;
     }
@@ -340,6 +346,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return publicKey;
     }
@@ -354,6 +361,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
         return pvKey;
     }
@@ -379,6 +387,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
 
         return publicKey_text;
@@ -399,6 +408,7 @@ public class RMI__EncryptManager {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
 
         return privateKey_text;
@@ -413,10 +423,10 @@ public class RMI__EncryptManager {
             cipher.init(Cipher.ENCRYPT_MODE,
                     MakeKey(sessionKey, 256, 1),
                     MakeInitializationVector(Initialization_Vector, 1));
-
-            encryptData = cipher.doFinal(plainData);
+            encryptData = cipher.doFinal( plainData );
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return encryptData;
     }
@@ -432,6 +442,7 @@ public class RMI__EncryptManager {
             plainData = cipher.doFinal(encryptData);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return plainData;
     }
@@ -449,6 +460,7 @@ public class RMI__EncryptManager {
             encryptData = cipher.doFinal(plainData);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return encryptData;
     }
@@ -464,6 +476,7 @@ public class RMI__EncryptManager {
             plainData = cipher.doFinal(encryptData);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return plainData;
     }
@@ -571,7 +584,6 @@ public class RMI__EncryptManager {
         return token;
     }
 
-
     public static class EncryptKeyInfo {
 
         public KeyPair keypair;
@@ -628,3 +640,4 @@ public class RMI__EncryptManager {
         }
     }
 }
+

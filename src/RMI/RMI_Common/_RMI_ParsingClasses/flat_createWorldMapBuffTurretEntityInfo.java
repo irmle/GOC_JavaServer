@@ -51,18 +51,17 @@ public final class flat_createWorldMapBuffTurretEntityInfo extends Table {
     }
 
     public static byte[] createflat_createWorldMapBuffTurretEntityInfo(createWorldMapBuffTurretEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_createWorldMapBuffTurretEntityInfo.createflat_createWorldMapBuffTurretEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static createWorldMapBuffTurretEntityInfo getRootAsflat_createWorldMapBuffTurretEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        createWorldMapBuffTurretEntityInfo result = new createWorldMapBuffTurretEntityInfo(flat_createWorldMapBuffTurretEntityInfo.getRootAsflat_createWorldMapBuffTurretEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        createWorldMapBuffTurretEntityInfo result = new createWorldMapBuffTurretEntityInfo(flat_createWorldMapBuffTurretEntityInfo.getRootAsflat_createWorldMapBuffTurretEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

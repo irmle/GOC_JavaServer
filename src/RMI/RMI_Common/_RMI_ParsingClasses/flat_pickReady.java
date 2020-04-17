@@ -43,18 +43,17 @@ public final class flat_pickReady extends Table {
     }
 
     public static byte[] createflat_pickReady(pickReady data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickReady.createflat_pickReady(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickReady getRootAsflat_pickReady(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickReady result = new pickReady(flat_pickReady.getRootAsflat_pickReady( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickReady result = new pickReady(flat_pickReady.getRootAsflat_pickReady( buf ) );
+        buf = null;
         return result;
     }
 

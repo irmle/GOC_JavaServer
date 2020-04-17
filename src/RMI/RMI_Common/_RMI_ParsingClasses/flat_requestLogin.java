@@ -43,18 +43,17 @@ public final class flat_requestLogin extends Table {
     }
 
     public static byte[] createflat_requestLogin(requestLogin data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_requestLogin.createflat_requestLogin(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static requestLogin getRootAsflat_requestLogin(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        requestLogin result = new requestLogin(flat_requestLogin.getRootAsflat_requestLogin( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        requestLogin result = new requestLogin(flat_requestLogin.getRootAsflat_requestLogin( buf ) );
+        buf = null;
         return result;
     }
 

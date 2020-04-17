@@ -68,18 +68,17 @@ public final class flat_useSkill extends Table {
     }
 
     public static byte[] createflat_useSkill(useSkill data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_useSkill.createflat_useSkill(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static useSkill getRootAsflat_useSkill(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        useSkill result = new useSkill(flat_useSkill.getRootAsflat_useSkill( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        useSkill result = new useSkill(flat_useSkill.getRootAsflat_useSkill( buf ) );
+        buf = null;
         return result;
     }
 

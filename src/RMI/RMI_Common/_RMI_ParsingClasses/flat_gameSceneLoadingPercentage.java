@@ -44,18 +44,17 @@ public final class flat_gameSceneLoadingPercentage extends Table {
     }
 
     public static byte[] createflat_gameSceneLoadingPercentage(gameSceneLoadingPercentage data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_gameSceneLoadingPercentage.createflat_gameSceneLoadingPercentage(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static gameSceneLoadingPercentage getRootAsflat_gameSceneLoadingPercentage(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        gameSceneLoadingPercentage result = new gameSceneLoadingPercentage(flat_gameSceneLoadingPercentage.getRootAsflat_gameSceneLoadingPercentage( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        gameSceneLoadingPercentage result = new gameSceneLoadingPercentage(flat_gameSceneLoadingPercentage.getRootAsflat_gameSceneLoadingPercentage( buf ) );
+        buf = null;
         return result;
     }
 

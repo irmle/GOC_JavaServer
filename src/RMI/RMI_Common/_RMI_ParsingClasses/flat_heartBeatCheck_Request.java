@@ -40,18 +40,17 @@ public final class flat_heartBeatCheck_Request extends Table {
     }
 
     public static byte[] createflat_heartBeatCheck_Request(heartBeatCheck_Request data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_heartBeatCheck_Request.createflat_heartBeatCheck_Request(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static heartBeatCheck_Request getRootAsflat_heartBeatCheck_Request(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        heartBeatCheck_Request result = new heartBeatCheck_Request(flat_heartBeatCheck_Request.getRootAsflat_heartBeatCheck_Request( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        heartBeatCheck_Request result = new heartBeatCheck_Request(flat_heartBeatCheck_Request.getRootAsflat_heartBeatCheck_Request( buf ) );
+        buf = null;
         return result;
     }
 

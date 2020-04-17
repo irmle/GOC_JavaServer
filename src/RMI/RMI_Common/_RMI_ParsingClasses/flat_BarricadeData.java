@@ -256,19 +256,20 @@ public final class flat_BarricadeData extends Table {
     }
 
     public static byte[] createflat_BarricadeData(BarricadeData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
-        fbb.finish(flat_BarricadeData.createflat_BarricadeData(fbb, data));
-        byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
-        return result;
+
+      FlatBufferBuilder fbb = new FlatBufferBuilder();
+      fbb.finish(flat_BarricadeData.createflat_BarricadeData(fbb, data));
+      byte[] result = fbb.sizedByteArray();
+      fbb = null;
+      return result;
     }
 
     public static BarricadeData getRootAsflat_BarricadeData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        BarricadeData result = new BarricadeData(flat_BarricadeData.getRootAsflat_BarricadeData( readData.nioBuffer() ) );
-        readData.release();
-        return result;
+
+      ByteBuffer readData = wrap(data);
+      BarricadeData result = new BarricadeData(flat_BarricadeData.getRootAsflat_BarricadeData( readData ) );
+      readData = null;
+      return result;
     }
 
 }

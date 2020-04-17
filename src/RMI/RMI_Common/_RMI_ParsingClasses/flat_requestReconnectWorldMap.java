@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_requestReconnectWorldMap extends Table {
   public static flat_requestReconnectWorldMap getRootAsflat_requestReconnectWorldMap(ByteBuffer _bb) { return getRootAsflat_requestReconnectWorldMap(_bb, new flat_requestReconnectWorldMap()); }
@@ -47,18 +46,17 @@ public final class flat_requestReconnectWorldMap extends Table {
     }
 
     public static byte[] createflat_requestReconnectWorldMap(requestReconnectWorldMap data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_requestReconnectWorldMap.createflat_requestReconnectWorldMap(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static requestReconnectWorldMap getRootAsflat_requestReconnectWorldMap(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        requestReconnectWorldMap result = new requestReconnectWorldMap(flat_requestReconnectWorldMap.getRootAsflat_requestReconnectWorldMap( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        requestReconnectWorldMap result = new requestReconnectWorldMap(flat_requestReconnectWorldMap.getRootAsflat_requestReconnectWorldMap( buf ) );
+        buf = null;
         return result;
     }
 

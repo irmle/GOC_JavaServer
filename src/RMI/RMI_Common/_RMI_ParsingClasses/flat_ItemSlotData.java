@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_ItemSlotData extends Table {
   public static flat_ItemSlotData getRootAsflat_ItemSlotData(ByteBuffer _bb) { return getRootAsflat_ItemSlotData(_bb, new flat_ItemSlotData()); }
@@ -54,18 +53,17 @@ public final class flat_ItemSlotData extends Table {
     }
 
     public static byte[] createflat_ItemSlotData(ItemSlotData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_ItemSlotData.createflat_ItemSlotData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static ItemSlotData getRootAsflat_ItemSlotData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        ItemSlotData result = new ItemSlotData(flat_ItemSlotData.getRootAsflat_ItemSlotData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        ItemSlotData result = new ItemSlotData(flat_ItemSlotData.getRootAsflat_ItemSlotData( buf ) );
+        buf = null;
         return result;
     }
 

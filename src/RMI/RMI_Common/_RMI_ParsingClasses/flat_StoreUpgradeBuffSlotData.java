@@ -48,18 +48,17 @@ public final class flat_StoreUpgradeBuffSlotData extends Table {
     }
 
     public static byte[] createflat_StoreUpgradeBuffSlotData(StoreUpgradeBuffSlotData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_StoreUpgradeBuffSlotData.createflat_StoreUpgradeBuffSlotData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static StoreUpgradeBuffSlotData getRootAsflat_StoreUpgradeBuffSlotData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        StoreUpgradeBuffSlotData result = new StoreUpgradeBuffSlotData(flat_StoreUpgradeBuffSlotData.getRootAsflat_StoreUpgradeBuffSlotData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        StoreUpgradeBuffSlotData result = new StoreUpgradeBuffSlotData(flat_StoreUpgradeBuffSlotData.getRootAsflat_StoreUpgradeBuffSlotData( buf ) );
+        buf = null;
         return result;
     }
 

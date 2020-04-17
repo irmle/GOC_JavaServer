@@ -51,18 +51,19 @@ public final class flat_broadcastingBuffTurretSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingBuffTurretSnapshot(broadcastingBuffTurretSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingBuffTurretSnapshot.createflat_broadcastingBuffTurretSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingBuffTurretSnapshot getRootAsflat_broadcastingBuffTurretSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingBuffTurretSnapshot result = new broadcastingBuffTurretSnapshot(flat_broadcastingBuffTurretSnapshot.getRootAsflat_broadcastingBuffTurretSnapshot( readData.nioBuffer() ) );
-        readData.release();
+
+        ByteBuffer readData = wrap(data);
+        broadcastingBuffTurretSnapshot result = new broadcastingBuffTurretSnapshot(flat_broadcastingBuffTurretSnapshot.getRootAsflat_broadcastingBuffTurretSnapshot( readData ) );
+        readData = null;
         return result;
     }
 

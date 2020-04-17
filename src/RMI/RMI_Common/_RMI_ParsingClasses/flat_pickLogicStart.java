@@ -51,18 +51,17 @@ public final class flat_pickLogicStart extends Table {
     }
 
     public static byte[] createflat_pickLogicStart(pickLogicStart data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicStart.createflat_pickLogicStart(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicStart getRootAsflat_pickLogicStart(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicStart result = new pickLogicStart(flat_pickLogicStart.getRootAsflat_pickLogicStart( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicStart result = new pickLogicStart(flat_pickLogicStart.getRootAsflat_pickLogicStart( buf ) );
+        buf = null;
         return result;
     }
 

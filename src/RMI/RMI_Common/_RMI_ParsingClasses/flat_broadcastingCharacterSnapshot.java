@@ -51,18 +51,19 @@ public final class flat_broadcastingCharacterSnapshot extends Table {
     }
 
     public static byte[] createflat_broadcastingCharacterSnapshot(broadcastingCharacterSnapshot data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_broadcastingCharacterSnapshot.createflat_broadcastingCharacterSnapshot(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static broadcastingCharacterSnapshot getRootAsflat_broadcastingCharacterSnapshot(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        broadcastingCharacterSnapshot result = new broadcastingCharacterSnapshot(flat_broadcastingCharacterSnapshot.getRootAsflat_broadcastingCharacterSnapshot( readData.nioBuffer() ) );
-        readData.release();
+
+        ByteBuffer readData = wrap(data);
+        broadcastingCharacterSnapshot result = new broadcastingCharacterSnapshot(flat_broadcastingCharacterSnapshot.getRootAsflat_broadcastingCharacterSnapshot( readData ) );
+        readData = null;
         return result;
     }
 

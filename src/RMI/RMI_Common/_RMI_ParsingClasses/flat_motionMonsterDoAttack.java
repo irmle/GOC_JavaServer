@@ -48,18 +48,17 @@ public final class flat_motionMonsterDoAttack extends Table {
     }
 
     public static byte[] createflat_motionMonsterDoAttack(motionMonsterDoAttack data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_motionMonsterDoAttack.createflat_motionMonsterDoAttack(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static motionMonsterDoAttack getRootAsflat_motionMonsterDoAttack(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        motionMonsterDoAttack result = new motionMonsterDoAttack(flat_motionMonsterDoAttack.getRootAsflat_motionMonsterDoAttack( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        motionMonsterDoAttack result = new motionMonsterDoAttack(flat_motionMonsterDoAttack.getRootAsflat_motionMonsterDoAttack( buf ) );
+        buf = null;
         return result;
     }
 

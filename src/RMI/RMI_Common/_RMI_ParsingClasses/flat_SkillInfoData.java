@@ -11,7 +11,6 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
-
 @SuppressWarnings("unused")
 public final class flat_SkillInfoData extends Table {
   public static flat_SkillInfoData getRootAsflat_SkillInfoData(ByteBuffer _bb) { return getRootAsflat_SkillInfoData(_bb, new flat_SkillInfoData()); }
@@ -40,18 +39,17 @@ public final class flat_SkillInfoData extends Table {
     }
 
     public static byte[] createflat_SkillInfoData(SkillInfoData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_SkillInfoData.createflat_SkillInfoData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static SkillInfoData getRootAsflat_SkillInfoData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        SkillInfoData result = new SkillInfoData(flat_SkillInfoData.getRootAsflat_SkillInfoData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        SkillInfoData result = new SkillInfoData(flat_SkillInfoData.getRootAsflat_SkillInfoData( buf ) );
+        buf = null;
         return result;
     }
 

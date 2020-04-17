@@ -40,18 +40,17 @@ public final class flat_initializeMyselfCharacterInfo extends Table {
     }
 
     public static byte[] createflat_initializeMyselfCharacterInfo(initializeMyselfCharacterInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_initializeMyselfCharacterInfo.createflat_initializeMyselfCharacterInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static initializeMyselfCharacterInfo getRootAsflat_initializeMyselfCharacterInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        initializeMyselfCharacterInfo result = new initializeMyselfCharacterInfo(flat_initializeMyselfCharacterInfo.getRootAsflat_initializeMyselfCharacterInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        initializeMyselfCharacterInfo result = new initializeMyselfCharacterInfo(flat_initializeMyselfCharacterInfo.getRootAsflat_initializeMyselfCharacterInfo( buf ) );
+        buf = null;
         return result;
     }
 

@@ -50,18 +50,17 @@ public final class flat_pickLogicUserOnChatMessage extends Table {
     }
 
     public static byte[] createflat_pickLogicUserOnChatMessage(pickLogicUserOnChatMessage data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickLogicUserOnChatMessage.createflat_pickLogicUserOnChatMessage(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickLogicUserOnChatMessage getRootAsflat_pickLogicUserOnChatMessage(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickLogicUserOnChatMessage result = new pickLogicUserOnChatMessage(flat_pickLogicUserOnChatMessage.getRootAsflat_pickLogicUserOnChatMessage( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickLogicUserOnChatMessage result = new pickLogicUserOnChatMessage(flat_pickLogicUserOnChatMessage.getRootAsflat_pickLogicUserOnChatMessage( buf ) );
+        buf = null;
         return result;
     }
 

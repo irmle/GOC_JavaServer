@@ -52,18 +52,17 @@ public final class flat_upgradeBarricade extends Table {
     }
 
     public static byte[] createflat_upgradeBarricade(upgradeBarricade data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_upgradeBarricade.createflat_upgradeBarricade(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static upgradeBarricade getRootAsflat_upgradeBarricade(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        upgradeBarricade result = new upgradeBarricade(flat_upgradeBarricade.getRootAsflat_upgradeBarricade( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        upgradeBarricade result = new upgradeBarricade(flat_upgradeBarricade.getRootAsflat_upgradeBarricade( buf ) );
+        buf = null;
         return result;
     }
 

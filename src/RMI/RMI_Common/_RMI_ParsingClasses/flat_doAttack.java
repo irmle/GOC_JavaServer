@@ -48,18 +48,17 @@ public final class flat_doAttack extends Table {
     }
 
     public static byte[] createflat_doAttack(doAttack data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_doAttack.createflat_doAttack(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static doAttack getRootAsflat_doAttack(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        doAttack result = new doAttack(flat_doAttack.getRootAsflat_doAttack( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        doAttack result = new doAttack(flat_doAttack.getRootAsflat_doAttack( buf ) );
+        buf = null;
         return result;
     }
 

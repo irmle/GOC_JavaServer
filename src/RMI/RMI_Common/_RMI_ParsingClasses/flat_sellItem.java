@@ -56,18 +56,17 @@ public final class flat_sellItem extends Table {
     }
 
     public static byte[] createflat_sellItem(sellItem data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_sellItem.createflat_sellItem(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static sellItem getRootAsflat_sellItem(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        sellItem result = new sellItem(flat_sellItem.getRootAsflat_sellItem( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        sellItem result = new sellItem(flat_sellItem.getRootAsflat_sellItem( buf ) );
+        buf = null;
         return result;
     }
 

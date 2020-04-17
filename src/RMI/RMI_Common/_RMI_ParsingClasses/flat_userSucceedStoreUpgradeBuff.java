@@ -42,18 +42,17 @@ public final class flat_userSucceedStoreUpgradeBuff extends Table {
     }
 
     public static byte[] createflat_userSucceedStoreUpgradeBuff(userSucceedStoreUpgradeBuff data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_userSucceedStoreUpgradeBuff.createflat_userSucceedStoreUpgradeBuff(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static userSucceedStoreUpgradeBuff getRootAsflat_userSucceedStoreUpgradeBuff(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        userSucceedStoreUpgradeBuff result = new userSucceedStoreUpgradeBuff(flat_userSucceedStoreUpgradeBuff.getRootAsflat_userSucceedStoreUpgradeBuff( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        userSucceedStoreUpgradeBuff result = new userSucceedStoreUpgradeBuff(flat_userSucceedStoreUpgradeBuff.getRootAsflat_userSucceedStoreUpgradeBuff( buf ) );
+        buf = null;
         return result;
     }
 

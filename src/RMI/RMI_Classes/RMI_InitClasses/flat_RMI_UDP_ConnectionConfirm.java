@@ -2,8 +2,6 @@
 
 package RMI.RMI_Classes.RMI_InitClasses;
 
-import RMI.RMI_Classes.PooledFlatBufferBuilder;
-import io.netty.buffer.*;
 import java.nio.*;
 import java.lang.*;
 import com.google.flatbuffers.*;
@@ -36,18 +34,17 @@ public final class flat_RMI_UDP_ConnectionConfirm extends Table {
     }
 
     public static byte[] createflat_RMI_UDP_ConnectionConfirm(RMI_UDP_ConnectionConfirm data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_RMI_UDP_ConnectionConfirm.createflat_RMI_UDP_ConnectionConfirm(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static RMI_UDP_ConnectionConfirm getRootAsflat_RMI_UDP_ConnectionConfirm(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        RMI_UDP_ConnectionConfirm result = new RMI_UDP_ConnectionConfirm(flat_RMI_UDP_ConnectionConfirm.getRootAsflat_RMI_UDP_ConnectionConfirm( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer readData = ByteBuffer.wrap(data);
+        RMI_UDP_ConnectionConfirm result = new RMI_UDP_ConnectionConfirm(flat_RMI_UDP_ConnectionConfirm.getRootAsflat_RMI_UDP_ConnectionConfirm( readData ) );
+        readData = null;
         return result;
     }
 

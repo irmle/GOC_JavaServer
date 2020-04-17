@@ -52,18 +52,17 @@ public final class flat_installTurret extends Table {
     }
 
     public static byte[] createflat_installTurret(installTurret data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_installTurret.createflat_installTurret(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static installTurret getRootAsflat_installTurret(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        installTurret result = new installTurret(flat_installTurret.getRootAsflat_installTurret( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        installTurret result = new installTurret(flat_installTurret.getRootAsflat_installTurret( buf ) );
+        buf = null;
         return result;
     }
 

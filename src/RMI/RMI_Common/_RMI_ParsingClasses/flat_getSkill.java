@@ -52,18 +52,17 @@ public final class flat_getSkill extends Table {
     }
 
     public static byte[] createflat_getSkill(getSkill data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_getSkill.createflat_getSkill(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static getSkill getRootAsflat_getSkill(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        getSkill result = new getSkill(flat_getSkill.getRootAsflat_getSkill( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        getSkill result = new getSkill(flat_getSkill.getRootAsflat_getSkill( buf ) );
+        buf = null;
         return result;
     }
 

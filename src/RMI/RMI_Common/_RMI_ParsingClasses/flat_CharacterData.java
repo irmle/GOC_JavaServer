@@ -384,18 +384,17 @@ public final class flat_CharacterData extends Table {
     }
 
     public static byte[] createflat_CharacterData(CharacterData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_CharacterData.createflat_CharacterData(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static CharacterData getRootAsflat_CharacterData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        CharacterData result = new CharacterData(flat_CharacterData.getRootAsflat_CharacterData( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        CharacterData result = new CharacterData(flat_CharacterData.getRootAsflat_CharacterData( buf ) );
+        buf = null;
         return result;
     }
 

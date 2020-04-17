@@ -284,19 +284,19 @@ public final class flat_AttackTurretData extends Table {
     }
 
     public static byte[] createflat_AttackTurretData(AttackTurretData data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
-        fbb.finish(flat_AttackTurretData.createflat_AttackTurretData(fbb, data));
-        byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
-        return result;
+      FlatBufferBuilder fbb = new FlatBufferBuilder();
+      fbb.finish(flat_AttackTurretData.createflat_AttackTurretData(fbb, data));
+      byte[] result = fbb.sizedByteArray();
+      fbb = null;
+      return result;
     }
 
     public static AttackTurretData getRootAsflat_AttackTurretData(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        AttackTurretData result = new AttackTurretData(flat_AttackTurretData.getRootAsflat_AttackTurretData( readData.nioBuffer() ) );
-        readData.release();
-        return result;
+
+      ByteBuffer readData = wrap(data);
+      AttackTurretData result = new AttackTurretData(flat_AttackTurretData.getRootAsflat_AttackTurretData( readData ) );
+      readData = null;
+      return result;
     }
 
 }

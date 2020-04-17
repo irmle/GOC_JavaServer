@@ -51,18 +51,17 @@ public final class flat_createWorldMapFlyingObjectEntityInfo extends Table {
     }
 
     public static byte[] createflat_createWorldMapFlyingObjectEntityInfo(createWorldMapFlyingObjectEntityInfo data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_createWorldMapFlyingObjectEntityInfo.createflat_createWorldMapFlyingObjectEntityInfo(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static createWorldMapFlyingObjectEntityInfo getRootAsflat_createWorldMapFlyingObjectEntityInfo(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        createWorldMapFlyingObjectEntityInfo result = new createWorldMapFlyingObjectEntityInfo(flat_createWorldMapFlyingObjectEntityInfo.getRootAsflat_createWorldMapFlyingObjectEntityInfo( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        createWorldMapFlyingObjectEntityInfo result = new createWorldMapFlyingObjectEntityInfo(flat_createWorldMapFlyingObjectEntityInfo.getRootAsflat_createWorldMapFlyingObjectEntityInfo( buf ) );
+        buf = null;
         return result;
     }
 

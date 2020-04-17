@@ -46,18 +46,17 @@ public final class flat_motionCharacterUseSkill extends Table {
     }
 
     public static byte[] createflat_motionCharacterUseSkill(motionCharacterUseSkill data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_motionCharacterUseSkill.createflat_motionCharacterUseSkill(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static motionCharacterUseSkill getRootAsflat_motionCharacterUseSkill(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        motionCharacterUseSkill result = new motionCharacterUseSkill(flat_motionCharacterUseSkill.getRootAsflat_motionCharacterUseSkill( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer readData = wrap(data);
+        motionCharacterUseSkill result = new motionCharacterUseSkill(flat_motionCharacterUseSkill.getRootAsflat_motionCharacterUseSkill( readData ) );
+        readData = null;
         return result;
     }
 

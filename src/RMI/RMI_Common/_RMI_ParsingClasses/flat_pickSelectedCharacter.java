@@ -47,18 +47,17 @@ public final class flat_pickSelectedCharacter extends Table {
     }
 
     public static byte[] createflat_pickSelectedCharacter(pickSelectedCharacter data) {
-        FlatBufferBuilder fbb = PooledFlatBufferBuilder.DEFAULT.poll();
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
         fbb.finish(flat_pickSelectedCharacter.createflat_pickSelectedCharacter(fbb, data));
         byte[] result = fbb.sizedByteArray();
-        fbb.clear(); PooledFlatBufferBuilder.DEFAULT.offer(fbb);
+        fbb = null;
         return result;
     }
 
     public static pickSelectedCharacter getRootAsflat_pickSelectedCharacter(byte[] data) {
-        ByteBuf readData = PooledByteBufAllocator.DEFAULT.directBuffer(data.length);
-        readData.writeBytes(data);
-        pickSelectedCharacter result = new pickSelectedCharacter(flat_pickSelectedCharacter.getRootAsflat_pickSelectedCharacter( readData.nioBuffer() ) );
-        readData.release();
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        pickSelectedCharacter result = new pickSelectedCharacter(flat_pickSelectedCharacter.getRootAsflat_pickSelectedCharacter( buf ) );
+        buf = null;
         return result;
     }
 
