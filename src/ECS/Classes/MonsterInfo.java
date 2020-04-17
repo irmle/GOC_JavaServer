@@ -218,7 +218,7 @@ public class MonsterInfo implements Cloneable {
 
 
     @Override
-    public Object clone()  {
+    public MonsterInfo clone()  {
         MonsterInfo clone;
         try {
             clone = (MonsterInfo) super.clone();
