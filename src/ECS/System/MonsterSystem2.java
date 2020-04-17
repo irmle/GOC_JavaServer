@@ -320,6 +320,10 @@ public class MonsterSystem2 {
 
                             /* 현 위치를 기준으로 가까운 MOVE POINT를 검색한다 */
                             MapInfo nearMovePoint = MapFactory.findNearMovePointVer20200213(worldMap, monsterPos);
+                            if(nearMovePoint == null){
+                                toDoAction = MonsterActionType.DO_NOTHING;
+                                break;
+                            }
 
                             /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
 

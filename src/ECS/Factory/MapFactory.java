@@ -441,6 +441,11 @@ public class MapFactory implements Cloneable {
             }
         }
 
+        if(pathType == PathType.NONE){
+            return null;
+        }
+
+
         /** Path에서 해당 타일의 다음 타일을 가져온다 */
         int currentNearIndex = worldMap.pathList.get(pathType).indexOf(currentNearMP);
 

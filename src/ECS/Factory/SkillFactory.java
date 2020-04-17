@@ -2693,7 +2693,9 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            //skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = skillInfoLIST.get(skillType).skillCoolTime;
+
 
             /* 시전자 상태 업데이트 */
             BuffAction userBuffAfterSkillUse = new BuffAction();
@@ -2914,7 +2916,7 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
 
             /* 시전자 상태 업데이트 */
             BuffAction userBuffAfterSkillUse = new BuffAction();
@@ -3112,7 +3114,7 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
 
             /* 시전자 상태 업데이트 */
             BuffAction userBuffAfterSkillUse = new BuffAction();
@@ -3304,7 +3306,7 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
 
             /* 시전자 상태 업데이트 */
             BuffAction userBuffAfterSkillUse = new BuffAction();
@@ -3502,7 +3504,7 @@ public class SkillFactory {
             /** 스킬 쿨타임 및 시전자쪽에 필요한 처리 */    // 뭔가 명확하게 정리가 잘 안되네
 
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
 
             /* 시전자 상태 업데이트 */
             BuffAction userBuffAfterSkillUse = new BuffAction();
