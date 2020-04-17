@@ -1107,6 +1107,73 @@ public class DamageHistorySystem {
         return attrType;
     }
 
+
+    /*******************************************************************************************************************/
+    /**
+     * 2020 04 18 새벽 작성
+     * 필요 데이터를 GDM으로부터 클론하여 사용하게끔, 초반에 미리 복사해두는 처리
+     */
+
+    /**
+     * 기    능 : 데미지 시스템에서 필요로 하는 데이터를, GDM에서 복사해온다.
+     * 처    리 :
+     *      DamageSystem 에서 필요로 하는 GDM 데이터는 다음과 같다
+     *      -- 상성효과값 목록
+     *      -- 앨리멘탈 상성 정보 목록
+     *
+     */
+    public void getNeedDataFromGDM(){
+
+        /* 초기화 처리 */
+
+
+        /* 상성효과값 목록을 복사한다 */
+
+
+        /* 앨리멘탈 상성 정보 목록을 복사한다 */
+
+
+    }
+
+    public void bringSynastryEffectValueListFromGDM(){
+
+        HashMap<Integer, Float> synatsryEffectValueList = new HashMap<>();
+        for( HashMap.Entry<Integer, Float> synastryEffect : GameDataManager.synastryEffectValueList.entrySet()){
+
+            int effectKey = synastryEffect.getKey();
+            float effectValue = synastryEffect.getValue();
+            synatsryEffectValueList.put(effectKey, effectValue);
+
+        }
+
+    }
+
+    public void bringElementalSynastryInfoListFromGDM(){
+
+        HashMap<Integer, HashMap<Integer, Integer>> waveArmyList = new HashMap<>();
+        for( HashMap.Entry<Integer, HashMap<Integer, Integer>> waveArmy : GameDataManager.waveArmyList.entrySet()){
+
+            int waveKey = waveArmy.getKey();
+
+            HashMap<Integer, Integer> waveValue = new HashMap<>();
+            for( HashMap.Entry<Integer, Integer> waveMob : waveArmy.getValue().entrySet()){
+
+                int mobKey = waveMob.getKey();
+                int mobValue = waveMob.getValue();
+
+                waveValue.put(mobKey, mobValue);
+
+            }
+
+            waveArmyList.put(waveKey, waveValue);
+
+        }
+
+    }
+
+
+
+
 }
 
 
