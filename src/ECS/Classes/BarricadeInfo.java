@@ -38,7 +38,7 @@ public class BarricadeInfo implements Cloneable {
     }
 
     @Override
-    public Object clone()  {
+    public BarricadeInfo clone()  {
         BarricadeInfo clone;
         try {
             clone = (BarricadeInfo) super.clone();

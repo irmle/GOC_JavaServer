@@ -11,7 +11,7 @@ package ECS.Classes;
  *      >> 궁수
  *
  */
-public class SkillInfoPerLevel {
+public class SkillInfoPerLevel implements Cloneable {
 
     public int level;                  // 스킬의 레벨
     public float durationTime;         // 스킬 효과 지속 시간
@@ -478,6 +478,22 @@ public class SkillInfoPerLevel {
     }
 
 
+    /*******************************************************************************************************************/
+
+    @Override
+    public SkillInfoPerLevel clone() {
+
+        SkillInfoPerLevel skillInfoPerLevel;
+
+        try{
+            skillInfoPerLevel = (SkillInfoPerLevel) super.clone();
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+
+        return skillInfoPerLevel;
+
+    }
 
 
 

@@ -22,7 +22,7 @@ package ECS.Classes;
  *
  *
  */
-public class GameDifficultyGradeInfo {
+public class GameDifficultyGradeInfo implements Cloneable{
 
     /** 멤버 변수 */
 
@@ -53,5 +53,19 @@ public class GameDifficultyGradeInfo {
         this.monsterStatRate = monsterStatRate;
     }
 
+    @Override
+    public GameDifficultyGradeInfo clone() {
+
+        GameDifficultyGradeInfo gameDifficultyGradeInfo;
+
+        try{
+            gameDifficultyGradeInfo = (GameDifficultyGradeInfo) super.clone();
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+
+        return gameDifficultyGradeInfo;
+
+    }
 
 }

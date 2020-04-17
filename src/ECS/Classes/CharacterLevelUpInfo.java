@@ -7,7 +7,7 @@ package ECS.Classes;
  *      캐릭터 레벨 업 시, 캐릭터 타입별로 변화하는 스탯 정보를 담아두기 위해 만든 클래스.
  *      현재, Game / GameDataManager 파일에서 이 클래스를 활용한 데이터테이블을 관리하도록 되어있다.
  */
-public class CharacterLevelUpInfo {
+public class CharacterLevelUpInfo implements Cloneable{
 
     /** 멤버 변수 */
 
@@ -64,5 +64,20 @@ public class CharacterLevelUpInfo {
 
         System.out.println("크리티걸 발생 확률 증가량 : " + criticalProbRate );
         System.out.println("크리티걸 데미지 증가량 : " + criticalDamage );
+    }
+
+    @Override
+    public CharacterLevelUpInfo clone() {
+
+        CharacterLevelUpInfo characterLevelUpInfo;
+
+        try{
+            characterLevelUpInfo = (CharacterLevelUpInfo) super.clone();
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+
+        return characterLevelUpInfo;
+
     }
 }

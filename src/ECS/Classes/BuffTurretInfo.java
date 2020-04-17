@@ -132,11 +132,10 @@ public class BuffTurretInfo implements Cloneable {
 
 
     @Override
-    public Object clone()  {
+    public BuffTurretInfo clone()  {
         BuffTurretInfo clone;
         try {
             clone = (BuffTurretInfo) super.clone();
-            //clone.buffAction = (BuffAction)buffAction.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

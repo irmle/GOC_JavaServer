@@ -125,7 +125,7 @@ public class AttackTurretInfo implements Cloneable {
     }
 
     @Override
-    public Object clone()  {
+    public AttackTurretInfo clone()  {
         AttackTurretInfo clone;
         try {
             clone = (AttackTurretInfo) super.clone();

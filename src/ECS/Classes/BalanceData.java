@@ -12,7 +12,7 @@ package ECS.Classes;
  * --
  *
  */
-public class BalanceData {
+public class BalanceData implements Cloneable{
 
     /* 어떤 종류의 밸런스를 위한 것인가?? */
     public int balanceDataType;
@@ -30,5 +30,20 @@ public class BalanceData {
         this.maxLevel = maxLevel;
         this.adjustmentValue = adjustmentValue;
         this.weightValue = weightValue;
+    }
+
+    @Override
+    public BalanceData clone() {
+
+        BalanceData balanceData;
+
+        try{
+            balanceData = (BalanceData) super.clone();
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+
+        return balanceData;
+
     }
 }
