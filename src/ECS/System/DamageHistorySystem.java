@@ -12,6 +12,7 @@ import ECS.Entity.*;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
+import org.omg.CORBA.INTERNAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1128,10 +1129,10 @@ public class DamageHistorySystem {
 
 
         /* 상성효과값 목록을 복사한다 */
-
+        bringSynastryEffectValueListFromGDM();
 
         /* 앨리멘탈 상성 정보 목록을 복사한다 */
-
+        bringElementalSynastryInfoListFromGDM();
 
     }
 
@@ -1150,27 +1151,27 @@ public class DamageHistorySystem {
 
     public void bringElementalSynastryInfoListFromGDM(){
 
-        HashMap<Integer, HashMap<Integer, Integer>> waveArmyList = new HashMap<>();
-        for( HashMap.Entry<Integer, HashMap<Integer, Integer>> waveArmy : GameDataManager.waveArmyList.entrySet()){
+        HashMap<Integer, HashMap<Integer, Integer>> elementalSynastryInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, HashMap<Integer, Integer>> elementalSynastryInfo
+                : GameDataManager.elementalSynastryInfoList.entrySet()) {
 
-            int waveKey = waveArmy.getKey();
+            int elementalKey = elementalSynastryInfo.getKey();
 
-            HashMap<Integer, Integer> waveValue = new HashMap<>();
-            for( HashMap.Entry<Integer, Integer> waveMob : waveArmy.getValue().entrySet()){
+            HashMap<Integer, Integer> elementalValue = new HashMap<>();
+            for (HashMap.Entry<Integer, Integer> synastryInfo : elementalSynastryInfo.getValue().entrySet()) {
 
-                int mobKey = waveMob.getKey();
-                int mobValue = waveMob.getValue();
+                int synastryKey = synastryInfo.getKey();
+                int synastryValue = synastryInfo.getValue();
 
-                waveValue.put(mobKey, mobValue);
+                elementalValue.put(synastryKey, synastryValue);
 
             }
 
-            waveArmyList.put(waveKey, waveValue);
+            elementalSynastryInfoList.put(elementalKey, elementalValue);
 
         }
 
     }
-
 
 
 

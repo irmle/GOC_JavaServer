@@ -1,6 +1,7 @@
 package ECS.System;
 
 import ECS.Classes.CharacterLevelUpInfo;
+import ECS.Classes.Type.BalanceData.BalanceDataType;
 import ECS.Components.CharacterComponent;
 import ECS.Entity.CharacterEntity;
 import ECS.Game.GameDataManager;
@@ -138,6 +139,92 @@ public class LevelUpSystem {
 
 
     }
+
+
+
+    /*******************************************************************************************************************/
+    /**
+     * 2020 04 18 새벽 작성
+     * 필요 데이터를 GDM으로부터 클론하여 사용하게끔, 초반에 미리 복사해두는 처리
+     */
+
+    /**
+     * 기    능 : 레벨업 시스템에서 필요로 하는 데이터를, GDM에서 복사해온다.
+     * 처    리 :
+     *      LevelUp System 에서 필요로 하는 GDM 데이터는 다음과 같다
+     *      -- 밸런스 데이터 목록
+     *      -- 레벨업 테이블
+     *      -- 캐릭터 레벨업 스탯변화 테이블
+     *
+     *      -- 매서드..
+     *
+     */
+    public void getNeedDataFromGDM(){
+
+        /* 초기화 처리 */
+
+
+        /* 정글몹 정보 목록을 복사한다 */
+
+
+    }
+
+    public void bringLevelUpInfoListFromGDM(){
+
+        HashMap<Integer, CharacterLevelUpInfo> characterLevelUpInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, CharacterLevelUpInfo> characterLevelUpInfo : GameDataManager.characterLevelUpInfoList.entrySet()){
+
+            int levelUpKey = characterLevelUpInfo.getKey();
+            CharacterLevelUpInfo levelUpValue = characterLevelUpInfo.getValue();
+            characterLevelUpInfoList.put(jungleKey, jungleValue.clone());
+
+        }
+
+    }
+
+    public void bringWaveMonsterInfoListFromGDM(){
+
+        HashMap<Integer, HashMap<Integer, Integer>> waveArmyList = new HashMap<>();
+        for( HashMap.Entry<Integer, HashMap<Integer, Integer>> waveArmy : GameDataManager.waveArmyList.entrySet()){
+
+            int waveKey = waveArmy.getKey();
+
+            HashMap<Integer, Integer> waveValue = new HashMap<>();
+            for( HashMap.Entry<Integer, Integer> waveMob : waveArmy.getValue().entrySet()){
+
+                int mobKey = waveMob.getKey();
+                int mobValue = waveMob.getValue();
+
+                waveValue.put(mobKey, mobValue);
+
+            }
+
+            waveArmyList.put(waveKey, waveValue);
+
+        }
+
+    }
+
+
+    /**
+     * 넘겨받은 레벨 값을 가지고, 현 레벨에서 다음 레벨로 업그레이드 하기 위해 필요한 경험치 량을 찾아 리턴한다
+     * @param currentLevel
+     * @return
+     */
+    public static float getMaxExpByLevel(int currentLevel){
+
+        int CHAR_MAX_LEVEL = balanceDataInfoList.get(BalanceDataType.EXP_FOR_CHARACTER_LEVEL_UP).maxLevel;
+
+        float expAmount;
+        if(currentLevel == CHAR_MAX_LEVEL){
+            expAmount = levelUpTable.get(currentLevel);
+        }
+        expAmount = levelUpTable.get(currentLevel+1);
+
+        return expAmount;
+    }
+
+
 
 
 

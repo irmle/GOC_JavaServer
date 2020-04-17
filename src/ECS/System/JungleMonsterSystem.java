@@ -842,4 +842,45 @@ public class JungleMonsterSystem {
 
     }
 
+    /*******************************************************************************************************************/
+    /**
+     * 2020 04 18 새벽 작성
+     * 필요 데이터를 GDM으로부터 클론하여 사용하게끔, 초반에 미리 복사해두는 처리
+     */
+
+    /**
+     * 기    능 : 월드맵에서 필요로 하는 데이터를, GDM에서 복사해온다.
+     * 처    리 :
+     *      WorldMap에서 필요로 하는 GDM 데이터는 다음과 같다
+     *      -- 정글몹정보 목록
+     *      -- 웨이브별 등장 몹 목록
+     *
+     */
+    public void getNeedDataFromGDM(){
+
+        /* 초기화 처리 */
+
+
+        /* 정글몹 정보 목록을 복사한다 */
+        bringJungleMobInfoListFromGDM();
+
+    }
+
+    public void bringJungleMobInfoListFromGDM(){
+
+        HashMap<Integer, MonsterInfo> jungleMonsterInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, MonsterInfo> jungleMonsterInfo : GameDataManager.jungleMonsterInfoList.entrySet()){
+
+            int jungleKey = jungleMonsterInfo.getKey();
+            MonsterInfo jungleValue = jungleMonsterInfo.getValue();
+            jungleMonsterInfoList.put(jungleKey, jungleValue.clone());
+
+        }
+
+    }
+
+
+
+
+
 }
