@@ -17,13 +17,27 @@ import java.util.HashMap;
 public class LevelUpSystem {
 
     public WorldMap worldMap;
+
+    float coolTime;
+    float remainCoolTime;
+
     public static final int MAX_LEVEL = 15;
 
-    public LevelUpSystem(WorldMap worldMap) {
+    public LevelUpSystem(WorldMap worldMap, float coolTime) {
         this.worldMap = worldMap;
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
     }
 
     public void onUpdate(float deltaTime){
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
 
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 

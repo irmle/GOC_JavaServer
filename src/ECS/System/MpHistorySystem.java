@@ -13,15 +13,29 @@ public class MpHistorySystem {
 
     public WorldMap worldMap;
 
+    float coolTime;
+    float remainCoolTime;
+
     public HashMap<Integer, Entity> worldEntityList;
     public HashMap<Integer, MPHistoryComponent> mpHistoryComponents;
 
-    public MpHistorySystem(WorldMap worldMap) {
+    public MpHistorySystem(WorldMap worldMap, float coolTime) {
         this.worldMap = worldMap;
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
     }
 
     public void onUpdate(float deltaTime)
     {
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
+
 
         /* mp히스토리 컴포넌트만 갖고오기 */
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {

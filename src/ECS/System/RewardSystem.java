@@ -32,15 +32,28 @@ public class RewardSystem {
 
     WorldMap worldMap;
 
+    float coolTime;
+    float remainCoolTime;
+
     HashMap<Integer, HashMap<Integer, StoreUpgradeInfoPerLevel>> storeUpgradeInfoList;
 
-    public RewardSystem(WorldMap worldMap) {
+    public RewardSystem(WorldMap worldMap, float coolTime) {
 
         this.worldMap = worldMap;
         storeUpgradeInfoList = GameDataManager.storeUpgradeInfoPerLevelList;
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
     }
 
     public void onUpdate(float deltaTime){
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
 
         /** 상점 업그레이드에 따른 보상 비율을 결정한다 */
 

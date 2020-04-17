@@ -25,11 +25,25 @@ public class CharacterSpawnPointWellSystem {
     float remainCoolTime;
     public static final float COOL_TIME = 1f;    // 자가회복 쿨타임 ; 1초
 
-    public CharacterSpawnPointWellSystem(WorldMap worldMap) {
+    float systemCoolTime;
+    float systemRemainCoolTime;
+
+    public CharacterSpawnPointWellSystem(WorldMap worldMap, float systemCoolTime) {
         this.worldMap = worldMap;
+        this.systemCoolTime = systemCoolTime;
+        this.systemRemainCoolTime = this.systemCoolTime;
     }
 
     public void onUpdate(float deltaTime) {
+
+
+        systemRemainCoolTime -= worldMap.tickRate;
+        if(systemRemainCoolTime <= 0){
+            systemRemainCoolTime = systemCoolTime;
+        }
+        else{
+            return;
+        }
 
         /* 우물 위치 */
         Vector3 wellPoint = new Vector3(3f, 0f, -3f);

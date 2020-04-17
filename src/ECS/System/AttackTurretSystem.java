@@ -36,6 +36,19 @@ public class AttackTurretSystem {
                 continue;
             }
 
+            /* 쿨타임 및 본인 상태 */
+            boolean turretIsAttackablee =
+                    ((!attackTurret.conditionComponent.isDisableAttack) && (attackAbility.remainCoolTime < 0))
+                            ? true : false;
+            if(!turretIsAttackablee){
+
+                attackAbility.remainCoolTime -= deltaTime;
+                continue;
+
+            }
+
+
+
             /** 공격 범위 내에서 가장 가까운 타겟을 찾는다 */
 
             float minDistance = attackAbility.attackRange;
@@ -175,13 +188,7 @@ public class AttackTurretSystem {
                     attackAbility.remainCoolTime = 1f/attackAbility.attackSpeed;
 
                 }
-                else{   /* 공격 가능한 상태가 아니라면 */
 
-                    /* 공격 쿨타임을 계산한다 */
-
-                    attackAbility.remainCoolTime -= deltaTime;
-
-                }
 
             } /* 타겟이 존재하는 경우의 처리 끝 */
             else{   /* 타겟이 존재하지 않음 */

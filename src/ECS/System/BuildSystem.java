@@ -40,14 +40,20 @@ public class BuildSystem {
     /* 멤버 변수 */
     WorldMap worldMap;
 
+    float coolTime;
+    float remainCoolTime;
+
     public static HashMap<Integer, Integer> installPriceTable;  // 설치 타입, 건설 가격 맵
     public static HashMap<Integer, Integer> upgradePriceTable;  //  업그레이드 타입, 건설 가격 맵 ; 바리는 업글 없음
                                                                 // 터렛 타입이랑 각 비용을 넣을 것,,,,,,으,,,
 
     /* 생성자 */
-    public BuildSystem(WorldMap worldMap) {
+    public BuildSystem(WorldMap worldMap, float coolTime) {
 
         this.worldMap = worldMap;
+
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
 
         installPriceTable = new HashMap<>();
         upgradePriceTable = new HashMap<>();
@@ -58,6 +64,14 @@ public class BuildSystem {
 
     /* 매서드 */
     public void onUpdate(float deltaTime){
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
 
         /* 모든 건설 슬롯들에 대해 반복한다 */
         for(int i=0; i<worldMap.buildSlotList.size(); i++){

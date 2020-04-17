@@ -320,26 +320,26 @@ public class WorldMap {
         buffActionSystem = new BuffActionSystem(this);
         characterSystem = new CharacterSystem(this);
         hpHistorySystem = new HpHistorySystem(this);
-        mpHistorySystem = new MpHistorySystem(this);
-        levelSystem = new LevelSystem(this);
-        monsterSystem = new MonsterSystem(this);
+        mpHistorySystem = new MpHistorySystem(this, 200f);
+        //levelSystem = new LevelSystem(this);
+        //monsterSystem = new MonsterSystem(this);
         monsterSystem2 = new MonsterSystem2(this);
         attackTurretSystem = new AttackTurretSystem(this);
-        buffTurretSystem = new BuffTurretSystem(this);
+        buffTurretSystem = new BuffTurretSystem(this, 200f);
         skillObjectSystem = new SkillObjectSystem(this);
         flyingObjectSystem = new FlyingObjectSystem(this);
 
-        deathSystem = new DeathSystem(this);
-        rewardSystem = new RewardSystem(this);
-        levelUpSystem = new LevelUpSystem(this);
-        itemSlotSystem = new ItemSlotSystem(this);
-        buildSystem = new BuildSystem(this);
+        deathSystem = new DeathSystem(this, 200f);
+        rewardSystem = new RewardSystem(this, 200f);
+        levelUpSystem = new LevelUpSystem(this, 200f);
+        itemSlotSystem = new ItemSlotSystem(this, 200f);
+        buildSystem = new BuildSystem(this, 200f);
 
         selfRecoverySystem = new SelfRecoverySystem(this);
         damageHistorySystem = new DamageHistorySystem(this);
 
         /** 2020 03 20 */
-        wellSystem = new CharacterSpawnPointWellSystem(this);
+        wellSystem = new CharacterSpawnPointWellSystem(this, 1000f);
 
 
         store = new Store(this);

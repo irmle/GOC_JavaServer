@@ -27,11 +27,24 @@ public class DeathSystem {
 
     WorldMap worldMap;
 
-    public DeathSystem(WorldMap worldMap) {
+    float coolTime;
+    float remainCoolTime;
+
+    public DeathSystem(WorldMap worldMap, float coolTime) {
         this.worldMap = worldMap;
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
     }
 
     public void onUpdate(float deltaTime){
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
 
         Queue<Death> deaths = worldMap.deathQueue;
 

@@ -18,11 +18,24 @@ public class BuffTurretSystem {
 
     WorldMap worldMap;
 
-    public BuffTurretSystem(WorldMap worldMap) {
+    float coolTime;
+    float remainCoolTime;
+
+    public BuffTurretSystem(WorldMap worldMap, float coolTime) {
         this.worldMap = worldMap;
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
     }
 
     public void onUpdate(float deltaTime) {
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
 
         /* 버프타워 갯수만큼 반복한다 */
         for(HashMap.Entry<Integer, BuffTurretEntity> buffTurretEntity : worldMap.buffTurretEntity.entrySet()){

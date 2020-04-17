@@ -27,13 +27,18 @@ public class ItemSlotSystem {
     /* 멤버 변수 */
     WorldMap worldMap;
 
+    float coolTime;
+    float remainCoolTime;
+
     /* 아이템 타입별 효과 목록 */
     public static HashMap<Integer, HashMap<String, BuffInfo>> itemEffectInfoLIST;
 
     /* 생성자 */
-    public ItemSlotSystem(WorldMap worldMap) {
+    public ItemSlotSystem(WorldMap worldMap, float coolTime) {
 
         this.worldMap = worldMap;
+        this.coolTime = coolTime;
+        this.remainCoolTime = this.coolTime;
 
 
         itemEffectInfoLIST = GameDataManager.effectInfoList.get(EffectCauseType.ITEM);
@@ -47,6 +52,14 @@ public class ItemSlotSystem {
      * @param deltaTime
      */
     public void onUpdate(float deltaTime){
+
+        remainCoolTime -= worldMap.tickRate;
+        if(remainCoolTime <= 0){
+            remainCoolTime = coolTime;
+        }
+        else{
+            return;
+        }
 
         /* 모든 캐릭터에 대해 반복한다 */
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
