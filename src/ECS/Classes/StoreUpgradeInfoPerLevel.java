@@ -10,7 +10,7 @@ import ECS.Classes.Type.Upgrade.StoreUpgradeType;
  *
  *
  */
-public class StoreUpgradeInfoPerLevel {
+public class StoreUpgradeInfoPerLevel implements Cloneable {
 
     public int upgradeType = StoreUpgradeType.NONE;
 
@@ -31,4 +31,20 @@ public class StoreUpgradeInfoPerLevel {
 
         System.out.println("업그레이드 금액 : " + upgradeCost);
     }
+
+    @Override
+    public StoreUpgradeInfoPerLevel clone() {
+
+        StoreUpgradeInfoPerLevel storeUpgradeInfoPerLevel = null;
+
+        try{
+            storeUpgradeInfoPerLevel = (StoreUpgradeInfoPerLevel) super.clone();
+
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+
+        return storeUpgradeInfoPerLevel;
+    }
+
 }

@@ -577,4 +577,77 @@ public class Store {
         return slot;
     }
 
+
+
+    /*******************************************************************************************************************/
+    /**
+     * 2020 04 18 새벽 작성
+     * 필요 데이터를 GDM으로부터 클론하여 사용하게끔, 초반에 미리 복사해두는 처리
+     */
+
+    /**
+     * 기    능 : 스토어에서 필요로 하는 데이터를, GDM에서 복사해온다.
+     * 처    리 :
+     *      Store에서 필요로 하는 GDM 데이터는 다음과 같다
+     *      -- 아이템정보 목록
+     *      -- 레벨별 상점 강화 목록
+     *
+     */
+    public void getNeedDataFromGDM(){
+
+        /* 초기화 처리 */
+
+
+        /* 정글몹 정보 목록을 복사한다 */
+        bringItemInfoListFromGDM();
+
+        /* 웨이브별 등장 몹 목록을 복사한다 */
+        bringStoreUpgradeInfoListFromGDM();
+
+    }
+
+    public void bringItemInfoListFromGDM(){
+
+        HashMap<Integer, ItemInfo> itemInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, ItemInfo> itemInfo : GameDataManager.itemInfoList.entrySet()){
+
+            int itemKey = itemInfo.getKey();
+            ItemInfo itemValue = itemInfo.getValue();
+            itemInfoList.put(itemKey, itemValue.clone());
+
+        }
+
+    }
+
+    public void bringStoreUpgradeInfoListFromGDM(){
+
+        HashMap<Integer, HashMap<Integer, StoreUpgradeInfoPerLevel>> storeUpgradeInfoPerLevelList = new HashMap<>();
+        for( HashMap.Entry<Integer, HashMap<Integer, StoreUpgradeInfoPerLevel>> storeUpgradeInfo
+                : GameDataManager.storeUpgradeInfoPerLevelList.entrySet()){
+
+            int storeUpgradeKey = storeUpgradeInfo.getKey();
+
+            HashMap<Integer, StoreUpgradeInfoPerLevel> storeUpgradeValue = new HashMap<>();
+            for( HashMap.Entry<Integer, StoreUpgradeInfoPerLevel> upgradeInfoPerLevel : storeUpgradeInfo.getValue().entrySet()){
+
+                int upgradeKey = upgradeInfoPerLevel.getKey();
+                StoreUpgradeInfoPerLevel upgradeValue = upgradeInfoPerLevel.getValue();
+
+                storeUpgradeValue.put(upgradeKey, upgradeValue.clone());
+
+            }
+
+            storeUpgradeInfoPerLevelList.put(storeUpgradeKey, storeUpgradeValue);
+
+        }
+
+    }
+
+
+
+
+
+
+
+
 }
