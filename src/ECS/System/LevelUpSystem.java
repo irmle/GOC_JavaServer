@@ -1,5 +1,6 @@
 package ECS.System;
 
+import ECS.Classes.BalanceData;
 import ECS.Classes.CharacterLevelUpInfo;
 import ECS.Classes.Type.BalanceData.BalanceDataType;
 import ECS.Components.CharacterComponent;
@@ -176,30 +177,20 @@ public class LevelUpSystem {
 
             int levelUpKey = characterLevelUpInfo.getKey();
             CharacterLevelUpInfo levelUpValue = characterLevelUpInfo.getValue();
-            characterLevelUpInfoList.put(jungleKey, jungleValue.clone());
+            characterLevelUpInfoList.put(levelUpKey, levelUpValue.clone());
 
         }
 
     }
 
-    public void bringWaveMonsterInfoListFromGDM(){
+    public void bringLevelUpTableFromGDM(){
 
-        HashMap<Integer, HashMap<Integer, Integer>> waveArmyList = new HashMap<>();
-        for( HashMap.Entry<Integer, HashMap<Integer, Integer>> waveArmy : GameDataManager.waveArmyList.entrySet()){
+        HashMap<Integer, Float> levelUpTable = new HashMap<>();
+        for( HashMap.Entry<Integer, Float> levelUpInfo : GameDataManager.levelUpTable.entrySet()){
 
-            int waveKey = waveArmy.getKey();
-
-            HashMap<Integer, Integer> waveValue = new HashMap<>();
-            for( HashMap.Entry<Integer, Integer> waveMob : waveArmy.getValue().entrySet()){
-
-                int mobKey = waveMob.getKey();
-                int mobValue = waveMob.getValue();
-
-                waveValue.put(mobKey, mobValue);
-
-            }
-
-            waveArmyList.put(waveKey, waveValue);
+            int levelUpKey = levelUpInfo.getKey();
+            float levelUpValue = levelUpInfo.getValue();
+            levelUpTable.put(levelUpKey, levelUpValue);
 
         }
 
@@ -211,7 +202,7 @@ public class LevelUpSystem {
      * @param currentLevel
      * @return
      */
-    public static float getMaxExpByLevel(int currentLevel){
+    /*public static float getMaxExpByLevel(int currentLevel){
 
         int CHAR_MAX_LEVEL = balanceDataInfoList.get(BalanceDataType.EXP_FOR_CHARACTER_LEVEL_UP).maxLevel;
 
@@ -222,8 +213,20 @@ public class LevelUpSystem {
         expAmount = levelUpTable.get(currentLevel+1);
 
         return expAmount;
-    }
+    }*/
 
+    public void bringBalanceDataInfoListFromGDM(){
+
+        HashMap<Integer, BalanceData> balanceDataInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, BalanceData> balanceDataInfo : GameDataManager.balanceDataInfoList.entrySet()){
+
+            int balanceKey = balanceDataInfo.getKey();
+            BalanceData balanceValue = balanceDataInfo.getValue();
+            balanceDataInfoList.put(balanceKey, balanceValue.clone());
+
+        }
+
+    }
 
 
 

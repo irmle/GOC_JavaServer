@@ -309,5 +309,175 @@ public class SelfRecoverySystem {
 
     }
 
+    /*******************************************************************************************************************/
+    /**
+     * 2020 04 18 새벽 작성
+     * 필요 데이터를 GDM으로부터 클론하여 사용하게끔, 초반에 미리 복사해두는 처리
+     */
+
+    /**
+     * 기    능 : 템슬롯 시스템에서 필요로 하는 데이터를, GDM에서 복사해온다.
+     * 처    리 :
+     *      ItemSlotSystem에서 필요로 하는 GDM 데이터는 다음과 같다
+     *      -- (아이템) 효과 정보 목록
+     *      -- 파싱, %제거 매서드... >> 뭐 길지도 않고.. 중요한 처리도 아니니까? 그냥 일단 복붙해다가 쓰지머.
+     *
+     */
+    public void getNeedDataFromGDM(){
+
+        /* 초기화 처리 */
+
+
+        /* 템 효과 정보 목록을 복사한다 */
+        bringItemEffectInfoListFromGDM();
+
+
+    }
+
+
+    public void bringItemEffectInfoListFromGDM(){
+
+        HashMap<Integer, HashMap<String, BuffInfo>> itemEffectInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, HashMap<String, BuffInfo>> itemEffectInfo
+                : GameDataManager.effectInfoList.get(EffectCauseType.ITEM).entrySet()){
+
+            int itemKey = itemEffectInfo.getKey();
+
+            HashMap<String, BuffInfo> itemEffectValue = new HashMap<>();
+            for( HashMap.Entry<String, BuffInfo> effectInfo : itemEffectInfo.getValue().entrySet()){
+
+                String effectKey = effectInfo.getKey();
+                BuffInfo effectValue = effectInfo.getValue();
+
+                itemEffectValue.put(effectKey, effectValue);
+
+            }
+
+            itemEffectInfoList.put(itemKey, itemEffectValue);
+
+        }
+
+    }
+
+
+    /**
+     * 효과 타입 구하기
+     * @param str
+     * @return
+     */
+    public int getEffectTypeByParsingString(String str){
+
+        int effectType;
+        switch (str){
+
+            case "데미지":
+                effectType = ConditionType.damageAmount;
+                break;
+            case "이동속도":
+            case "이동속도증가":
+                effectType = ConditionType.moveSpeedRate;
+                break;
+            case "흡혈":
+                effectType = ConditionType.bloodSuckingRate;
+                break;
+            case "공격속도":
+                effectType = ConditionType.attackSpeedRate;
+                break;
+            case "최대체력증가":
+                effectType = ConditionType.maxHPRate;
+                break;
+            case "에어본":
+                effectType = ConditionType.isAirborne;
+                break;
+            case "무적":
+                effectType = ConditionType.isTargetingInvincible;
+                break;
+            case "슬로우":
+                effectType = ConditionType.moveSpeedRate;
+                break;
+            case "체력회복":
+                effectType = ConditionType.hpRecoveryAmount;
+                break;
+            case "방어력증가":
+                effectType = ConditionType.defenseBonus;
+                break;
+            case "장판 데미지":
+                effectType = ConditionType.damageAmount;
+                break;
+            case "스턴":
+                effectType = ConditionType.isStunned;
+                break;
+            case "빙결":
+                effectType = ConditionType.isFreezing;
+                break;
+            case "헤드샷활성화":
+                effectType = ConditionType.isArcherHeadShotActivated;
+                break;
+            case "크리뎀":
+                effectType = ConditionType.criticalDamageAmount;
+                break;
+            case "치명확률":
+                effectType = ConditionType.criticalChanceRate;
+                break;
+            case "치명데미지증가":
+                effectType = ConditionType.criticalDamageRate;
+                break;
+            case "난사활성화":
+                effectType = ConditionType.isArcherFireActivated;
+                break;
+            case "1차 데미지":
+            case "2차 데미지":
+            case "보스 1차데미지":
+            case "보스 2차데미지":
+                effectType = ConditionType.criticalDamageAmount;
+                break;
+            case "귀환상태":
+                effectType = ConditionType.isReturning;
+                break;
+            case "마력회복":
+                effectType = ConditionType.mpRecoveryAmount;
+                break;
+            case "최대마력증가":
+                effectType = ConditionType.maxMPRate;
+                break;
+            case "추가 데미지" :
+                effectType = ConditionType.damageAmount;
+                break;
+
+            case "체력회복속도" :
+            case "체력회복 속도증가" :
+                effectType = ConditionType.hpRecoveryRate;
+                break;
+
+            case "마력회복속도" :
+            case "마력회복 속도증가" :
+                effectType = ConditionType.mpRecoveryRate;
+                break;
+
+            default:
+                effectType = -1;
+                break;
+
+        }
+
+        return effectType;
+
+    }
+
+    /**
+     * 퍼센테이지 값을 갖는 문자열들에서 '%'를 제거해줌.
+     * 일부 float 값들을 파싱할 때에 사용.
+     * @param str
+     * @return
+     */
+    public String removePercentage(String str){
+
+        if(str.contains("%")){
+            str = str.substring(0, str.indexOf("%"));
+        }
+
+        return str;
+    }
+
 
 }

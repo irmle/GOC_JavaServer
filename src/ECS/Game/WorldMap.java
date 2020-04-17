@@ -1693,7 +1693,7 @@ public class WorldMap {
 
                     /* HTTP 요청을 만들어 전송 */
 
-                    String ipAddr = "http://222.106.75.90/result/endgame.php";
+                    String ipAddr = "http://220.85.30.235/result/endgame.php";
                     Future<Response> future = httpClient.preparePost(ipAddr)
                             .addFormParam("data", gameResult)
                             .execute(new AsyncCompletionHandler<Response>() {
@@ -3507,7 +3507,7 @@ public class WorldMap {
     public Response RQ_getPlayerCharInfo(String playerRequestInfo){
 
         Response response = null;
-        String ipAddr = "http://222.106.75.90/result/insertgame.php";  /** 주소 바꿀 것*/
+        String ipAddr = "http://220.85.30.235/result/insertgame.php";  /** 주소 바꿀 것*/
 
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
@@ -3552,7 +3552,7 @@ public class WorldMap {
     public Response RQ_saveGameResult(String gameResult){
 
         Response response = null;
-        String ipAddr = "http://222.106.75.90/result/endgame.php";
+        String ipAddr = "http://220.85.30.235/result/endgame.php";
 
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
