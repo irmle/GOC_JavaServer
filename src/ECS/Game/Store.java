@@ -598,10 +598,10 @@ public class Store {
         /* 초기화 처리 */
 
 
-        /* 정글몹 정보 목록을 복사한다 */
+        /* 아이템 정보 목록을 복사한다 */
         bringItemInfoListFromGDM();
 
-        /* 웨이브별 등장 몹 목록을 복사한다 */
+        /* 레벨별 상점 업그레이드 정보 목록을 복사한다 */
         bringStoreUpgradeInfoListFromGDM();
 
     }

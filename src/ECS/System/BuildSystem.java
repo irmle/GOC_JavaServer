@@ -1093,6 +1093,117 @@ public class BuildSystem {
 
 
 
+    /*******************************************************************************************************************/
+    /**
+     * 2020 04 18 새벽 작성
+     * 필요 데이터를 GDM으로부터 클론하여 사용하게끔, 초반에 미리 복사해두는 처리
+     */
+
+    /**
+     * 기    능 : 건설 시스템에서 필요로 하는 데이터를, GDM에서 복사해온다.
+     * 처    리 :
+     *      BuildSystem에서 필요로 하는 GDM 데이터는 다음과 같다
+     *      -- 바리케이드 목록
+     *      -- 터렛 목록
+     *      -- 공격터렛정보 목록
+     *      -- 버프터렛정보 목록
+     *      -- 밸런스데이터 목록
+     *
+     */
+    public void getNeedDataFromGDM(){
+
+        /* 초기화 처리 */
+
+
+        /* 바리케이드 정보 목록을 복사한다 */
+        bringBarricadeInfoListFromGDM();
+
+        /* 터렛 목록을 복사한다 */
+        bringTurretListFromGDM();
+
+        /* 공격터렛정보 목록을 복사한다 */
+        bringAttackTurretInfoListFromGDM();
+
+        /* 버프터렛정보 목록을 복사한다 */
+        bringBuffTurretInfoListFromGDM();
+
+        /* 밸런스데이터 목록을 복사한다 */
+        bringBalanceDataInfoListFromGDM();
+
+
+    }
+
+    public void bringBarricadeInfoListFromGDM(){
+
+        HashMap<Integer, BarricadeInfo> barricadeInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, BarricadeInfo> barricadeInfo : GameDataManager.barricadeInfoList.entrySet()){
+
+            int barricadeKey = barricadeInfo.getKey();
+            BarricadeInfo barricadeValue = barricadeInfo.getValue();
+            barricadeInfoList.put(barricadeKey, barricadeValue.clone());
+
+        }
+
+    }
+
+    public void bringTurretListFromGDM(){
+
+        HashMap<String, Integer> turretList = new HashMap<>();
+        for( HashMap.Entry<String, Integer> turret : GameDataManager.turretList.entrySet()){
+
+            String turretKey = turret.getKey();
+            int turretValue = turret.getValue();
+            turretList.put(turretKey, turretValue);
+
+        }
+
+    }
+
+
+
+    public void bringAttackTurretInfoListFromGDM(){
+
+        HashMap<Integer, AttackTurretInfo> attackTurretInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, AttackTurretInfo> attackTurretInfo : GameDataManager.attackTurretInfoList.entrySet()){
+
+            int attackTurretKey = attackTurretInfo.getKey();
+            AttackTurretInfo attackTurretValue = attackTurretInfo.getValue();
+            attackTurretInfoList.put(attackTurretKey, attackTurretValue.clone());
+
+        }
+
+    }
+
+    public void bringBuffTurretInfoListFromGDM(){
+
+        HashMap<Integer, BuffTurretInfo> buffTurretInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, BuffTurretInfo> buffTurretInfo : GameDataManager.buffTurretInfoList.entrySet()){
+
+            int buffTurretKey = buffTurretInfo.getKey();
+            BuffTurretInfo buffTurretValue = buffTurretInfo.getValue();
+            buffTurretInfoList.put(buffTurretKey, buffTurretValue.clone());
+
+        }
+
+    }
+
+
+    public void bringBalanceDataInfoListFromGDM(){
+
+        HashMap<Integer, BalanceData> balanceDataInfoList = new HashMap<>();
+        for( HashMap.Entry<Integer, BalanceData> balanceDataInfo : GameDataManager.balanceDataInfoList.entrySet()){
+
+            int balanceKey = balanceDataInfo.getKey();
+            BalanceData balanceValue = balanceDataInfo.getValue();
+            balanceDataInfoList.put(balanceKey, balanceValue.clone());
+
+        }
+
+    }
+
+
+
+
 
 
 }
