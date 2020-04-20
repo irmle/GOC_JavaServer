@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ECS.ActionQueue.ClientAction.*;
@@ -774,29 +775,38 @@ public class WorldMap {
             //EntityID와 RMI_ID를 다시 세팅한다.
             worldMapRMI_IDList.put(entityID, rmi_id);
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             //게임이 시작한 이후에만 중계하도록 한다 (로딩중에 튕긴것은 중계할 필요가 없다)
             if (isGameMapStarted) {
 
-                //할당된 자신의 캐릭터의 EntityID를 재접속한 클라이언트에 보내서 자기자신의 EntityID를 세팅하도록 한다.
-                server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable_AES256, entityID);
+                //800ms 후에 재접속 시퀀스를 송신한다.
+                rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        //할당된 자신의 캐릭터의 EntityID를 재접속한 클라이언트에 보내서 자기자신의 EntityID를 세팅하도록 한다.
+                        server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable_AES256, entityID);
+                    }
+                }, 800, TimeUnit.MILLISECONDS);
 
-                //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 초기화 하도록 전송한다.
-                WorldMapDataListSet worldData = initData();
-                server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable_Public_AES256,
-                        worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
-                        worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
+                //위의 800ms가 경과한 후부터 200ms후에 아래의 작업이 실행된다.
 
-                /** 2020 03 06 */
-                server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable_Public_AES256, worldData.storeUpgradeBuffSlotData);
+                //1000ms 후에 재접속 시퀀스를 송신한다.
+                rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 초기화 하도록 전송한다.
+                        WorldMapDataListSet worldData = initData();
+                        server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable_Public_AES256,
+                                worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
+                                worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
 
-                //유저가 다시 접속하였으므로, 재연결 되었다는 메시지를 모든 클라이언트에게 중계한다
-                server_to_client.userReconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
+                        /** 2020 03 06 */
+                        server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable_Public_AES256, worldData.storeUpgradeBuffSlotData);
+
+                        //유저가 다시 접속하였으므로, 재연결 되었다는 메시지를 모든 클라이언트에게 중계한다
+                        server_to_client.userReconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
+
+                    }
+                }, 1000, TimeUnit.MILLISECONDS);
             }
         }
     }

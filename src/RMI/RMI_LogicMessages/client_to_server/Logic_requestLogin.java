@@ -1,6 +1,7 @@
 package RMI.RMI_LogicMessages.client_to_server;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 import ECS.Game.*;
 import RMI.RMI_Classes.*;
@@ -25,17 +26,24 @@ public class Logic_requestLogin {
         WorldMap result = MatchingManager.isUserPlayingGame(googleIDToken);
         if (result != null) {
             int getWorldMapID = result.getWorldMapID();
-            server_to_client.reconnectingWorldMap(rmi_id, RMI_Context.Reliable_AES256,
-                    getWorldMapID, new LinkedList<>(result.loadingProgressList.values()),"127.0.0.1_test", 65005);
 
-            try {
-                Thread.currentThread().sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            //300ms 후에 재접속 시퀀스를 송신한다.
+            rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    server_to_client.reconnectingWorldMap(rmi_id, RMI_Context.Reliable_AES256, getWorldMapID,
+                            new LinkedList<>(result.loadingProgressList.values()),"127.0.0.1_test", 65005);
 
-            server_to_client.broadcastingLoadingProgress(rmi_id, RMI_Context.Reliable_AES256, new LinkedList<>(result.loadingProgressList.values()));
+                }
+            }, 300, TimeUnit.MILLISECONDS);
 
+            //1000ms 후에 로딩되는 정도를 중계한다.
+            rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    server_to_client.broadcastingLoadingProgress(rmi_id, RMI_Context.Reliable_AES256, new LinkedList<>(result.loadingProgressList.values()));
+                }
+            }, 1000, TimeUnit.MILLISECONDS);
         }
 
     }
