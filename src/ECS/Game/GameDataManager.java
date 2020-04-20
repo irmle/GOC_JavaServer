@@ -31,7 +31,7 @@ public class GameDataManager {
     static HashMap<Integer, BarricadeInfo> barricadeTableDB;
 
     // 캐릭터 레벨업 관련
-    static HashMap<Integer, Float> levelUpTable;  // currentLevel, expAmountForLevelUP
+    public static HashMap<Integer, Float> levelUpTable;  // currentLevel, expAmountForLevelUP
     static HashMap<Integer, CharacterLevelUpInfo> statByCharacterLevelUpTable;  // CharacterType, characterLevelUpInfo
 
     // ??
