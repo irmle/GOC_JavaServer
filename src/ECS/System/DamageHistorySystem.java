@@ -146,15 +146,13 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
-                int entityType = 0;
-                if(worldMap.entityMappingList.containsKey(currentDamage.unitID)){
 
-                    entityType = worldMap.entityMappingList.get(currentDamage.unitID);
+                if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
 
-                }
-                else{
                     continue;
                 }
+
+                int entityType = worldMap.entityMappingList.get(currentDamage.unitID);
 
                 switch (entityType){
                     case EntityType.CharacterEntity :
@@ -247,7 +245,12 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
+                if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
+
+                    continue;
+                }
                 int entityType = worldMap.entityMappingList.get(currentDamage.unitID);
+
                 switch (entityType){
                     case EntityType.CharacterEntity :
                         attacker = worldMap.characterEntity.get(currentDamage.unitID);
@@ -430,7 +433,12 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
+                if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
+
+                    continue;
+                }
                 int entityType = worldMap.entityMappingList.get(currentDamage.unitID);
+
                 switch (entityType){
                     case EntityType.CharacterEntity :
                         attacker = worldMap.characterEntity.get(currentDamage.unitID);
@@ -517,6 +525,10 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
+                if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
+
+                    continue;
+                }
                 int entityType = worldMap.entityMappingList.get(currentDamage.unitID);
                 switch (entityType){
                     case EntityType.CharacterEntity :
@@ -605,7 +617,9 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
-
+                if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
+                    continue;
+                }
                 int entityType = worldMap.entityMappingList.get(currentDamage.unitID);
                 switch (entityType){
                     case EntityType.CharacterEntity :

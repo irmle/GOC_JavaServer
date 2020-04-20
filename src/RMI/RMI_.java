@@ -123,49 +123,97 @@ public class RMI_ {
 //이 부분을 수동으로 작성할 필요가 있음.
 //================================================================================
 
-
     //단일 송신 로직. TCP
     public static void sendByte_TCP(RMI_ID rmi_id, short rmi_ctx, short packetType, byte[] data)
     {
         if(rmi_id == null)
         {
-            System.out.println("sendByte_TCP null");
             return;
+            //throw new IllegalArgumentException("sendByte_TCP()::RMI_ID는 null일 수 없습니다.");
         }
 
-        ByteBuf packet = alloc.directBuffer(data.length + 12);
+        if(rmi_id.getTCP_Object() == null)
+        {
+            throw new IllegalArgumentException("sendByte_TCP()::rmi_id.getTCP_Object() == null입니다.");
+        }
 
-        packet.writeIntLE(data.length);
-        packet.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 주체의 RMI_ID가 지정됨.
-        packet.writeShortLE(rmi_ctx);
-        packet.writeShortLE(packetType);
-        packet.writeBytes(data);
+        if(data == null || data.length <= 0)
+        {
+            throw new IllegalArgumentException("sendByte_TCP()::길이가 0인 데이터나 null은 전송할 수 없습니다.");
+        }
 
+        if (!(RMI_Context.Reliable <= rmi_ctx && rmi_ctx <= RMI_Context.UnReliable_Public_AES256))
+        {
+            throw new IllegalArgumentException("sendByte_TCP()::RMI_Context 값이 잘못되었습니다. rmi_ctx = " + rmi_ctx);
+        }
+
+        if (!(0 < packetType && packetType <= RMI_PacketType.names.length))
+        {
+            throw new IllegalArgumentException("sendByte_TCP()::RMI_PacketType 값이 잘못되었습니다. packetType = " + packetType);
+        }
 
         if(rmi_id.equals(RMI_ID.NONE))
         {
-            System.out.println("sendByte_TCP시에 RMI_ID.NONE 으로는 보낼 수 없습니다.");
-            packet.release();
-        }
-        else
-        {
-            //정상적일 경우 데이터 송신.
-            rmi_id.getTCP_Object().writeAndFlush(packet);
+            System.out.println("sendByte_TCP()::RMI_ID.NONE 으로는 보낼 수 없습니다.");
+            return;
         }
 
+        Channel channel = rmi_id.getTCP_Object();
+
+        //channel이 정상적일 경우 데이터 송신.
+        if(channel.isActive())
+        {
+            //channel이 쓰기가능한 상태인지 체크.
+
+            //쓰기 가능하다면 데이터 전송.
+            if(channel.isWritable())
+            {
+                ByteBuf packet = alloc.directBuffer(32768);
+
+                packet.writeIntLE(data.length);
+                packet.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 주체의 RMI_ID가 지정됨.
+                packet.writeShortLE(rmi_ctx);
+                packet.writeShortLE(packetType);
+                packet.writeBytes(data);
+
+                rmi_id.getTCP_ObjectHandler().writeAndFlush( packet );
+            }
+            //가능하지 않다면 Queue에 쌓거나 release 한다.
+            else
+            {
+                //TCP의 송신이 늦는다면 연결을 종료한다.
+                //System.out.println("TCP SendBufferOver");
+                //rmi_id.getTCP_ObjectHandler().close();
+            }
+        }
         //System.out.println("sendByte_TCP = "+data.length+" bytes");
     }
 
     //범위 송신 로직. TCP
     public static void sendByte_TCP(RMI_ID[] rmi_id, short rmi_ctx, short packetType, byte[] data)
     {
-        if(rmi_id == null)
+        if(rmi_id == null || rmi_id.length <= 0)
         {
-            System.out.println("sendByte_TCP[] null");
             return;
+            //throw new IllegalArgumentException("sendByte_TCP[]()::RMI_ID[]는 null이거나 길이가 0일 수 없습니다.");
         }
 
-        ByteBuf packet = alloc.directBuffer(data.length + 12);
+        if(data == null || data.length <= 0)
+        {
+            throw new IllegalArgumentException("sendByte_TCP[]()::길이가 0인 데이터나 null은 전송할 수 없습니다.");
+        }
+
+        if (!(RMI_Context.Reliable <= rmi_ctx && rmi_ctx <= RMI_Context.UnReliable_Public_AES256))
+        {
+            throw new IllegalArgumentException("sendByte_TCP[]()::RMI_Context 값이 잘못되었습니다. rmi_ctx = " + rmi_ctx);
+        }
+
+        if (!(0 < packetType && packetType <= RMI_PacketType.names.length))
+        {
+            throw new IllegalArgumentException("sendByte_TCP[]()::RMI_PacketType 값이 잘못되었습니다. packetType = " + packetType);
+        }
+
+        ByteBuf packet = alloc.directBuffer(32768);
 
         packet.writeIntLE(data.length);
         packet.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 주체의 RMI_ID가 지정됨.
@@ -182,52 +230,114 @@ public class RMI_ {
             if(target != null && !target.equals(RMI_ID.NONE))
             {
                 Channel channel = target.getTCP_Object();
-                if(channel != null && channel.isActive() && channel.isWritable())
+                if(channel != null && channel.isActive())
                 {
-                    //정상적일 경우 데이터 송신.
-                    channel.writeAndFlush( packet.retainedDuplicate() );
+                    //channel이 쓰기가능한 상태인지 체크.
+
+                    //쓰기 가능하다면 데이터 전송.
+                    if(channel.isWritable())
+                    {
+                        target.getTCP_ObjectHandler().writeAndFlush( packet.retainedDuplicate() );
+                    }
+                    //가능하지 않다면 Queue에 쌓거나 release 한다.
+                    else
+                    {
+                        //TCP의 송신이 늦는다면 연결을 종료한다.
+                        //System.out.println("TCP[] SendBufferOver");
+                        //target.getTCP_ObjectHandler().close();
+                        //channel.pipeline().fireUserEventTriggered( packet.retainedDuplicate() );
+                    }
                 }
             }
         }
-        ReferenceCountUtil.release(packet);
+
+        //ByteBuf객체를 해제
+        packet.release();
 
         //System.out.println("sendByte_TCP [] = "+data.length+" bytes");
     }
+
     //단일 송신 로직. UDP
     public static void sendByte_UDP(RMI_ID rmi_id, short rmi_ctx, short packetType, byte[] data)
     {
         if(rmi_id == null)
         {
-            System.out.println("sendByte_UDP null");
             return;
+            //throw new IllegalArgumentException("sendByte_UDP()::RMI_ID는 null일 수 없습니다.");
         }
 
         if(rmi_id.getUDP_Object() == null)
         {
-            System.out.println("sendByte_UDP rmi_id.getUDP_Object()==null");
-            return;
+            throw new IllegalArgumentException("sendByte_UDP()::rmi_id.getUDP_Object() == null입니다.");
         }
 
-        ByteBuf packet = alloc.directBuffer(data.length + 12);
+        if(data == null || data.length <= 0)
+        {
+            throw new IllegalArgumentException("sendByte_UDP()::길이가 0인 데이터나 null은 전송할 수 없습니다.");
+        }
 
-        packet.writeIntLE(data.length);
-        packet.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 주체의 RMI_ID가 지정됨.
-        packet.writeShortLE(rmi_ctx);
-        packet.writeShortLE(packetType);
-        packet.writeBytes(data);
+        if (!(RMI_Context.Reliable <= rmi_ctx && rmi_ctx <= RMI_Context.UnReliable_Public_AES256))
+        {
+            throw new IllegalArgumentException("sendByte_UDP()::RMI_Context 값이 잘못되었습니다. rmi_ctx = " + rmi_ctx);
+        }
 
+        if (!(0 < packetType && packetType <= RMI_PacketType.names.length))
+        {
+            throw new IllegalArgumentException("sendByte_UDP()::RMI_PacketType 값이 잘못되었습니다. packetType = " + packetType);
+        }
 
         if(rmi_id.equals(RMI_ID.NONE))
         {
-            System.out.println("sendByte_UDP시에 RMI_ID.NONE 으로는 보낼 수 없습니다.");
-            packet.release();
+            System.out.println("sendByte_UDP()::RMI_ID.NONE 으로는 보낼 수 없습니다.");
+            return;
         }
-        else
-        {
-            //정상적일 경우 데이터 송신.
-            DatagramPacket udpData = new DatagramPacket(packet, (InetSocketAddress)rmi_id.getUDP_Object().remoteAddress());
 
-            rmi_id.getUDP_Object().writeAndFlush(udpData);
+        if(!rmi_id.isUDPConnectionAvailable)
+        {
+            //System.out.println("UDP연결이 가능한 상태가 아님. sendByte_UDP 취소");
+            return;
+        }
+
+        //UDP패킷을 보낼 주소.
+        InetSocketAddress remoteAddress = (InetSocketAddress)rmi_id.getUDP_Object().remoteAddress();
+        //UDP패킷을 보내는 쪽의 주소.
+        InetSocketAddress localAddress = (InetSocketAddress)rmi_id.getUDP_Object().localAddress();
+
+
+        if(remoteAddress == null || localAddress == null)
+        {
+            System.out.println("sendByte_UDP()::rmi_id.getUDP_Object() remoteAddress or localAddress==null");
+            return;
+        }
+
+        Channel channel = rmi_id.getUDP_Object();
+
+        //channel이 정상적일 경우 데이터 송신.
+        if(channel.isActive())
+        {
+            //channel이 쓰기가능한 상태인지 체크.
+
+            //쓰기 가능하다면 데이터 전송.
+            if(channel.isWritable())
+            {
+                ByteBuf packet = alloc.directBuffer(32768);
+
+                packet.writeIntLE(data.length);
+                packet.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 주체의 RMI_ID가 지정됨.
+                packet.writeShortLE(rmi_ctx);
+                packet.writeShortLE(packetType);
+                packet.writeBytes(data);
+
+                //정상적일 경우 데이터 송신.
+                DatagramPacket udpData = new DatagramPacket(packet, remoteAddress, localAddress);
+
+                rmi_id.getUDP_ObjectHandler().writeAndFlush( udpData );
+            }
+            //가능하지 않다면 Queue에 쌓거나 release 한다.
+            else
+            {
+                //System.out.println("UDP SendBufferOver");
+            }
         }
 
         //System.out.println("sendByte_UDP = "+data.length+" bytes");
@@ -236,13 +346,28 @@ public class RMI_ {
     //범위 송신 로직. UDP
     public static void sendByte_UDP(RMI_ID[] rmi_id, short rmi_ctx, short packetType, byte[] data)
     {
-        if(rmi_id == null)
+        if(rmi_id == null || rmi_id.length <= 0)
         {
-            System.out.println("sendByte_UDP[] null");
             return;
+            //throw new IllegalArgumentException("sendByte_UDP[]()::RMI_ID[]는 null이거나 길이가 0일 수 없습니다.");
         }
 
-        ByteBuf packet = alloc.directBuffer(data.length + 12);
+        if(data == null || data.length <= 0)
+        {
+            throw new IllegalArgumentException("sendByte_UDP[]()::길이가 0인 데이터나 null은 전송할 수 없습니다.");
+        }
+
+        if (!(RMI_Context.Reliable <= rmi_ctx && rmi_ctx <= RMI_Context.UnReliable_Public_AES256))
+        {
+            throw new IllegalArgumentException("sendByte_UDP[]()::RMI_Context 값이 잘못되었습니다. rmi_ctx = " + rmi_ctx);
+        }
+
+        if (!(0 < packetType && packetType <= RMI_PacketType.names.length))
+        {
+            throw new IllegalArgumentException("sendByte_UDP[]()::RMI_PacketType 값이 잘못되었습니다. packetType = " + packetType);
+        }
+
+        ByteBuf packet = alloc.directBuffer(32768);
 
         packet.writeIntLE(data.length);
         packet.writeIntLE(RMI_ID.SERVER.rmi_host_id);  //보내는 주체의 RMI_ID가 지정됨.
@@ -250,29 +375,51 @@ public class RMI_ {
         packet.writeShortLE(packetType);
         packet.writeBytes(data);
 
-
         for(int i=0;i<rmi_id.length;i++)
         {
             RMI_ID target = rmi_id[i];
-            if(target != null && !target.equals(RMI_ID.NONE))
+            if(target != null && !target.equals(RMI_ID.NONE) && target.isUDPConnectionAvailable)
             {
                 Channel channel = target.getUDP_Object();
-                if(channel != null && channel.isActive() && channel.isWritable())
+                if(channel != null && channel.isActive())
                 {
-                    //UDP 송신을 위한 DatagramPacket 생성.
-                    DatagramPacket udpData = new DatagramPacket(packet,
-                            (InetSocketAddress)target.getUDP_Object().remoteAddress(),
-                            (InetSocketAddress)target.getUDP_Object().localAddress());
+                    //UDP패킷 수신자 주소.
+                    InetSocketAddress remoteAddress = (InetSocketAddress)target.getUDP_Object().remoteAddress();
 
-                    //정상적일 경우 데이터 송신.
-                    channel.writeAndFlush( udpData.retainedDuplicate() );
+                    //UDP패킷 송신자 주소.
+                    InetSocketAddress localAddress = (InetSocketAddress)target.getUDP_Object().localAddress();
+
+                    if(remoteAddress == null || localAddress == null)
+                    {
+                        System.out.println("sendByte_UDP[]()::rmi_id.getUDP_Object() remoteAddress or localAddress==null");
+                        continue;
+                    }
+                    //channel이 쓰기가능한 상태인지 체크.
+
+                    //쓰기 가능하다면 데이터 전송.
+                    if(channel.isWritable())
+                    {
+                        //UDP 송신을 위한 DatagramPacket 생성.
+                        DatagramPacket udpData = new DatagramPacket( packet.retainedDuplicate(), remoteAddress, localAddress);
+
+                        target.getUDP_ObjectHandler().writeAndFlush( udpData );
+                    }
+                    //가능하지 않다면 Queue에 쌓거나 release 한다.
+                    else
+                    {
+                        System.out.println("UDP[] SendBufferOver");
+                        //channel.writeAndFlush( udpData );
+                    }
                 }
             }
         }
-        ReferenceCountUtil.release(packet);
+
+        //ByteBuf객체를 해제
+        packet.release();
 
         //System.out.println("sendByte_UDP [] = "+data.length+" bytes");
     }
+
 
 
     //수신 로직.

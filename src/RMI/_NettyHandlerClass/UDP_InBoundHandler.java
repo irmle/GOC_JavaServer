@@ -10,7 +10,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.AttributeKey;
-import io.netty.util.ReferenceCountUtil;
 
 public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
 {
@@ -97,15 +96,14 @@ public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
         byte[] packet_data = new byte[packet_size];
         receive_data.readBytes(packet_data, 0, packet_size);
 
-        //사용한 버퍼를 반환한다!
-        received_datagram.release();
-
         //recvPacket recvPacket = new recvPacket(rmi_id, rmi_ctx, packet_type, packet_data, received_datagram.sender(), ctx);
         //testUserList.recvActorUDP.tell(recvPacket, null);
 
         //RMI 수신로직 처리 부분.
         RMI_.recvByte(rmi_id, rmi_ctx, packet_type, packet_data, received_datagram.sender(), ctx);
 
+        //사용한 버퍼를 반환한다!
+        received_datagram.release();
     } //channelRead 종료 부분!
 
     @Override

@@ -138,8 +138,6 @@ public class DeathSystem {
 
         //이후, 캐릭터가 사망함을 월드맵에 중계한다.
         worldMap.userDefeated(character, (int)remainRespawnTimeMilliSeconds);
-
-
     }
 
     public void processMonsterDeath(Death death){
@@ -212,7 +210,6 @@ public class DeathSystem {
                 /** 2020 02 12 수 추가 */
                 // 킬러 캐릭터의 스코어에 반영한다
                 worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount++;
-
                 break;
 
             /**
@@ -317,8 +314,11 @@ public class DeathSystem {
         /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
         worldMap.requestDeleteQueue.add(deadMonster);
 
-        //System.out.println("몬스터 죽음 처리 완료");
+        //사망처리된 몬스터를 목록에서 삭제한다.
+        worldMap.monsterEntity.remove(death.deadEntityID);
+        worldMap.entityMappingList.remove(death.deadEntityID);
 
+        //System.out.println("몬스터 죽음 처리 완료");
     }
 
     public void processBarricadeDeath(Death death){
@@ -334,6 +334,10 @@ public class DeathSystem {
         buildSlot.setSlotState(BuildSlotState.DESTROYED);
         /* Entity 삭제요청 큐에 넣는다 */
         worldMap.requestDeleteQueue.add(barricade);
+
+        //파괴처리된 바리케이드를 목록에서 삭제한다.
+        worldMap.barricadeEntity.remove(death.deadEntityID);
+        worldMap.entityMappingList.remove(death.deadEntityID);
     }
 
     public void processAttackTurretDeath(Death death){
@@ -354,6 +358,10 @@ public class DeathSystem {
         /* Entity 삭제요청 큐에 넣는다 */
         worldMap.requestDeleteQueue.add(attackTurret);
 
+        //파괴처리된 포탑을 목록에서 삭제한다.
+        worldMap.attackTurretEntity.remove(death.deadEntityID);
+        worldMap.entityMappingList.remove(death.deadEntityID);
+
     }
 
     public void processBuffTurretDeath(Death death){
@@ -369,6 +377,10 @@ public class DeathSystem {
         buildSlot.setSlotState(BuildSlotState.DESTROYED);
         /* Entity 삭제요청 큐에 넣는다 */
         worldMap.requestDeleteQueue.add(buffTurret);
+
+        //파괴처리된 포탑을 목록에서 삭제한다.
+        worldMap.buffTurretEntity.remove(death.deadEntityID);
+        worldMap.entityMappingList.remove(death.deadEntityID);
 
     }
 
@@ -536,6 +548,9 @@ public class DeathSystem {
         /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
         worldMap.requestDeleteQueue.add(deadMonster);
 
+        //사망처리된 몬스터를 목록에서 삭제한다.
+        worldMap.monsterEntity.remove(death.deadEntityID);
+        worldMap.entityMappingList.remove(death.deadEntityID);
     //    System.out.println("몬스터 죽음 처리 완료");
 
     }
