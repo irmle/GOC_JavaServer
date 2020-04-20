@@ -35,7 +35,7 @@ public class Logic_requestLogin {
                             new LinkedList<>(result.loadingProgressList.values()),"127.0.0.1_test", 65005);
 
                 }
-            }, 300, TimeUnit.MILLISECONDS);
+            }, 100, TimeUnit.MILLISECONDS);
 
             //1000ms 후에 로딩되는 정도를 중계한다.
             rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
@@ -43,7 +43,7 @@ public class Logic_requestLogin {
                 public void run() {
                     server_to_client.broadcastingLoadingProgress(rmi_id, RMI_Context.Reliable_AES256, new LinkedList<>(result.loadingProgressList.values()));
                 }
-            }, 1000, TimeUnit.MILLISECONDS);
+            }, 500, TimeUnit.MILLISECONDS);
         }
 
     }

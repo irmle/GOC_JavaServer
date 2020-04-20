@@ -778,35 +778,35 @@ public class WorldMap {
             //게임이 시작한 이후에만 중계하도록 한다 (로딩중에 튕긴것은 중계할 필요가 없다)
             if (isGameMapStarted) {
 
-                //800ms 후에 재접속 시퀀스를 송신한다.
+                //500ms 후에 재접속 시퀀스를 송신한다.
                 rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
                     @Override
                     public void run() {
                         //할당된 자신의 캐릭터의 EntityID를 재접속한 클라이언트에 보내서 자기자신의 EntityID를 세팅하도록 한다.
-                        server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable_AES256, entityID);
+                        server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable, entityID);
                     }
-                }, 800, TimeUnit.MILLISECONDS);
+                }, 500, TimeUnit.MILLISECONDS);
 
-                //위의 800ms가 경과한 후부터 200ms후에 아래의 작업이 실행된다.
+                //위의 500ms가 경과한 후부터 200ms후에 아래의 작업이 실행된다.
 
-                //1000ms 후에 재접속 시퀀스를 송신한다.
+                //7000ms 후에 재접속 시퀀스를 송신한다.
                 rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
                     @Override
                     public void run() {
                         //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 초기화 하도록 전송한다.
                         WorldMapDataListSet worldData = initData();
-                        server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable_Public_AES256,
+                        server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable,
                                 worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
                                 worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
 
                         /** 2020 03 06 */
-                        server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable_Public_AES256, worldData.storeUpgradeBuffSlotData);
+                        server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable, worldData.storeUpgradeBuffSlotData);
 
                         //유저가 다시 접속하였으므로, 재연결 되었다는 메시지를 모든 클라이언트에게 중계한다
                         server_to_client.userReconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
 
                     }
-                }, 1000, TimeUnit.MILLISECONDS);
+                }, 700, TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -888,7 +888,7 @@ public class WorldMap {
         //2명이상일 때, 그리고 300ms 마다 로딩상황을 중계한다.
         if (loadingProgressList.size() > 0 && loadingTime % 300 == 0) {
             RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
-            server_to_client.broadcastingLoadingProgress(TARGET, RMI_Context.Reliable_Public_AES256, new LinkedList<>(loadingProgressList.values()));
+            server_to_client.broadcastingLoadingProgress(TARGET, RMI_Context.Reliable, new LinkedList<>(loadingProgressList.values()));
         }
 
         //게임을 시작할 준비가 되었다면.
@@ -928,7 +928,7 @@ public class WorldMap {
                         worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData,
                         worldData.buildSlotData);
 
-                server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable_Public_AES256, worldData.storeUpgradeBuffSlotData);
+                server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable, worldData.storeUpgradeBuffSlotData);
 
                 //게임이 시작됨을 알리는 플래그변수.
                 isGameMapStarted = true;
@@ -2487,7 +2487,7 @@ public class WorldMap {
                 //System.out.println("캐릭터 좌표 : " + characterData.posX + ", "+ characterData.posY + ", "+ characterData.posZ);
 
             }
-            server_to_client.broadcastingCharacterSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.characterData);
+            server_to_client.broadcastingCharacterSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.characterData);
         }
     }
 
@@ -2501,7 +2501,7 @@ public class WorldMap {
                 MonsterEntity entity = data.poll();
                 worldEntityData.monsterData.add(getMonsterDataFromEntity(entity));
             }
-            server_to_client.broadcastingMonsterSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.monsterData);
+            server_to_client.broadcastingMonsterSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.monsterData);
         }
     }
 
@@ -2515,7 +2515,7 @@ public class WorldMap {
                 AttackTurretEntity entity = data.poll();
                 worldEntityData.attackTurretData.add(getAttackTurretDataFromEntity(entity));
             }
-            server_to_client.broadcastingAttackTurretSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.attackTurretData);
+            server_to_client.broadcastingAttackTurretSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.attackTurretData);
         }
     }
 
@@ -2529,7 +2529,7 @@ public class WorldMap {
                 BuffTurretEntity entity = data.poll();
                 worldEntityData.buffTurretData.add(getBuffTurretDataFromEntity(entity));
             }
-            server_to_client.broadcastingBuffTurretSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.buffTurretData);
+            server_to_client.broadcastingBuffTurretSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.buffTurretData);
         }
     }
 
@@ -2543,7 +2543,7 @@ public class WorldMap {
                 BarricadeEntity entity = data.poll();
                 worldEntityData.barricadeData.add(getBarricadeDataFromEntity(entity));
             }
-            server_to_client.broadcastingBarricadeSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.barricadeData);
+            server_to_client.broadcastingBarricadeSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.barricadeData);
         }
     }
 
@@ -2557,7 +2557,7 @@ public class WorldMap {
                 CrystalEntity entity = data.poll();
                 worldEntityData.crystalData.add(getCrystalDataFromEntity(entity));
             }
-            server_to_client.broadcastingCrystalSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.crystalData);
+            server_to_client.broadcastingCrystalSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.crystalData);
         }
     }
 
@@ -2571,7 +2571,7 @@ public class WorldMap {
                 SkillObjectEntity entity = data.poll();
                 worldEntityData.skillObjectData.add(getSkillObjectDataFromEntity(entity));
             }
-            server_to_client.broadcastingSkillObjectSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.skillObjectData);
+            server_to_client.broadcastingSkillObjectSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.skillObjectData);
         }
     }
 
@@ -2585,7 +2585,7 @@ public class WorldMap {
                 FlyingObjectEntity entity = data.poll();
                 worldEntityData.flyingObjectData.add(getFlyingObjectDataFromEntity(entity));
             }
-            server_to_client.broadcastingFlyingObjectSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.flyingObjectData);
+            server_to_client.broadcastingFlyingObjectSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.flyingObjectData);
         }
     }
 
@@ -2603,7 +2603,7 @@ public class WorldMap {
                 BuildSlot buildSlot = buildSlotList.get(i);
                 worldEntityData.buildSlotData.add(getBuildSlotData(buildSlot));
             }
-            server_to_client.broadcastingBuildSlotSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.buildSlotData);
+            server_to_client.broadcastingBuildSlotSnapshot(TARGET, RMI_Context.UnReliable, worldEntityData.buildSlotData);
 
         }
 
