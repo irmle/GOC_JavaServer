@@ -500,6 +500,8 @@ public class DeathSystem {
                 CharacterEntity turretBuildUser = worldMap.characterEntity.get(buildUserEntityID);
                 int builderLevel = turretBuildUser.characterComponent.level;
 
+                killer = turretBuildUser;
+
                 /* 해당 유저에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, builderLevel);
                 reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
@@ -533,6 +535,17 @@ public class DeathSystem {
                 break;
 
             case EntityType.SkillObjectEntity :
+
+                /* 몹을 죽인 장판 정보를 찾는다 */
+                killer = worldMap.characterEntity.get(death.killerEntityID);
+
+
+                CharacterEntity user = worldMap.characterEntity.get(killer.entityID);
+
+                /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
+                //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killer.entityID);
+                reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
+                user.rewardHistoryComponent.rewardHistory.add(reward);
 
 
                 break;
