@@ -437,7 +437,7 @@ public class MonsterSystem2 {
 
                     //System.out.println("타겟을 쫒아간다 ");
 
-                    /** 타겟을 향해 이동할 지점을 구한다  */
+                    /* 타겟을 향해 이동할 지점을 구한다  */
 
 
                     /* 이동 방향 구하기 */
@@ -445,7 +445,7 @@ public class MonsterSystem2 {
                             = Vector3.normalizeVector(monsterPos, finalTargetPosition);
 
                     /**
-                     * 작    성 : 오후 10:43 2020-04-21
+                     * 작성날짜 : 오후 10:43 2020-04-21
                      * 기    능 : 제일 가까운 충돌을 감지하고, 순간 방향을 틀음.
                      * 처    리 :
                      *      1) 충돌 체크를 한다( )
@@ -490,9 +490,30 @@ public class MonsterSystem2 {
                      */
 
 
+                    /** 충돌 체크를 한다 */
+                    MonsterEntity crashMob = checkCollisionWithOtherMonsters(monster);
+                    boolean willBeCrash = (!(crashMob == null)) ? true : false;
+
+                    /** 이동 방향을 결정한다 */
+                    if(willBeCrash){
+
+                        Vector3 crashMobPos = crashMob.positionComponent.position;
+
+                        /* 이동 방향을 틀어준다 */
+                        directionToTarget
+                                = turnDirectionToAvoidCollision(monsterPos,crashMobPos, directionToTarget);
+
+                    }
+                    else{
+
+                        /* 본래 목적 방향으로 향한다 */
+                        /*directionToTarget
+                                = Vector3.normalizeVector(monsterPos, finalTargetPosition);*/
+                    }
 
 
-
+                    /** 방향결정 로직의 끝 */
+                    /***************************************************************************************************/
 
 
                     /* 이동 지점 구하기  */
@@ -650,21 +671,37 @@ public class MonsterSystem2 {
                      */
 
 
+                    /** 충돌 체크를 한다 */
+                    crashMob = checkCollisionWithOtherMonsters(monster);
+                    willBeCrash = (!(crashMob == null)) ? true : false;
+
+                    /** 이동 방향을 결정한다 */
+                    if(willBeCrash){
+
+                        Vector3 crashMobPos = crashMob.positionComponent.position;
+
+                        /* 이동 방향을 틀어준다 */
+                        directionToMovePoint
+                                = turnDirectionToAvoidCollision(monsterPos,crashMobPos, directionToMovePoint);
+
+                    }
+                    else{
+
+                        /* 본래 목적 방향으로 향한다 */
+                        /*directionToMovePoint
+                                = Vector3.normalizeVector(monsterPos, targetMovePos);*/
+                    }
+
+
+                    /** 방향결정 로직의 끝 */
+                    /***************************************************************************************************/
+
 
 
 
 
 
                     /* 이동 지점 구하기  */
-
-
-
-
-
-
-
-
-
 
                     float movementSpeedToMovePoint
                             = deltaTime * (mobMoveSpeed + moveSpeedBonus) * moveSpeedRate;
@@ -883,5 +920,140 @@ public class MonsterSystem2 {
         }
 
     }
+
+    /*******************************************************************************************************************/
+
+    /**
+     * 작성날짜 : 오후 11:11 2020-04-21
+     * 기    능 : 근처에 충돌가능성 있는 몬스터가 있는지 여부를 판단한다
+     * 처    리 :
+     *          1. 충돌 거리에 존재하는, 제일 가까운 충돌타겟을 검색함
+     *               모든 몹에 대해 반복(본인 제외, 죽은애 제외)
+     *                   대상과의 거리를 구한다
+     *                   if 대상이 충돌 범위 내 존재할 때,
+     *                       제일 가까운지 확인하여 업데이트
+     *                   else면 걍 continue임
+     *           2. 충돌 여부를 판단하여 리턴
+     *               if 존재하면
+     *                   true 리턴
+     *              else
+     *                  false 리턴
+     *
+     */
+    public MonsterEntity checkCollisionWithOtherMonsters(MonsterEntity monster){
+
+        MonsterEntity beCrashedMob = null;
+
+        float COLLISION_DISTANCE = 1.5f;
+
+        float minDis = COLLISION_DISTANCE;
+        for (MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
+
+            MonsterEntity target = monsterEntity;
+
+            /* pass 조건 */
+            boolean isMe = (target.entityID == monster.entityID) ? true : false;
+            boolean isDeadTarget = (target.hpComponent.currentHP <= 0f) ? true : false;
+
+            boolean pass = ( isMe || isDeadTarget );
+            if(pass)
+                continue;
+
+            /* 참조 */
+            Vector3 myPos = monster.positionComponent.position;
+            Vector3 targetPos = target.positionComponent.position;
+
+            /* 타겟과의 거리를 구한다 */
+            float currentDis = Vector3.distance(myPos, targetPos);
+            System.out.println("거리: " + currentDis);
+
+            boolean isOutOfRange = (currentDis > COLLISION_DISTANCE) ? true : false;
+            if(isOutOfRange)
+                continue;
+
+            /* 최소 거리 업데이트 */
+            boolean isMinDis = (currentDis <= minDis) ? true : false;
+            if(isMinDis){
+
+                minDis = currentDis;
+                beCrashedMob = target;
+                System.out.println("최소거리 업뎃");
+            }
+
+        }
+
+        return beCrashedMob;
+    }
+
+    /**
+     * 작성날짜 : 오후 11:11 2020-04-21
+     * 기    능 : 충돌을 피하기 위해 틀어줄 방향을 구한다
+     * 처    리 :
+     *          1. 목적 방향 벡터와 충돌 방향 벡터를 구한다.
+     *          2. 두 벡터의 사잇각을 구한다
+     *          3. 두 벡터의 외적을 구한다
+     *          4. 외적(3)의 y값을 가지고, 현 몹에 대한 충돌 몹의 상대적인 방향(왼쪽/오른쪽..)을 구한다.
+     *               if y > 0
+     *                   // 충돌 대상이, 몬스터의 왼쪽에 있는 것임(반시계 방향)
+     *                   본래 목적 방향 벡터로부터, + (사잇각) 만큼 회전한 방향을 구해 리턴한다
+     *               else if y < 0
+     *                   // 충돌 대상이, 몬스터의 오른쪽에 있는 것임(시계 방향)
+     *                   본래 목적 방향 벡터로부터, - (사잇각) 만큼 회전한 방향을 구해 리턴한다
+     *               else
+     *                   // 일단 패스. 평행.
+     *
+     */
+    public Vector3 turnDirectionToAvoidCollision(Vector3 monsterPos, Vector3 crashMobPos, Vector3 targetDir){
+
+        Vector3 turnedDirection = null;
+
+        /** 충돌방향 백터 구하기 */
+        Vector3 crashDir = Vector3.getTargetDirection(monsterPos, crashMobPos);
+
+        /** 목적방향 벡터와 충돌방향 벡터의 사잇각 구하기 */
+        float betweenAngle = Vector3.getAngle(targetDir, crashDir);
+
+
+        /** 두 벡터의 외적을 구함 */
+        Vector3 cross = Vector3.getCrossProduct(targetDir, crashDir);
+
+        /** 충돌 대상의 상대적 방향 판단 */
+        float y = cross.y();
+
+        if( y < 0){
+
+            turnedDirection = Vector3.rotateVector3ByAngleAxis(targetDir, new Vector3(0,1,0), betweenAngle);
+        }
+        else if (y > 0){
+
+            turnedDirection = Vector3.rotateVector3ByAngleAxis(targetDir, new Vector3(0,1,0), -(betweenAngle));
+        }
+        else {
+
+            System.out.println("평행임... 어카지... 왠지그냥 아무 방향으로 줘도 될 것 같은데.. ");
+            turnedDirection = Vector3.rotateVector3ByAngleAxis(targetDir, new Vector3(0,1,0), -(betweenAngle));
+        }
+
+        turnedDirection.normalize();
+
+        return turnedDirection;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

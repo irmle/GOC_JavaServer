@@ -836,8 +836,8 @@ public class SkillFactory {
          * 스킬 사용 후, 잠시간 스킬 사용 불가 처리를 여기에 작성함
          * 2020 04 21
          */
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+        /*skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );*/
 
     }
 
@@ -7616,7 +7616,7 @@ public class SkillFactory {
         boolean needToGetDurationTime = (
                 (( effectInfo.effectAppicationType == EffectApplicationType.지속)
                         ||( effectInfo.effectAppicationType == EffectApplicationType.도트))
-                && ( effectInfo.effectDurationTime <= 0f)) ? true : false;
+                && ( effectInfo.effectDurationTime <= 0f) && (skillType != SkillType.ARCHER_STORM)) ? true : false;
         if(needToGetDurationTime){
 
             /* 지속시간 값을 구해야 한다면, 시전자의 스킬 레벨 값에 맞는 적용시간 값을 가져와 적용한다 */

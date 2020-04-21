@@ -1979,6 +1979,12 @@ public class GameDataManager {
         if(effectValueStr.contains("스킬") || effectValueStr.contains("공격력") || effectValueStr.contains("스탯")){
             effectValue = 0f;
         }
+        else if(effectValueStr.contains("FALSE")){
+            effectValue = -1f;
+        }
+        else if(effectValueStr.contains("TRUE")){
+            effectValue = 1f;
+        }
         else{
             effectValue = Float.parseFloat(removePercentage(effectValueStr));
         }

@@ -84,7 +84,7 @@ public class WorldMap {
     public static int tickRate = 100; //ms 단위.
 
     //몬스터 생성 쿨타임
-    static long SPAWN_COOL_TIME = 2000; //ms 단위.
+    static long SPAWN_COOL_TIME = 1000; //ms 단위.
 
     //월드맵 최대 접속 유저수
     public int userCount;
@@ -1379,7 +1379,7 @@ public class WorldMap {
                                         int mobCount = monsters.getValue();
 
                                         /* 해당 종류의 마릿수만큼 반복한다 */
-                                        for (int i = 0; i < mobCount; i++) {
+                                        for (int i = 0; i < (mobCount*3); i++) {
 
                                             monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
                                         }
