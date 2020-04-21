@@ -3698,7 +3698,7 @@ public class WorldMap {
         entity.itemSlotComponent = new ItemSlotComponent();
 
         entity.hpComponent = new HPComponent();
-        //characterData.hp = 3000f;
+        characterData.hp = 3000f;
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
@@ -4165,6 +4165,7 @@ public class WorldMap {
 
         /** 전투력이 속한 등급을 찾는다 */
         int grade = GameDifficultyGrade.decideGameGrade(teamStrengthPower);
+        grade = 1;
 
         /** 등장하는 몬스터의 레벨을 구한다 */
         int level = GameDifficultyGrade.decideMonsterExpLevel(grade, teamStrengthPower);
