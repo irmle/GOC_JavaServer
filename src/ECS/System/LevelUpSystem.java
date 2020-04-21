@@ -33,13 +33,14 @@ public class LevelUpSystem {
 
     public void onUpdate(float deltaTime){
 
-        remainCoolTime -= worldMap.tickRate;
+        // 시스템 도는 주기 조절용 코드
+        /*remainCoolTime -= worldMap.tickRate;
         if(remainCoolTime <= 0){
             remainCoolTime = coolTime;
         }
         else{
             return;
-        }
+        }*/
 
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
@@ -199,7 +200,7 @@ public class LevelUpSystem {
 
     /**
      * 넘겨받은 레벨 값을 가지고, 현 레벨에서 다음 레벨로 업그레이드 하기 위해 필요한 경험치 량을 찾아 리턴한다
-     * @param currentLevel
+     * @param
      * @return
      */
     /*public static float getMaxExpByLevel(int currentLevel){

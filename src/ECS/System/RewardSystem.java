@@ -47,13 +47,14 @@ public class RewardSystem {
 
     public void onUpdate(float deltaTime){
 
-        remainCoolTime -= worldMap.tickRate;
+        // 시스템 도는 주기 조절용 코드
+        /*remainCoolTime -= worldMap.tickRate;
         if(remainCoolTime <= 0){
             remainCoolTime = coolTime;
         }
         else{
             return;
-        }
+        }*/
 
         /** 상점 업그레이드에 따른 보상 비율을 결정한다 */
 

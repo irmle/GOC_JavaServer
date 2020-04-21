@@ -36,14 +36,14 @@ public class CharacterSpawnPointWellSystem {
 
     public void onUpdate(float deltaTime) {
 
-
-        systemRemainCoolTime -= worldMap.tickRate;
+        // 시스템 도는 주기 조절용 코드
+        /*systemRemainCoolTime -= worldMap.tickRate;
         if(systemRemainCoolTime <= 0){
             systemRemainCoolTime = systemCoolTime;
         }
         else{
             return;
-        }
+        }*/
 
         /* 우물 위치 */
         Vector3 wellPoint = new Vector3(3f, 0f, -3f);

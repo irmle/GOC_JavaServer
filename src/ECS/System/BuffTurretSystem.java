@@ -29,13 +29,14 @@ public class BuffTurretSystem {
 
     public void onUpdate(float deltaTime) {
 
-        remainCoolTime -= worldMap.tickRate;
+        // 시스템 도는 주기 조절용 코드
+        /*remainCoolTime -= worldMap.tickRate;
         if(remainCoolTime <= 0){
             remainCoolTime = coolTime;
         }
         else{
             return;
-        }
+        }*/
 
         /* 버프타워 갯수만큼 반복한다 */
         for(HashMap.Entry<Integer, BuffTurretEntity> buffTurretEntity : worldMap.buffTurretEntity.entrySet()){

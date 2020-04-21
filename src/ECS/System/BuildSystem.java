@@ -65,13 +65,14 @@ public class BuildSystem {
     /* 매서드 */
     public void onUpdate(float deltaTime){
 
-        remainCoolTime -= worldMap.tickRate;
+        // 시스템 도는 주기 조절용 코드
+        /*remainCoolTime -= worldMap.tickRate;
         if(remainCoolTime <= 0){
             remainCoolTime = coolTime;
         }
         else{
             return;
-        }
+        }*/
 
         /* 모든 건설 슬롯들에 대해 반복한다 */
         for(int i=0; i<worldMap.buildSlotList.size(); i++){

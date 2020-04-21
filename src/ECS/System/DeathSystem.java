@@ -38,13 +38,14 @@ public class DeathSystem {
 
     public void onUpdate(float deltaTime){
 
-        remainCoolTime -= worldMap.tickRate;
+        // 시스템 도는 주기 조절용 코드
+        /*remainCoolTime -= worldMap.tickRate;
         if(remainCoolTime <= 0){
             remainCoolTime = coolTime;
         }
         else{
             return;
-        }
+        }*/
 
         Queue<Death> deaths = worldMap.deathQueue;
 
