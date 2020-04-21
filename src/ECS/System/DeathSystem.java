@@ -432,29 +432,18 @@ public class DeathSystem {
         }
 
 
-        //killerEntityType = EntityType.CharacterEntity;
-//        System.out.println("킬러 앤티티타입 : " + killerEntityType);
-
         /* 죽은 몬스터 정보를 찾는다 */
         MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
         int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
         int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
-  //      System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
-        /**
-         * 2020 02 28
-         *
-         */
         JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, deadMonster.entityID);
         slot = worldMap.jungleMonsterSlotHashMap.get(deadMonster.entityID);
         //slot.setMonsterState(JungleMobState.DIED);
 
 
-
-
         Reward reward;
-
         /* 살해한 Entity의 타입에 따라 처리한다 */
         switch (killerEntityType) {
 
@@ -472,11 +461,11 @@ public class DeathSystem {
                 boolean isTestMode = false;
                 if(isTestMode){   // 테스트
                     for(int i=0; i<100; i++){
-                        ((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
+                        //((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
                     }
                 }
                 else{   // 테스트가 아님
-                    ((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
+                    //((CharacterEntity) killer).rewardHistoryComponent.rewardHistory.add(reward);
                 }
 
                 /** 2020 02 12 수 추가 */
@@ -505,7 +494,7 @@ public class DeathSystem {
                 /* 해당 유저에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardOfKillMonsterByTurret(typeOfDeadMonster, builderLevel);
                 reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
-                turretBuildUser.rewardHistoryComponent.rewardHistory.add(reward);
+                //turretBuildUser.rewardHistoryComponent.rewardHistory.add(reward);
 
                 break;
 
@@ -529,7 +518,7 @@ public class DeathSystem {
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killer.entityID);
                 reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
-                skillUser.rewardHistoryComponent.rewardHistory.add(reward);
+                //skillUser.rewardHistoryComponent.rewardHistory.add(reward);
 
 
                 break;
@@ -545,16 +534,47 @@ public class DeathSystem {
                 /* 몹을 죽인 캐릭터에게 보상을 넣어준다 */
                 //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, killer.entityID);
                 reward = RewardFactory.createRewardByKillJungleMonster(typeOfDeadMonster, deadMonster.entityID, monsterLevel);
-                user.rewardHistoryComponent.rewardHistory.add(reward);
-
+                //user.rewardHistoryComponent.rewardHistory.add(reward);
 
                 break;
 
 
             default:
+                reward = null;
                 break;
 
         }
+
+
+        /** 2020 04 21 뉴 보상 처리를 정글에도 적용 */
+
+        /* 보상 get */
+        //reward = RewardFactory.createRewardByKillMonster(typeOfDeadMonster, monsterLevel);
+
+        /* 경험치 N빵 */
+        reward.rewardExp /= (worldMap.characterEntity.size());
+        reward.rewardGold *= 100;
+
+        Reward rewardN;
+        for(CharacterEntity character : worldMap.characterEntity.values()){
+
+            rewardN = (Reward) reward.clone();
+
+            boolean isKiller = (character.entityID == killer.entityID) ? true : false;
+            if(!isKiller){
+
+                rewardN.rewardGold = 0;
+            }
+
+            character.rewardHistoryComponent.rewardHistory.add(reward);
+        }
+
+
+
+
+
+
+
 
         System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
 

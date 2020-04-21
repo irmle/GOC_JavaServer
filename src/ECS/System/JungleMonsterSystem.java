@@ -119,6 +119,12 @@ public class JungleMonsterSystem {
 
                     /** 검색된 타겟을 지정해준다 */
                     MonsterEntity monster = worldMap.monsterEntity.get(slot.monsterID);
+
+                    int oldTarget = monster.monsterComponent.targetID;
+                    if((oldTarget != 0) && (oldTarget != target.entityID)){
+                        slot.reducePatience();
+                    }
+
                     monster.monsterComponent.targetID = target.entityID;
 
 //                    System.out.println("지정된 타겟 : " + target.entityID);
@@ -163,7 +169,7 @@ public class JungleMonsterSystem {
                     if( !isAbleToTrace ){
 
                         /* 인내심 */
-                        slot.reducePatience();
+                        //slot.reducePatience();
 
                         slot.setMonsterState(JungleMobState.TARGET_INDICATE);
 //                        System.out.println("타겟 추적이 불가능하므로 INDICATE로 상태변환함");
@@ -237,6 +243,7 @@ public class JungleMonsterSystem {
                         reduceAttackCoolTime(slot, deltaTime);
                     }
 
+                    slot.setMonsterState(JungleMobState.TARGET_INDICATE);
                     break;
 
 
