@@ -1,9 +1,9 @@
 ﻿판매 종류,id,이름,타입,가격,효과,효과값,최대 레벨
-ITEM,1,체력회복 포션,HP_POTION,100,체력회복,20 ,-
-ITEM,2,마력회복 포션,MP_POTION,100,마력회복,20 ,-
-ITEM,3,이동속도 증가포션,SPEED_POTION,100,이동속도 증가,5 ,-
-ITEM,4,공격속도 증가포션,ATTACK_SPEED_POTION,100,공격속도 증가,20 ,-
-ITEM,5,방어력 증가포션,DEFENSE_POTION,100,방어력 증가,10 ,-
+ITEM,1,체력회복 포션,HP_POTION,100,체력회복,20,-
+ITEM,2,마력회복 포션,MP_POTION,100,마력회복,20,-
+ITEM,3,이동속도 증가포션,SPEED_POTION,100,이동속도 증가,20,-
+ITEM,4,공격속도 증가포션,ATTACK_SPEED_POTION,100,공격속도 증가,20,-
+ITEM,5,방어력 증가포션,DEFENSE_POTION,100,방어력 증가,10,-
 UPGRADE,,크리스탈 체력 업그레이드,CRYSTAL_UPGRADE,-,-,-,5
 UPGRADE,,경험치 획득량 업그레이드,EXP_UPGRADE,-,-,-,5
 UPGRADE,,골드 획득량 업그레이드,GOLD_UPGRADE,-,-,-,5
