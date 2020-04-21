@@ -342,7 +342,7 @@ public class JungleMonsterSystem {
 //        System.out.println("정글몹을 생성합니다");
 
         /** 몹을 생성함 */
-        MonsterEntity newJungleMob = MonsterFactory.createJungleMonster(slot.jungleMobType, worldMap);
+        MonsterEntity newJungleMob = MonsterFactory.createJungleMonster(slot.jungleMobType, worldMap, slot.regenCount);
 
         /** 새로 ID 할당받음 */
         int newEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
@@ -747,6 +747,8 @@ public class JungleMonsterSystem {
         jungleInfo = jungleMonsterInfoList.get(newType);
         slot.setJungleMonsterInfo(newType, jungleInfo.regenTime * 60f);
 
+        /** 리젠카운트 세팅 */
+        slot.increaseRegenCount();
 
         /** 지정된 몹을 생성한다 */
         // onUpdate - regenWaiting 케이스의 create~() 매서드를 지우고, 여기서 호출하도록 함.

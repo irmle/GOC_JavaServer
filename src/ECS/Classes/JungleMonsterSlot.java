@@ -26,6 +26,9 @@ public class JungleMonsterSlot {
     public float regenTime;    // 현 슬롯의 몹이 재생성하는 데 걸리는 시간 (고정값)
     public float remainedRegenTime;    // 몹 리젠까지 남은 시간
 
+    /** 오후 3:56 2020-04-21 추가 */
+    public int regenCount;
+
     /** 오후 8:46 2020-04-08 추가 */
     public int patience;
 
@@ -41,6 +44,8 @@ public class JungleMonsterSlot {
 
         monsterState = JungleMobState.EMPTY;
         patience = PATIENCE_VALUE;
+
+        regenCount = 0;
     }
 
 
@@ -108,6 +113,11 @@ public class JungleMonsterSlot {
         boolean isNotPatinet = (this.patience <= 0) ? true : false;
 
         return isNotPatinet;
+    }
+
+    public void increaseRegenCount(){
+
+        this.regenCount++;
     }
 
 

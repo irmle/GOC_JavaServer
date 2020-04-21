@@ -705,7 +705,7 @@ public class MonsterFactory {
 
     }
 
-    public static MonsterEntity createJungleMonster(int requestedJungleMonsterType, WorldMap worldMap){
+    public static MonsterEntity createJungleMonster(int requestedJungleMonsterType, WorldMap worldMap, int regenCount){
 
         MonsterEntity newJungleMob;
 
@@ -720,6 +720,9 @@ public class MonsterFactory {
 
         /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
         resetJungleMonsterStatByLevel(newJungleMob, level);
+
+        /* 리젠 카운트에 맞게, 몬스터의 스탯 비율을 추가 적용한다 */
+        applyMonsterStatByJungleSlotRegenCount(worldMap, newJungleMob, regenCount);
 
         //System.out.println("정그르몹.. 생성된거 맞나??");
 
@@ -1133,6 +1136,54 @@ public class MonsterFactory {
         monsterSight.lookRadius *= statRate;
 
    }
+
+    /**
+     * 기    능 : 특정 정글 슬롯의 몹 리젠 카운트에 따라, 몬스터 스탯 비율을 조절함. (100% ~ )
+     *
+     *
+     */
+    public static void applyMonsterStatByJungleSlotRegenCount(WorldMap worldMap, MonsterEntity monster,int regenCount){
+
+        /** 리젠 횟수를 참조하여, 적용할 스탯 비율을 결정 */
+        float appliedStatRate = 0.5f;
+        float statRate = (1 + (regenCount * appliedStatRate));
+
+        /** 몬스터 정보 참조 */
+        HPComponent monsterHP = monster.hpComponent;
+        AttackComponent monsterAttack = monster.attackComponent;
+        DefenseComponent monsterDefense = monster.defenseComponent;
+        SightComponent monsterSight = monster.sightComponent;
+        VelocityComponent monstserMove = monster.velocityComponent;
+
+        /** 비율에 맞게, 스탯을 적용함 */
+
+        /* 체력 */
+        monsterHP.originalMaxHp *= statRate;
+        monsterHP.maxHP = monsterHP.originalMaxHp;
+        monsterHP.currentHP = monsterHP.originalMaxHp;
+
+        /* 체력 회복 */
+        monsterHP.recoveryRateHP *= statRate;
+
+        /* 공격력 */
+        monsterAttack.attackDamage *= statRate;
+
+        /* 방어력 */
+        monsterDefense.defense *= statRate;
+
+        /* 공격속도 */
+        monsterAttack.attackSpeed *= statRate;
+
+        /* 이동속도 */
+        monstserMove.moveSpeed *= statRate;
+
+        /* 사거리 */
+        monsterAttack.attackRange *= statRate;
+
+        /* 시야 */
+        monsterSight.lookRadius *= statRate;
+
+    }
 
 
 }

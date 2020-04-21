@@ -6598,6 +6598,13 @@ public class SkillFactory {
 
         /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
+        /**
+         * 2020 04 21 추가,, 폭시 사용 시, 캐릭터가 바라보는 방향이. 스킬을 사용하는 방향과 일치해야 할 거 같아서 이렇게 고쳤는데
+         * 이게 맞을지는 아직 잘 모르겠다.
+         */
+        skillUser.rotationComponent.y = event.skillDirection.y();
+        skillUser.rotationComponent.z = event.skillDirection.z();
+
         /* 스킬 모션 중계 */
 
         SkillInfoData skillInfoData = new SkillInfoData();
