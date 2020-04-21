@@ -770,6 +770,8 @@ public class JungleMonsterSystem {
      *      -- 몹이 IDLE, RETURN 상태일 때
      *              체력이 max 이하라면 체력 값을 회복하는 버프를 넣어준다.
      *
+     * 2020 04 21 수정 :
+     * 체력이 일정이하 낮아지더라도, 귀환하지 않도록 바꿔달라는 요구사항이 있어서 적용.
      *
      */
     public boolean ckeckMonsterReturningCondition(JungleMonsterSlot slot){
@@ -785,22 +787,22 @@ public class JungleMonsterSystem {
         float monsterLookRadius = monster.sightComponent.lookRadius;
 
         /** 체력 검사 */
-        float HP_RATE_FOR_RETURNING = 30f;
-        boolean isHPLow = ( monsterHP.checkCurrentHpPercentage() < HP_RATE_FOR_RETURNING ) ? true : false;
-        System.out.println("남은 체력 : " + monsterHP.checkCurrentHpPercentage());
+        //float HP_RATE_FOR_RETURNING = 30f;
+        //boolean isHPLow = ( monsterHP.checkCurrentHpPercentage() < HP_RATE_FOR_RETURNING ) ? true : false;
+        //System.out.println("남은 체력 : " + monsterHP.checkCurrentHpPercentage());
 
         /** 인내심 테스트 */
         boolean isNoPatience = slot.checkMonsterIsNotPatient();
-        System.out.println("인내심 : " + slot.patience);
+        //System.out.println("인내심 : " + slot.patience);
 
         /** 너무 멀리왔나? */
         float distnaceFromSP =  Vector3.distance(spawnPoint, monsterPos);
         boolean isFarFromHome = (distnaceFromSP > monsterLookRadius) ? true : false;
-        System.out.println("거리 : " + distnaceFromSP + ", 시야 : " + monsterLookRadius);
+        //System.out.println("거리 : " + distnaceFromSP + ", 시야 : " + monsterLookRadius);
 
 
         /** 결과 판단 */
-        isReturnCondition = ( isHPLow || isNoPatience || isFarFromHome );
+        isReturnCondition = ( isNoPatience || isFarFromHome );
 
 
         return isReturnCondition;
