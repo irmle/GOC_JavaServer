@@ -439,21 +439,76 @@ public class MonsterSystem2 {
 
                     /** 타겟을 향해 이동할 지점을 구한다  */
 
+
+                    /* 이동 방향 구하기 */
                     Vector3 directionToTarget
                             = Vector3.normalizeVector(monsterPos, finalTargetPosition);
+
+                    /**
+                     * 작    성 : 오후 10:43 2020-04-21
+                     * 기    능 : 제일 가까운 충돌을 감지하고, 순간 방향을 틀음.
+                     * 처    리 :
+                     *      1) 충돌 체크를 한다( )
+                     *      2) if 충돌객체(몹)이 존재한다면,
+                     *              이동 방향을 틀어준다( )
+                     *         else
+                     *              기존 목적지 방향으로 간다
+                     *
+                     *     ==============================================
+                     *     충돌체크 로직 :
+                     *
+                     *          1. 충돌 거리에 존재하는, 제일 가까운 충돌타겟을 검색함
+                     *              모든 몹에 대해 반복(본인 제외, 죽은애 제외)
+                     *                  대상과의 거리를 구한다
+                     *                  if 대상이 충돌 범위 내 존재할 때,
+                     *                      제일 가까운지 확인하여 업데이트
+                     *                  else면 걍 continue임
+                     *          2. 충돌 여부를 판단하여 리턴
+                     *              if 존재하면
+                     *                  true 리턴
+                     *              else
+                     *                  false 리턴
+                     *
+                     *     ==============================================
+                     *     이동방향 틀기 로직 :
+                     *
+                     *          1. 목적 방향 벡터와 충돌 방향 벡터를 구한다.
+                     *          2. 두 벡터의 사잇각을 구한다
+                     *          3. 두 벡터의 외적을 구한다
+                     *          4. 외적(3)의 y값을 가지고, 현 몹에 대한 충돌 몹의 상대적인 방향(왼쪽/오른쪽..)을 구한다.
+                     *              if y > 0
+                     *                  // 충돌 대상이, 몬스터의 왼쪽에 있는 것임(반시계 방향)
+                     *                  본래 목적 방향 벡터로부터, + (사잇각) 만큼 회전한 방향을 구해 리턴한다
+                     *              else if y < 0
+                     *                  // 충돌 대상이, 몬스터의 오른쪽에 있는 것임(시계 방향)
+                     *                  본래 목적 방향 벡터로부터, - (사잇각) 만큼 회전한 방향을 구해 리턴한다
+                     *              else
+                     *                  // 일단 패스. 평행.
+                     *
+                     *      ==============================================
+                     *
+                     */
+
+
+
+
+
+
+
+                    /* 이동 지점 구하기  */
+
                     float movementSpeedToTarget
                             = deltaTime * (mobMoveSpeed + moveSpeedBonus) * moveSpeedRate;
                     Vector3 moveVectorToTarget
                             = directionToTarget.setSpeed(movementSpeedToTarget);
+
+
 
                     // 이동할 지점. 충돌판정 후 이동할 것임.
                     Vector3 movementPosToTarget = (Vector3) monsterPos.clone();
                     movementPosToTarget.movePosition(movementPosToTarget, moveVectorToTarget);
 
                     movedPosition.set(movementPosToTarget);
-
-                    /* 2020 01 14.. 경로 이탈 */
-
 
                     break;
 
@@ -543,9 +598,74 @@ public class MonsterSystem2 {
                         }
                     }
 
-                    /* 몹이 이동할 지점을 계산한다 */
+                    /**  몹이 이동할 지점을 계산한다 */
+
+                    /* 이동 방향 구하기 */
                     Vector3 directionToMovePoint
                             = Vector3.normalizeVector(monsterPos, targetMovePos);
+
+                    /**
+                     * 작    성 : 오후 10:43 2020-04-21
+                     * 기    능 : 제일 가까운 충돌을 감지하고, 순간 방향을 틀음.
+                     * 처    리 :
+                     *      1) 충돌 체크를 한다( )
+                     *      2) if 충돌객체(몹)이 존재한다면,
+                     *              이동 방향을 틀어준다( )
+                     *         else
+                     *              기존 목적지 방향으로 간다
+                     *
+                     *     ==============================================
+                     *     충돌체크 로직 :
+                     *
+                     *          1. 충돌 거리에 존재하는, 제일 가까운 충돌타겟을 검색함
+                     *              모든 몹에 대해 반복(본인 제외, 죽은애 제외)
+                     *                  대상과의 거리를 구한다
+                     *                  if 대상이 충돌 범위 내 존재할 때,
+                     *                      제일 가까운지 확인하여 업데이트
+                     *                  else면 걍 continue임
+                     *          2. 충돌 여부를 판단하여 리턴
+                     *              if 존재하면
+                     *                  true 리턴
+                     *              else
+                     *                  false 리턴
+                     *
+                     *     ==============================================
+                     *     이동방향 틀기 로직 :
+                     *
+                     *          1. 목적 방향 벡터와 충돌 방향 벡터를 구한다.
+                     *          2. 두 벡터의 사잇각을 구한다
+                     *          3. 두 벡터의 외적을 구한다
+                     *          4. 외적(3)의 y값을 가지고, 현 몹에 대한 충돌 몹의 상대적인 방향(왼쪽/오른쪽..)을 구한다.
+                     *              if y > 0
+                     *                  // 충돌 대상이, 몬스터의 왼쪽에 있는 것임(반시계 방향)
+                     *                  본래 목적 방향 벡터로부터, + (사잇각) 만큼 회전한 방향을 구해 리턴한다
+                     *              else if y < 0
+                     *                  // 충돌 대상이, 몬스터의 오른쪽에 있는 것임(시계 방향)
+                     *                  본래 목적 방향 벡터로부터, - (사잇각) 만큼 회전한 방향을 구해 리턴한다
+                     *              else
+                     *                  // 일단 패스. 평행.
+                     *
+                     *      ==============================================
+                     *
+                     */
+
+
+
+
+
+
+
+                    /* 이동 지점 구하기  */
+
+
+
+
+
+
+
+
+
+
                     float movementSpeedToMovePoint
                             = deltaTime * (mobMoveSpeed + moveSpeedBonus) * moveSpeedRate;
                     Vector3 moveVectorToMovePoint

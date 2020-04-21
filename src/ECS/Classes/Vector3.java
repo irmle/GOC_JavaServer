@@ -124,7 +124,6 @@ public class Vector3 implements Cloneable {
         //System.out.println("시작 -> 타겟 백터와 직선백터의 외적 : " + cross.x() + ", " + cross.y() + ", " + cross.z());
 
 
-        //
         distance = ( Vector3.distance(new Vector3(), cross) / Vector3.distance(new Vector3(0, 0, 0), vector) );
 
         return distance;
