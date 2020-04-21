@@ -944,7 +944,7 @@ public class MonsterSystem2 {
 
         MonsterEntity beCrashedMob = null;
 
-        float COLLISION_DISTANCE = 1.5f;
+        float COLLISION_DISTANCE = 2.5f;
 
         float minDis = COLLISION_DISTANCE;
         for (MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
@@ -965,7 +965,6 @@ public class MonsterSystem2 {
 
             /* 타겟과의 거리를 구한다 */
             float currentDis = Vector3.distance(myPos, targetPos);
-            System.out.println("거리: " + currentDis);
 
             boolean isOutOfRange = (currentDis > COLLISION_DISTANCE) ? true : false;
             if(isOutOfRange)
@@ -977,7 +976,6 @@ public class MonsterSystem2 {
 
                 minDis = currentDis;
                 beCrashedMob = target;
-                System.out.println("최소거리 업뎃");
             }
 
         }
@@ -1031,7 +1029,7 @@ public class MonsterSystem2 {
         else {
 
             System.out.println("평행임... 어카지... 왠지그냥 아무 방향으로 줘도 될 것 같은데.. ");
-            turnedDirection = Vector3.rotateVector3ByAngleAxis(targetDir, new Vector3(0,1,0), -(betweenAngle));
+            turnedDirection = Vector3.rotateVector3ByAngleAxis(targetDir, new Vector3(0,1,0), (betweenAngle)/2f);
         }
 
         turnedDirection.normalize();

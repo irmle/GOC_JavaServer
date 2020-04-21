@@ -3690,7 +3690,7 @@ public class WorldMap {
 
         entity.characterComponent.level = 3;
         entity.characterComponent.exp = 0;
-        entity.characterComponent.gold = 1000;
+        entity.characterComponent.gold = 1000000;
 
         entity.characterComponent.skillPoint = 3;
 
