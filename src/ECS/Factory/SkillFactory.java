@@ -832,6 +832,13 @@ public class SkillFactory {
 
         }
 
+        /**
+         * 스킬 사용 후, 잠시간 스킬 사용 불가 처리를 여기에 작성함
+         * 2020 04 21
+         */
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
     }
 
 
@@ -7661,7 +7668,7 @@ public class SkillFactory {
         if(isConditionEffect){
 
             /* 상태이상을 결정하는 효과 타입인 경우, boolParam 클래스를 활용해 효과 내용을 채운다 */
-
+            // 2020 04 21 all true -->>> effectSwitch by parsing effectInfo.effectValue.
             boolean effectSwitch = Boolean.parseBoolean(effectInfo.effectValue);
             ConditionBoolParam conditionEffect = new ConditionBoolParam(effectType, effectSwitch);
             newEffect.addEffect(conditionEffect);
