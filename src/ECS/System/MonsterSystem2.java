@@ -200,6 +200,7 @@ public class MonsterSystem2 {
                     case  EntityType.BarricadeEntity :
                         currentTarget = worldMap.barricadeEntity.get(targetID);
                         if(currentTarget == null){
+                            System.out.println("바리케이드 : " + targetID + " 널널");
                             continue;
                         }
                         targetCondition = ((BarricadeEntity) currentTarget).conditionComponent;
@@ -207,6 +208,8 @@ public class MonsterSystem2 {
                         targetDefense = ((BarricadeEntity) currentTarget).defenseComponent;
                         targetHpHistory = ((BarricadeEntity) currentTarget).hpHistoryComponent;
                         targetBuff = ((BarricadeEntity) currentTarget).buffActionHistoryComponent;
+
+                        System.out.println("바리케이드 : " + targetID);
                         break;
 
                     /* 객체가 몬스터, 스킬 오브젝트, 투사체인 경우는 패스한다 */
@@ -353,7 +356,7 @@ public class MonsterSystem2 {
 
 
             // 테스트
-            if(false){
+            if(true){
                 System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
                 System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);
             }
@@ -366,7 +369,7 @@ public class MonsterSystem2 {
 
                 case MonsterActionType.DO_NOTHING :
 
-                    //System.out.println("아무것도 하지 않는다");
+                    System.out.println("아무것도 하지 않는다");
 
                     /* 공격 쿨타임을 업데이트한다 */
                     if(monster.attackComponent.remainCoolTime > 0){
@@ -378,7 +381,7 @@ public class MonsterSystem2 {
 
                 case MonsterActionType.ATTACK_TARGET :
 
-                    //System.out.println("타겟을 공격한다");
+                    System.out.println("타겟을 공격한다");
 
                     /* 모션 중계 */
                     server_to_client.motionMonsterDoAttack(

@@ -84,6 +84,13 @@ public class MatchingManager {
                         System.out.println("매칭 성공. 캐릭터 픽창 진입.");
                     }
 
+                    /**
+                     * 2020 04 23 여기다가 추가하면 될 것 같은데.. 매칭 대기 인원 넣어주는거.
+                     */
+
+                    
+
+
                     /* 시간 */
                     for(HashMap.Entry<String, Float> waitTimeEntry: matchingWaitTime.entrySet()){
 
