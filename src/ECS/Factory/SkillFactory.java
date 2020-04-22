@@ -648,36 +648,60 @@ public class SkillFactory {
 
                 useSkill_archerPowerShot(worldMap, event);
                 System.out.println("파워 샷 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_MULTI_SHOT :
 
                 useSkill_archerMultiShot2(worldMap, event);
                 System.out.println("멀티 샷 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_ARROW_RAIN :
 
                 useSkill_archerArrowRain(worldMap, event);
                 System.out.println("화살비 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_INC_ATTACK_SPEED :
 
                 useSkill_archerIncAttackSpeed(worldMap, event);
                 System.out.println("속공 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_HEAD_SHOT :
 
                 useSkill_archerHeadShot(worldMap, event);
                 System.out.println("헤드 샷 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_CRITICAL_HIT :
 
                 useSkill_archerCriticalHit(worldMap, event);
                 System.out.println("치명타 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_STORM :
@@ -690,12 +714,20 @@ public class SkillFactory {
 
                 useSkill_archerFire(worldMap, event);
                 System.out.println("난사 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.ARCHER_SNIPE :
 
                 useSkill_archerSnipe(worldMap, event);
                 System.out.println("저격 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
 
@@ -709,54 +741,90 @@ public class SkillFactory {
 
                 useSkill_magicianFireball(worldMap, event);
                 System.out.println("파이어볼 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_HEAL :
 
                 useSkill_magicianHeal(worldMap, event);
                 System.out.println("힐링 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_METEOR :
 
                 useSkill_magicianMeteor(worldMap, event);
                 System.out.println("메테오 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_LIGHTNING_ROAD :
 
                 useSkill_magicianLightningRoad(worldMap, event);
                 System.out.println("라이트닝 로드 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_ICEBALL :
 
                 useSkill_magicianIceBall(worldMap, event);
                 System.out.println("아이스볼 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_SHIELD :
 
                 useSkill_magicianShield(worldMap, event);
                 System.out.println("쉴드 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_ICE_FIELD :
 
                 useSkill_magicianIceField(worldMap, event);
                 System.out.println("아이스 필드 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_THUNDER :
 
                 useSkill_magicianThunder(worldMap, event);
                 System.out.println("썬더 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.MAGICIAN_FROZEN_BEAM :
 
                 useSkill_magicianFrozenBeam(worldMap, event);
                 System.out.println("프로즌빔 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
 
@@ -770,54 +838,90 @@ public class SkillFactory {
 
                 useSKill_knightCut(worldMap, event);
                 System.out.println("베기 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_PIERCE :
 
                 useSKill_knightPierce(worldMap, event);
                 System.out.println("찌르기 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_TORNADO :
 
                 useSKill_knightTornado(worldMap, event);
                 System.out.println("회오리 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_GARREN_Q :
 
                 useSkill_knightGarrenQ(worldMap, event);
                 System.out.println("가렌 Q");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_GARREN_E :
 
                 useSkill_knightGarrenE(worldMap, event);
                 System.out.println("가렌 E");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_GARREN_R :
 
                 useSkill_knightGarrenR(worldMap, event);
                 System.out.println("가렌 R");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_BERSERKER :
 
                 useSkill_knightBerserker(worldMap, event);
                 System.out.println("버서커 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_INCR_HP :
 
                 useSkill_knightIncrHp(worldMap, event);
                 System.out.println("체력 증가 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
             case SkillType.KNIGHT_INVINCIBLE :
 
                 useSkill_knightInvincible(worldMap, event);
                 System.out.println("무적 사용");
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
 

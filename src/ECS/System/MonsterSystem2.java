@@ -944,7 +944,7 @@ public class MonsterSystem2 {
 
         MonsterEntity beCrashedMob = null;
 
-        float COLLISION_DISTANCE = 2.5f;
+        float COLLISION_DISTANCE = 3.5f;
 
         float minDis = COLLISION_DISTANCE;
         for (MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
