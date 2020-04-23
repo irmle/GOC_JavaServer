@@ -383,6 +383,14 @@ public class MonsterSystem2 {
 
                     System.out.println("타겟을 공격한다");
 
+
+                    Vector3 targetDir = Vector3.getTargetDirection(monsterPos, finalTargetPosition);
+                    targetDir.normalize();
+
+                    monster.rotationComponent.y = targetDir.y();
+                    monster.rotationComponent.z = targetDir.z();
+
+
                     /* 모션 중계 */
                     server_to_client.motionMonsterDoAttack(
                             RMI_ID.getArray(worldMap.worldMapRMI_IDList.values()), RMI_Context.Reliable_Public_AES128,
@@ -428,6 +436,8 @@ public class MonsterSystem2 {
                     }
 
 
+
+
                     /* 공격 쿨타임을 초기화한다 */
                     monster.attackComponent.remainCoolTime = 1 / monster.attackComponent.attackSpeed;
 
@@ -446,6 +456,9 @@ public class MonsterSystem2 {
                     /* 이동 방향 구하기 */
                     Vector3 directionToTarget
                             = Vector3.normalizeVector(monsterPos, finalTargetPosition);
+
+                    /*directionToTarget
+                            = Vector3.getTargetDirection(monsterPos, finalTargetPosition).normalize();*/
 
                     /**
                      * 작성날짜 : 오후 10:43 2020-04-21
@@ -494,7 +507,10 @@ public class MonsterSystem2 {
 
 
                     /** 충돌 체크를 한다 */
-                    MonsterEntity crashMob = checkCollisionWithOtherMonsters(monster);
+
+
+
+                    MonsterEntity crashMob = checkCollisionWithOtherMonsters(monster, directionToTarget, 3f);
                     boolean willBeCrash = (!(crashMob == null)) ? true : false;
 
                     /** 이동 방향을 결정한다 */
@@ -517,6 +533,11 @@ public class MonsterSystem2 {
 
                     /** 방향결정 로직의 끝 */
                     /***************************************************************************************************/
+
+
+                    monster.rotationComponent.y = directionToTarget.y();
+                    monster.rotationComponent.z = directionToTarget.z();
+
 
 
                     /* 이동 지점 구하기  */
@@ -628,6 +649,10 @@ public class MonsterSystem2 {
                     Vector3 directionToMovePoint
                             = Vector3.normalizeVector(monsterPos, targetMovePos);
 
+                    /*directionToMovePoint
+                            = Vector3.getTargetDirection(monsterPos, targetMovePos).normalize();*/
+
+
                     /**
                      * 작    성 : 오후 10:43 2020-04-21
                      * 기    능 : 제일 가까운 충돌을 감지하고, 순간 방향을 틀음.
@@ -675,11 +700,16 @@ public class MonsterSystem2 {
 
 
                     /** 충돌 체크를 한다 */
-                    crashMob = checkCollisionWithOtherMonsters(monster);
+
+                    crashMob = checkCollisionWithOtherMonsters(monster, directionToMovePoint, 2f);
                     willBeCrash = (!(crashMob == null)) ? true : false;
+
+                    //willBeCrash = false;
 
                     /** 이동 방향을 결정한다 */
                     if(willBeCrash){
+
+                        System.out.println("충돌이다");
 
                         Vector3 crashMobPos = crashMob.positionComponent.position;
 
@@ -700,6 +730,8 @@ public class MonsterSystem2 {
                     /***************************************************************************************************/
 
 
+                    monster.rotationComponent.y = directionToMovePoint.y();
+                    monster.rotationComponent.z = directionToMovePoint.z();
 
 
 
@@ -943,11 +975,11 @@ public class MonsterSystem2 {
      *                  false 리턴
      *
      */
-    public MonsterEntity checkCollisionWithOtherMonsters(MonsterEntity monster){
+    public MonsterEntity checkCollisionWithOtherMonsters(MonsterEntity monster, Vector3 targetDir, float distance){
 
         MonsterEntity beCrashedMob = null;
 
-        float COLLISION_DISTANCE = 3.5f;
+        float COLLISION_DISTANCE = distance;
 
         float minDis = COLLISION_DISTANCE;
         for (MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
@@ -972,6 +1004,24 @@ public class MonsterSystem2 {
             boolean isOutOfRange = (currentDis > COLLISION_DISTANCE) ? true : false;
             if(isOutOfRange)
                 continue;
+
+            /* 뒤에 있는 애 패스 */
+            float betweenAngle = Vector3.getAngle(targetDir, Vector3.getTargetDirection(myPos, targetPos));
+            boolean isBehindMe = (betweenAngle > 90) ? true : false;
+            if(isBehindMe){
+                continue;
+            }
+
+            // 범위영역에 따라.. 다른 기준을..
+            if(betweenAngle >= 80){
+
+                // 수평에 가까운 영역에 있다면, 비교적 가까이 있어도, 충돌 아닌걸로 하자..
+                if((currentDis < 0.25f) ){
+                    continue;
+                }
+            }
+
+
 
             /* 최소 거리 업데이트 */
             boolean isMinDis = (currentDis <= minDis) ? true : false;
@@ -1010,9 +1060,13 @@ public class MonsterSystem2 {
 
         /** 충돌방향 백터 구하기 */
         Vector3 crashDir = Vector3.getTargetDirection(monsterPos, crashMobPos);
+        crashDir = Vector3.normalizeVector(monsterPos, crashMobPos);
 
         /** 목적방향 벡터와 충돌방향 벡터의 사잇각 구하기 */
         float betweenAngle = Vector3.getAngle(targetDir, crashDir);
+
+        // 겹침 방지용 응급처치; 타겟과 수직 관계에 있을 경우, 사잇각을 구해봤자,, 0이라 회전률도 0
+        betweenAngle += 20f;
 
 
         /** 두 벡터의 외적을 구함 */
@@ -1032,10 +1086,11 @@ public class MonsterSystem2 {
         else {
 
             System.out.println("평행임... 어카지... 왠지그냥 아무 방향으로 줘도 될 것 같은데.. ");
-            turnedDirection = Vector3.rotateVector3ByAngleAxis(targetDir, new Vector3(0,1,0), (betweenAngle)/2f);
+            turnedDirection = targetDir;
+
         }
 
-        turnedDirection.normalize();
+        turnedDirection.printVectorInfo();
 
         return turnedDirection;
     }

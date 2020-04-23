@@ -86,6 +86,12 @@ public class Vector3 implements Cloneable {
         this.z = target.z;
     }
 
+    public void printVectorInfo(){
+
+        System.out.println("x : " + this.x + ", y : " + this.y + ", z : " + this.z);
+
+    }
+
 
     // 외적 구하기
     // 음.. y, z 기준을 클라로 뒤야할지, 그냥 해야할지.. 일단은 그냥 함. 결과는 부호 바뀜 정도인거 같은데

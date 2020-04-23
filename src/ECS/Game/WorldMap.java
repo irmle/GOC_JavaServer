@@ -84,7 +84,7 @@ public class WorldMap {
     public static int tickRate = 100; //ms 단위.
 
     //몬스터 생성 쿨타임
-    static long SPAWN_COOL_TIME = 1000; //ms 단위.
+    static long SPAWN_COOL_TIME = 500; //ms 단위.
 
     //월드맵 최대 접속 유저수
     public int userCount;
@@ -1175,7 +1175,7 @@ public class WorldMap {
             data.remainRespawnTimeMilliSeconds -= tickRate;
 
             //부활시간이 경과했다면.
-            if (data.remainRespawnTimeMilliSeconds <= 0f && entity.hpComponent.currentHP <= 0) {
+            if ((data.remainRespawnTimeMilliSeconds <= 0f) && (entity.hpComponent.currentHP <= 0)) {
                 //캐릭터가 다시 부활하였으므로 목록에서 제거한다.0
                 iterator.remove();
 

@@ -2155,7 +2155,7 @@ public class GameDataManager {
                 effectType = ConditionType.mpRecoveryRate;
                 break;
 
-            case "스킬사용불가가" :
+            case "스킬사용불가" :
                 effectType = ConditionType.isDisableSkill;
                 break;
 

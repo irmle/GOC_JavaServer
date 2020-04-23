@@ -405,7 +405,7 @@ public class HpHistorySystem {
             boolean barriIsDestroyed = (hpComponent.currentHP <= 0) ? true : false;
             if(barriIsDestroyed) {
 
-                System.out.println("공격포탑이 파괴되었습니다..");
+                System.out.println("바리케이드가 파괴되었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int destroyedBarri = barricade.entityID;
