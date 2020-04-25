@@ -292,7 +292,7 @@ public class DeathSystem {
 
         /* 경험치 N빵 */
         reward.rewardExp /= (worldMap.characterEntity.size());
-        reward.rewardGold *= 100;
+        //reward.rewardGold *= 100;
 
         Reward rewardN;
         for(CharacterEntity character : worldMap.characterEntity.values()){
@@ -554,7 +554,7 @@ public class DeathSystem {
 
         /* 경험치 N빵 */
         reward.rewardExp /= (worldMap.characterEntity.size());
-        reward.rewardGold *= 100;
+        //reward.rewardGold *= 100;
 
         Reward rewardN;
         for(CharacterEntity character : worldMap.characterEntity.values()){

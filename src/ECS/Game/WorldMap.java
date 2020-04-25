@@ -1263,6 +1263,7 @@ public class WorldMap {
 
                             /* 첫 번째 웨이브 세팅 */
                             //waveInfoCount = 1;
+                            // ㄴ 게임시작 매서드에서 처리하게끔 햇음. 나중에 정리할 때 이부분 지울 것.
                         }
 
                         /**
@@ -1378,8 +1379,18 @@ public class WorldMap {
 
                                         int mobCount = monsters.getValue();
 
+                                        /**
+                                         * 2020 04 25 수정,
+                                         *      플레이어 수에 따라 몹 수가 비례해서 나오게끔..
+                                         *      단, 이렇게 처리하면 중간에 유저 이탈 시 등장 마릿수에도 영향을 주게 되는데,
+                                         *      이걸로 괜찮은지?? 는 회의를 통해 결정해야 할 듯.
+                                         *
+                                         *      또, 21웨이브 이하에서만 이게 적용되도록 할지
+                                         *          아니면 전부 적용되도록 할지도..
+                                         */
                                         /* 해당 종류의 마릿수만큼 반복한다 */
-                                        for (int i = 0; i < (mobCount*3); i++) {
+                                        int charCount = characterEntity.size();
+                                        for (int i = 0; i < (mobCount*charCount); i++) {
 
                                             monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
                                         }
@@ -3688,17 +3699,16 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 3;
+        entity.characterComponent.level = 1;
         entity.characterComponent.exp = 0;
-        entity.characterComponent.gold = 1000000;
+        entity.characterComponent.gold = 1000;
 
-        entity.characterComponent.skillPoint = 3;
+        entity.characterComponent.skillPoint = 1;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
 
         entity.hpComponent = new HPComponent();
-        characterData.hp = 3000f;
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
@@ -3714,7 +3724,7 @@ public class WorldMap {
         entity.attackComponent.attackRange = characterData.attackRange;
         entity.attackComponent.attackSpeed = characterData.attackSpeed;
         entity.attackComponent.attackDamage = characterData.attackDamage;
-        //entity.attackComponent.attackDamage = 3000f;
+
 
         /**
          * 추가 & 수정
@@ -3740,7 +3750,7 @@ public class WorldMap {
         entity.velocityComponent = new VelocityComponent();
         entity.velocityComponent.velocity = new Vector3(0f, 0f, 0f);
         entity.velocityComponent.moveSpeed = characterData.moveSpeed;
-        entity.velocityComponent.moveSpeed = 10f;
+        //entity.velocityComponent.moveSpeed = 10f;
 
         entity.buffActionHistoryComponent = new BuffActionHistoryComponent();
         entity.buffActionHistoryComponent.conditionHistory = new ArrayList<>();
@@ -4165,7 +4175,7 @@ public class WorldMap {
 
         /** 전투력이 속한 등급을 찾는다 */
         int grade = GameDifficultyGrade.decideGameGrade(teamStrengthPower);
-        grade = 1;
+        //grade = 1;
 
         /** 등장하는 몬스터의 레벨을 구한다 */
         int level = GameDifficultyGrade.decideMonsterExpLevel(grade, teamStrengthPower);
