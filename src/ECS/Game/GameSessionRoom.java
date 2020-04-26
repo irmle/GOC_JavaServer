@@ -466,7 +466,8 @@ public class GameSessionRoom {
     public Response RQ_getPlayerNickInfo(String playerRequestInfo){
 
         Response response = null;
-        String ipAddr = "http://220.85.30.235/result/getnick.php";
+        //String ipAddr = "http://112.221.220.205/result/getnick.php";
+        String ipAddr = "http://ngnl.xyz/result/getnick.php";
 
         Future<Response> future =
                 httpClient.preparePost(ipAddr)

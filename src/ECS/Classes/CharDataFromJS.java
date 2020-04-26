@@ -50,6 +50,8 @@ public class CharDataFromJS {
     /* 생성자 */
     public CharDataFromJS(JsonObject playerInfo) {
 
+        System.out.println("캐릭터 JS 파싱 처리 시작 ");
+
         this.userToken = playerInfo.get("userToken").getAsInt();
 
         int dbCharType = playerInfo.get("guardianType").getAsInt();

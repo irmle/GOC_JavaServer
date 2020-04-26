@@ -661,10 +661,10 @@ public class WorldMap {
             String playerInfoString = response.getResponseBody().toString();
 
             int index = playerInfoString.indexOf("{");
-            //System.out.println("엔터 인덱스..?? : " + index);
+            System.out.println("엔터 인덱스..?? : " + index);
 
             String testStr = playerInfoString.substring(index);
-            //System.out.println("테스트 스트링 : " + testStr);
+            System.out.println("테스트 스트링 : " + testStr);
             // 위 처리를 왜 해주냐면.. 응답 내용에, 서버의 IP 주소(아마도) 가 같이 포함되어서 오는데, 왜 그런지는 모르겠지만
             // 이거때문에 JS 파싱이 제대로 되지 않아서.. 걔를 분리해주기 위함임.
 
@@ -687,14 +687,18 @@ public class WorldMap {
 
                 JsonObject infoJSO = playerInfoJSO.getAsJsonObject(userStr);
 
-                //System.out.println(userStr + " : " + infoJSO + "\n");
+                System.out.println(userStr + " : " + infoJSO + "\n");
 
                 LoadingPlayerData loadingPlayerData = matchingUserDataList[i];
                 RMI_ID rmi_id = matchingUserList[i];
                 String tokenID = SessionManager.findTokenIDfromRMI_HostID(rmi_id.rmi_host_id);
 
+
                 newCharData = parsePlayerInfoJSonToData(infoJSO);
                 newCharEntity = createCharacterEntityFromData(newCharData, loadingPlayerData);
+
+
+
 
 
                 //불러온 tokenID를 List에 추가. tokenID를 기준으로 EntityID를 불러온다.
@@ -1712,7 +1716,7 @@ public class WorldMap {
 
                     /* HTTP 요청을 만들어 전송 */
 
-                    String ipAddr = "http://220.85.30.235/result/endgame.php";
+                    String ipAddr = "http://ngnl.xyz/result/endgame.php";
                     Future<Response> future = httpClient.preparePost(ipAddr)
                             .addFormParam("data", gameResult)
                             .execute(new AsyncCompletionHandler<Response>() {
@@ -3527,7 +3531,8 @@ public class WorldMap {
     public Response RQ_getPlayerCharInfo(String playerRequestInfo){
 
         Response response = null;
-        String ipAddr = "http://220.85.30.235/result/insertgame.php";  /** 주소 바꿀 것*/
+        //String ipAddr = "http://112.221.220.205/result/insertgame.php";  /** 주소 바꿀 것*/
+        String ipAddr = "http://ngnl.xyz/result/insertgame.php";
 
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
@@ -3572,7 +3577,8 @@ public class WorldMap {
     public Response RQ_saveGameResult(String gameResult){
 
         Response response = null;
-        String ipAddr = "http://220.85.30.235/result/endgame.php";
+        //String ipAddr = "http://112.221.220.205/result/endgame.php";
+        String ipAddr = "http://ngnl.xyz/result/endgame.php";
 
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
@@ -3672,9 +3678,11 @@ public class WorldMap {
      */
     public CharDataFromJS parsePlayerInfoJSonToData(JsonObject playerInfo){
 
+        System.out.println("혹시 가디언인포라는 이름이 없어서 널이 뜬다던가??");
+
         CharDataFromJS charData = new CharDataFromJS(playerInfo.getAsJsonObject("guardianINFO"));
 
-        //System.out.println(playerInfo);
+        System.out.println(playerInfo);
 
         return charData;
     }
