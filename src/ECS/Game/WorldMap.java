@@ -1780,7 +1780,7 @@ public class WorldMap {
                     //스레드 상태 체크. 스레드가 꺼졌다면, 다시 재실행.
                     //그 후 로그 출력 or 기록.
                     /** 디버깅시 오류 발생하는 정확한 지점 알아보려고 주석처리함 */
-                    restartGameLogicThread();
+                    //restartGameLogicThread();
                 }
             }
         }

@@ -236,14 +236,26 @@ public class HpHistorySystem {
                     // 몹에게 데미지를 준 앤티티가 캐릭터일 경우, 해당 캐릭터의 스코어에 반영한다
                     // ㄴ 아마.. 투사체나 스킬 오브젝트 등등의 경우, 데미지를 준 주체가 그 효과를 발동시킬 캐릭터로 되어있을거긴 한데.
                     // 건물은 아직.
-                    int attackerType = worldMap.entityMappingList.get(damageHistory.unitID);
-                    if(attackerType == EntityType.CharacterEntity){
-                        worldMap.playerGameScoreList.get(damageHistory.unitID).givenDamageAmount += damageHistory.amount;
 
-                        /* 2020 01 24 추가 ; 흡혈 처리 */
-                        blooldSuck(lastDamagedEntity, damageHistory.amount);
+                    /**
+                     * 2020 04 29 타워관련 예외처리,,
+                     *
+                     */
+
+                    boolean attackerExist = worldMap.entityMappingList.containsKey(damageHistory.unitID);
+                    if(attackerExist){
+
+                        int attackerType = worldMap.entityMappingList.get(damageHistory.unitID);
+                        if(attackerType == EntityType.CharacterEntity){
+                            worldMap.playerGameScoreList.get(damageHistory.unitID).givenDamageAmount += damageHistory.amount;
+
+                            /* 2020 01 24 추가 ; 흡혈 처리 */
+                            blooldSuck(lastDamagedEntity, damageHistory.amount);
+
+                        }
 
                     }
+
 
                     /** 2020 02 28 추가 */
                     /**

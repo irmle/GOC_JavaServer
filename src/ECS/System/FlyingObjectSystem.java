@@ -63,6 +63,13 @@ public class FlyingObjectSystem {
             int skillLevel;
             int skillType;
 
+            boolean turretNotExist = !(worldMap.entityMappingList.containsKey(flyingObjectComponent.userEntityID));
+            if(turretNotExist){
+
+                worldMap.requestDeleteQueue.add(flyingObject);
+                continue;
+            }
+
             int createdEntityType = worldMap.entityMappingList.get(flyingObjectComponent.userEntityID);
             switch (createdEntityType){
 
@@ -90,7 +97,14 @@ public class FlyingObjectSystem {
 
                     skillUser = null;
                     skillType = flyingObjectComponent.createdSkillType;
-                    attackTurret = worldMap.attackTurretEntity.get(flyingObjectComponent.userEntityID);
+
+                    if(turretNotExist){
+                        attackTurret  = null;
+                        System.out.println("투사체를 생성한 포탑이 파괴되었습니다.");
+                    }
+                    else{
+                        attackTurret = worldMap.attackTurretEntity.get(flyingObjectComponent.userEntityID);
+                    }
 
                     skillSlot = null;
                     skillLevel = 1;
@@ -233,15 +247,40 @@ public class FlyingObjectSystem {
                             BuffAction buff = new BuffAction();
 
                             /**
-                             * 공격터렛..
+                             * 투사체 생성자가 공격터렛인 경우.
+                             *
+                             * 2020 04 28 수정 사항
+                             *  -- 포탑이 생성한 투사체가 타겟에 도달하여 적중 처리를 할 때
+                             *      생성한 포탑 Entity 의 정보를 참조하게 되는데,
+                             *      이 시점에 포탑이 파괴되어 Entity 가 존재하지 않는 경우를 판별하여
+                             *      적중 및 데미지 생성 처리를 생략, 바로 삭제되도록 한다.
+                             *
+                             *  -- 삭제된 포탑 앤티티에 대한 최초 접근 시점이 여기라고 생각했는데,
+                             *      위에서 투사체 생성자 타입을 검사하면서 월드맵의 entityList 를 참조하여
+                             *      attackTurret 변수에 대입하고 있다.
+                             *
+                             *      그래서 그 부분을
+                             *          매핑리스트에 존재한다면(containsKey) 참조하여 집어넣고,
+                             *          존재하지 않는다면 null 을 넣어주도록 변경함.
+                             *
+                             *      그리고 아래에서는 attackTurret이 null 이 아닌 경우에 한해
+                             *          데미지를 생성하여 처리하도록 함.
+                             *
                              */
                             if(createdEntityType == EntityType.AttackTurretEntity){
 
-                                int turretType = attackTurret.turretComponent.turretType;
+                                /* 존재하는 포탑인지? 여부에 따른 처리를 수행함 */
+                                if(attackTurret != null){
 
-                                targetEntity.buffActionHistoryComponent.conditionHistory.add(
-                                        AttackTurretFactory.createAttackTurretEffect(
-                                                turretType, "데미지", attackTurret, attackTurret.entityID));
+                                    int turretType = attackTurret.turretComponent.turretType;
+
+                                    targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                            AttackTurretFactory.createAttackTurretEffect(
+                                                    turretType, "데미지", attackTurret, attackTurret.entityID));
+                                }
+                                else{
+                                    System.out.println("투사체를 생성한 포탑이 파괴되어, 해당 투사체의 데미지 처리를 하지 않습니다.");
+                                }
 
                             }
 

@@ -2746,6 +2746,14 @@ public class SkillFactory {
 
             startPosition.movePosition(startPosition, direction);
 
+            System.out.println("스킬 거리비율 : " + event.skillDistanceRate);
+            System.out.println("장판 시작 위치 : ");
+            startPosition.printVectorInfo();
+            System.out.println("스킬 시전방향 : ");
+            direction.printVectorInfo();
+
+
+
 
             /* Skill Object BuffAction */
             BuffAction buffAction = (BuffAction) skillInfo.skillObjectInfo.buffAction.clone();
@@ -5784,6 +5792,13 @@ public class SkillFactory {
         startPosition.movePosition(startPosition, skillDir);
 
 
+        System.out.println("스킬 거리비율 : " + event.skillDistanceRate);
+        System.out.println("장판 시작 위치 : ");
+        startPosition.printVectorInfo();
+        System.out.println("스킬 시전방향 : ");
+        skillDir.printVectorInfo();
+
+
         /* skillObject component */
         int createdSkillType;
         createdSkillType = skillToUse.skillinfo.skillType;
@@ -5832,8 +5847,8 @@ public class SkillFactory {
         /* SkillObject Component */
         SkillObjectComponent skillObjectComponent
                 = new SkillObjectComponent(createdSkillType, skillAreaType, skillUser.entityID,
-                skillObjDurationTime, skillObjectRadius, 0f,
-                0f, startPosition, skillDir, skillDistanceRate, skillObjBuff);
+                skillObjDurationTime, skillObjectRadius, -1f,
+                -1f, startPosition, event.skillDirection, skillDistanceRate, skillObjBuff);
 
         /* FlyingObject Entity */
         SkillObjectEntity skillObjectEntity
