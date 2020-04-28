@@ -218,6 +218,12 @@ public class BuffActionSystem {
                                     /* 비율 변화 버프일 경우 */
                                     case ConditionType.moveSpeedRate:
                                         newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                        /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                        if(condition.value < 0f){
+                                            newCondition.isSlow = true;
+                                        }
+
                                         break;
                                     case ConditionType.attackSpeedRate:
                                         newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -426,7 +432,11 @@ public class BuffActionSystem {
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
-                                    newCondition.isSlow = true;
+
+                                    /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                    if(condition.value < 0f){
+                                        newCondition.isSlow = true;
+                                    }
 
                                     break;
                                 case ConditionType.attackSpeedRate:
@@ -748,6 +758,12 @@ public class BuffActionSystem {
                                     /* 비율 변화 버프일 경우 */
                                     case ConditionType.moveSpeedRate:
                                         newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                        /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                        if(condition.value < 0f){
+                                            newCondition.isSlow = true;
+                                        }
+
                                         break;
                                     case ConditionType.attackSpeedRate:
                                         newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -947,6 +963,12 @@ public class BuffActionSystem {
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                    /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                    if(condition.value < 0f){
+                                        newCondition.isSlow = true;
+                                    }
+
                                     break;
                                 case ConditionType.attackSpeedRate:
                                     newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -1177,6 +1199,12 @@ public class BuffActionSystem {
                                     /* 비율 변화 버프일 경우 */
                                     case ConditionType.moveSpeedRate:
                                         newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                        /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                        if(condition.value < 0f){
+                                            newCondition.isSlow = true;
+                                        }
+
                                         break;
                                     case ConditionType.attackSpeedRate:
                                         newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -1332,6 +1360,12 @@ public class BuffActionSystem {
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                    /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                    if(condition.value < 0f){
+                                        newCondition.isSlow = true;
+                                    }
+
                                     break;
                                 case ConditionType.attackSpeedRate:
                                     newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -1562,6 +1596,12 @@ public class BuffActionSystem {
                                     /* 비율 변화 버프일 경우 */
                                     case ConditionType.moveSpeedRate:
                                         newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                        /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                        if(condition.value < 0f){
+                                            newCondition.isSlow = true;
+                                        }
+
                                         break;
                                     case ConditionType.attackSpeedRate:
                                         newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -1715,6 +1755,12 @@ public class BuffActionSystem {
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                    /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                    if(condition.value < 0f){
+                                        newCondition.isSlow = true;
+                                    }
+
                                     break;
                                 case ConditionType.attackSpeedRate:
                                     newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -1943,6 +1989,12 @@ public class BuffActionSystem {
                                     /* 비율 변화 버프일 경우 */
                                     case ConditionType.moveSpeedRate:
                                         newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                        /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                        if(condition.value < 0f){
+                                            newCondition.isSlow = true;
+                                        }
+
                                         break;
                                     case ConditionType.attackSpeedRate:
                                         newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -2096,6 +2148,12 @@ public class BuffActionSystem {
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                    /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                    if(condition.value < 0f){
+                                        newCondition.isSlow = true;
+                                    }
+
                                     break;
                                 case ConditionType.attackSpeedRate:
                                     newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -2321,6 +2379,12 @@ public class BuffActionSystem {
                                     /* 비율 변화 버프일 경우 */
                                     case ConditionType.moveSpeedRate:
                                         newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                        /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                        if(condition.value < 0f){
+                                            newCondition.isSlow = true;
+                                        }
+
                                         break;
                                     case ConditionType.attackSpeedRate:
                                         newCondition.attackSpeedRate += (condition.value * 0.01);
@@ -2474,6 +2538,12 @@ public class BuffActionSystem {
                                 /* 비율 변화 버프일 경우 */
                                 case ConditionType.moveSpeedRate:
                                     newCondition.moveSpeedRate += (condition.value * 0.01);
+
+                                    /** 2020 04 27 슬로우/이속증가 구분 필요 예외처리 */
+                                    if(condition.value < 0f){
+                                        newCondition.isSlow = true;
+                                    }
+
                                     break;
                                 case ConditionType.attackSpeedRate:
                                     newCondition.attackSpeedRate += (condition.value * 0.01);
