@@ -724,8 +724,6 @@ public class MonsterFactory {
         /* 리젠 카운트에 맞게, 몬스터의 스탯 비율을 추가 적용한다 */
         applyMonsterStatByJungleSlotRegenCount(worldMap, newJungleMob, regenCount);
 
-        //System.out.println("정그르몹.. 생성된거 맞나??");
-
         return newJungleMob;
 
     }
@@ -1130,7 +1128,21 @@ public class MonsterFactory {
         monstserMove.moveSpeed *= statRate;
 
         /* 사거리 */
-        monsterAttack.attackRange *= statRate;
+        /**
+         * 2020 04 28 화요일
+         * 몹 생성 시, 게임 난이도 등급에 따라
+         * 몬스터의 초기 스탯을 NN% 추가 적용하끔 하는데,
+         * 여기서 공격 사거리만 주석처리 해 봄.
+         * 시야는.. 멀리서도 타겟을 보고 쫒아가는 거니까 별 문제가 안될 거 같은데
+         * 공격 사거리의 경우,,
+         * ㄴ 아니근데 이게 문제가 맞는지 모르겠지만
+         *      지금까지 플레에한 유저들의 게임 등급이 F를 벗어나지 않았다면 이런 문제는 애초에 발생하지 않았을 건데 말임??
+         *       1. 스탯이 문제냐
+         *       2. 통신이나 뭐 다른게 문제냐
+         *       같은 방에서 플레이할 때에도 두 기기의 중계 상황이 다른데, 이거는 또 뭐 때문이냐
+         *       
+         */
+        //monsterAttack.attackRange *= statRate;
 
         /* 시야 */
         monsterSight.lookRadius *= statRate;
