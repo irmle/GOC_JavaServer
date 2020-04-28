@@ -1140,7 +1140,7 @@ public class MonsterFactory {
          *       1. 스탯이 문제냐
          *       2. 통신이나 뭐 다른게 문제냐
          *       같은 방에서 플레이할 때에도 두 기기의 중계 상황이 다른데, 이거는 또 뭐 때문이냐
-         *       
+         *
          */
         //monsterAttack.attackRange *= statRate;
 
@@ -1190,7 +1190,7 @@ public class MonsterFactory {
         monstserMove.moveSpeed *= statRate;
 
         /* 사거리 */
-        monsterAttack.attackRange *= statRate;
+        //monsterAttack.attackRange *= statRate;
 
         /* 시야 */
         monsterSight.lookRadius *= statRate;
