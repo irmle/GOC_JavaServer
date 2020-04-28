@@ -334,28 +334,33 @@ public class MonsterSystem2 {
                                 System.out.println("타겟은 선택되지 않았음, 근처 이동포인트가 null임, 그래서 아무것도 안하려고..");
 
                                 toDoAction = MonsterActionType.DO_NOTHING;
-                                break;
+                            }
+                            else{
+
+                                /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
+
+                                MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
+                                ArrayList<MapInfo> tempPath = MapFactory.pathFind(worldMap, currentTilePoint, nearMovePoint);
+
+                                // 월드에 경로 등록
+                                worldMap.mpPathList.put(monster.entityID, tempPath);
+
+                                // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
+                                int pathType = PathType.TO_MP;
+                                int pathIndex = 0;
+
+                                // 갱신
+                                monster.monsterComponent.movePathType = pathType;
+                                monster.monsterComponent.movePointIndex = pathIndex;
+
+                                toDoAction = MonsterActionType.MOVE;
+
+                                System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
+
+
                             }
 
-                            /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
 
-                            MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
-                            ArrayList<MapInfo> tempPath = MapFactory.pathFind(worldMap, currentTilePoint, nearMovePoint);
-
-                            // 월드에 경로 등록
-                            worldMap.mpPathList.put(monster.entityID, tempPath);
-
-                            // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
-                            int pathType = PathType.TO_MP;
-                            int pathIndex = 0;
-
-                            // 갱신
-                            monster.monsterComponent.movePathType = pathType;
-                            monster.monsterComponent.movePointIndex = pathIndex;
-
-                            toDoAction = MonsterActionType.MOVE;
-
-                            System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
                         }
 
                     }
