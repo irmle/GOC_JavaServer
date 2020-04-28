@@ -163,22 +163,32 @@ public class DeathSystem {
         // 뭐 그 몹한테 타격을 가장 많이 입힌 애한테 kill 수를 주는걸로 나중에 바뀔 수도 있잖음? 이런 변경사항들 다 고려해도
         // 크게 무리가 없을 구조 생각해두기
 
+        /* 죽은 몬스터 정보를 찾는다 */
+        MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
+        int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
+        int monsterLevel = deadMonster.monsterComponent.monsterLevel;
+
+
         if(worldMap.entityMappingList.containsKey(death.killerEntityID)){
 
             killerEntityType = worldMap.entityMappingList.get(death.killerEntityID);
         }
         else{
+
+            /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
+            worldMap.requestDeleteQueue.add(deadMonster);
+
+            //사망처리된 몬스터를 목록에서 삭제한다.
+            worldMap.monsterEntity.remove(death.deadEntityID);
+            worldMap.entityMappingList.remove(death.deadEntityID);
+
+
             return;
         }
 
 
         //killerEntityType = EntityType.CharacterEntity;
         //System.out.println("킬러 앤티티타입 : " + killerEntityType);
-
-        /* 죽은 몬스터 정보를 찾는다 */
-        MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
-        int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
-        int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
           //      System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
@@ -424,19 +434,29 @@ public class DeathSystem {
         // 뭐 그 몹한테 타격을 가장 많이 입힌 애한테 kill 수를 주는걸로 나중에 바뀔 수도 있잖음? 이런 변경사항들 다 고려해도
         // 크게 무리가 없을 구조 생각해두기
 
+        /* 죽은 몬스터 정보를 찾는다 */
+        MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
+        int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
+        int monsterLevel = deadMonster.monsterComponent.monsterLevel;
+
+
         if(worldMap.entityMappingList.containsKey(death.killerEntityID)){
 
             killerEntityType = worldMap.entityMappingList.get(death.killerEntityID);
         }
         else{
+
+            /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
+            worldMap.requestDeleteQueue.add(deadMonster);
+
+            //사망처리된 몬스터를 목록에서 삭제한다.
+            worldMap.monsterEntity.remove(death.deadEntityID);
+            worldMap.entityMappingList.remove(death.deadEntityID);
+
             return;
         }
 
 
-        /* 죽은 몬스터 정보를 찾는다 */
-        MonsterEntity deadMonster = worldMap.monsterEntity.get(death.deadEntityID);
-        int typeOfDeadMonster = deadMonster.monsterComponent.monsterType;
-        int monsterLevel = deadMonster.monsterComponent.monsterLevel;
 
 
         JungleMonsterSlot slot = JungleMonsterSystem.findJungleSlotByMonsterID(worldMap, deadMonster.entityID);
@@ -585,7 +605,7 @@ public class DeathSystem {
         //사망처리된 몬스터를 목록에서 삭제한다.
         worldMap.monsterEntity.remove(death.deadEntityID);
         worldMap.entityMappingList.remove(death.deadEntityID);
-    //    System.out.println("몬스터 죽음 처리 완료");
+        System.out.println("몬스터 죽음 처리 완료");
 
     }
 

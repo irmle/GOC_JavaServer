@@ -109,7 +109,7 @@ public class GameDataManager {
         }
 
         /* 테스트용 출력 */
-        if(true){
+        if(false){
 
             System.out.println("레벨업 정보 출력 테스트");
             for(int i=1; i<=15; i++){
@@ -1181,7 +1181,7 @@ public class GameDataManager {
         String attackSpeedStr = charInfo.nextToken();
         if(attackSpeedStr.contains("%")){
             attackSpeedStr = attackSpeedStr.substring(0, attackSpeedStr.indexOf('%'));
-            System.out.println("%를 제거했습니다.");
+            //System.out.println("%를 제거했습니다.");
         }
         float attackSpeedIncrValue = Float.parseFloat(attackSpeedStr);
         //float attackSpeedIncrValue = Float.parseFloat(charInfo.nextToken());  // %를 고려하지 않음.
@@ -1749,11 +1749,11 @@ public class GameDataManager {
 
         /* 치명타 발생 확률 */
         float criticalAppearProbRate = Float.parseFloat(removePercentage(tokenizer.nextToken()));
-        System.out.println("치명타 발생확률 값 : " + criticalAppearProbRate);
+        //System.out.println("치명타 발생확률 값 : " + criticalAppearProbRate);
 
         /* 치명뎀 */
         float criticalDamageRate = Float.parseFloat(removePercentage(tokenizer.nextToken()));
-        System.out.println("치명타 데미지 값 : " + criticalDamageRate);
+        //System.out.println("치명타 데미지 값 : " + criticalDamageRate);
 
 
         /* 이동속도 증가율 */
@@ -1767,7 +1767,7 @@ public class GameDataManager {
 
         /* 치명추가뎀 */
         float criticalBonusDamRate = Float.parseFloat(removePercentage(tokenizer.nextToken()));
-        System.out.println("치명추가댐 값 : " + criticalBonusDamRate);
+        //System.out.println("치명추가댐 값 : " + criticalBonusDamRate);
 
         /* 빙결시간 */
         float freezingTime = Float.parseFloat(tokenizer.nextToken());
@@ -1929,7 +1929,7 @@ public class GameDataManager {
                     buffInfo = createEffectBuffInfo(effectCauseTypeID, effectCause, effectType, tokenizer);
 
                     effectInfoPerCauseList.put(effectType, buffInfo);
-                    buffInfo.printEffectInfo();
+                    //buffInfo.printEffectInfo();
 
                     System.out.println(effectCause + "의 " + effectType + "효과 데이터를 파싱했습니다.");
 

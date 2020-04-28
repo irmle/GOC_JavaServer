@@ -150,6 +150,12 @@ public class FlyingObjectSystem {
 //                    System.out.println("투사체의 타겟이 존재하지 않음. 투사체 파괴");
                     worldMap.requestDeleteQueue.add(flyingObject);
                     return;
+
+                    /**
+                     * 위에.. 리턴이 아니라 break 라던가 continue 해야하는 거 아님?? 일단 주석만 달아놓고
+                     * 내일 테스트하자.
+                     */
+
                 }
                 else
                     targetEntityType = worldMap.entityMappingList.get(targetEntityID);

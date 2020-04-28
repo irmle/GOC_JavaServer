@@ -4,10 +4,7 @@ import ECS.Classes.DamageHistory;
 import ECS.Classes.Type.AttributeSynastryType;
 import ECS.Classes.Type.AttributeType;
 import ECS.Classes.Type.DamageType;
-import ECS.Components.AttackComponent;
-import ECS.Components.ConditionComponent;
-import ECS.Components.DefenseComponent;
-import ECS.Components.HpHistoryComponent;
+import ECS.Components.*;
 import ECS.Entity.*;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
@@ -226,6 +223,16 @@ public class DamageHistorySystem {
             MonsterEntity monster = monsterEntity.getValue();
             ConditionComponent mobCondition = monster.conditionComponent;
 
+            HPComponent monsterHp = monster.hpComponent;
+            if(monsterHp.currentHP <= 0){
+                continue;
+
+                /**
+                 * 사실 이 처리는.. 몹의 정보를 참조하는 데 있어서, 얘가 죽은애든 말든
+                 * 일단 서버에서 아직 사라지진 않은 거라서 별 문제는 없을건데 말임...
+                 */
+            }
+
             List<DamageHistory> damageHistory = monster.hpHistoryComponent.hpHistory;
 
             DamageHistory currentDamage;
@@ -246,7 +253,7 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
-                if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
+                if(!(worldMap.entityMappingList.containsKey(currentDamage.unitID))){
 
                     continue;
                 }
