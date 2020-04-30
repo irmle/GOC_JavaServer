@@ -186,7 +186,7 @@ public class FlyingObjectSystem {
                         float distance = Vector3.distance(flyingObject.positionComponent.position, targetPos);
 
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
-                        if(distance <= movedDeltaDistance * 2)
+                        if(distance <= (movedDeltaDistance * 1.5))
                         {
                             //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
 
