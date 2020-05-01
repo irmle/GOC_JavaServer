@@ -3,6 +3,7 @@ package ECS.System;
 import ECS.Classes.DamageHistory;
 import ECS.Classes.Type.AttributeSynastryType;
 import ECS.Classes.Type.AttributeType;
+import ECS.Classes.Type.CharacterType;
 import ECS.Classes.Type.DamageType;
 import ECS.Components.*;
 import ECS.Entity.*;
@@ -259,11 +260,14 @@ public class DamageHistorySystem {
                 }
                 int entityType = worldMap.entityMappingList.get(currentDamage.unitID);
 
+                float defaultDamage = currentDamage.amount;
                 switch (entityType){
                     case EntityType.CharacterEntity :
                         attacker = worldMap.characterEntity.get(currentDamage.unitID);
                         attackerAttack = ((CharacterEntity)attacker).attackComponent;
                         attackerCondition = ((CharacterEntity)attacker).conditionComponent;
+
+                        defaultDamage = getMaxDamByCharacterTypeForCalculatingFlatDam(defaultDamage, (CharacterEntity)attacker);
                         break;
                     case EntityType.MonsterEntity :
                         attacker = worldMap.monsterEntity.get(currentDamage.unitID);
@@ -280,7 +284,7 @@ public class DamageHistorySystem {
 
                 /* 평타 구함 */
                 float flatDamage =
-                        calculateFlatDamage(currentDamage.amount, attackerAttack, attackerCondition, monster.defenseComponent, monster.conditionComponent);
+                        calculateFlatDamage(defaultDamage, attackerAttack, attackerCondition, monster.defenseComponent, monster.conditionComponent);
 
                 /* 치명타 적용함.. 혹은 데미지 타입별 특수처리가 필요한 경우 */
                 switch(currentDamage.damageType){
@@ -687,6 +691,72 @@ public class DamageHistorySystem {
         }
 
     }
+
+
+    /**
+     * 작성
+     * 오전 3:37 2020-05-02
+     *
+     * 처리 :
+     * 데미지에.. 유저 스탯 및 계수 적용
+     */
+    public float getMaxDamByCharacterTypeForCalculatingFlatDam(float damage, CharacterEntity characterEntity){
+
+        float defaultDamage = damage;
+        float resultDamage = 0f;
+        CharacterEntity character = characterEntity;
+
+        AttackComponent charAttack = character.attackComponent;
+        DefenseComponent charDefense = character.defenseComponent;
+        HPComponent charHp = character.hpComponent;
+        MPComponent charMp = character.mpComponent;
+
+
+        float DEFENSE_COEFFIECIENT = 0.5f;
+        float ATTACK_DAMAGE_COEFFIECIENT = 1f;
+        float ATTACK_SPEED_COEFFIECIENT = 10f;
+        float HP_COEFFIECIENT = 0.1f;
+        float MP_COEFFIECIENT = 0.1f;
+
+
+        int characterType = character.characterComponent.characterType;
+        switch (characterType){
+
+            case CharacterType.ARCHER :
+
+
+                resultDamage = defaultDamage * ATTACK_DAMAGE_COEFFIECIENT;
+
+                resultDamage += charAttack.attackSpeed * ATTACK_SPEED_COEFFIECIENT;
+
+                break;
+
+            case CharacterType.KNIGHT :
+
+                resultDamage = defaultDamage * ATTACK_DAMAGE_COEFFIECIENT;
+
+                resultDamage += charDefense.defense * DEFENSE_COEFFIECIENT;
+
+                resultDamage += charHp.originalMaxHp * HP_COEFFIECIENT;
+
+
+                break;
+
+            case CharacterType.MAGICIAN :
+
+                resultDamage = defaultDamage * ATTACK_DAMAGE_COEFFIECIENT;
+
+                resultDamage += charMp.originalMaxMP * MP_COEFFIECIENT;
+
+                break;
+
+        }
+
+
+        return resultDamage;
+    }
+
+
 
 
     /*******************************************************************************************************************/
