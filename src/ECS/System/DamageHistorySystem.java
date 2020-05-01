@@ -714,9 +714,9 @@ public class DamageHistorySystem {
 
         float DEFENSE_COEFFIECIENT = 0.5f;
         float ATTACK_DAMAGE_COEFFIECIENT = 1f;
-        float ATTACK_SPEED_COEFFIECIENT = 10f;
-        float HP_COEFFIECIENT = 0.1f;
-        float MP_COEFFIECIENT = 0.1f;
+        float ATTACK_SPEED_COEFFIECIENT = 12f;
+        float HP_COEFFIECIENT = 0.05f;
+        float MP_COEFFIECIENT = 0.05f;
 
 
         int characterType = character.characterComponent.characterType;

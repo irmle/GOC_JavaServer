@@ -2,8 +2,7 @@ package ECS.System;
 
 import ECS.Classes.*;
 import ECS.Classes.Type.*;
-import ECS.Entity.CharacterEntity;
-import ECS.Entity.MonsterEntity;
+import ECS.Entity.*;
 import ECS.Factory.SkillFactory;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
@@ -92,6 +91,76 @@ public class SelfRecoverySystem {
 
             }
 
+
+            /* 크리스탈에 대해 처리한다 */
+            for (HashMap.Entry<Integer, CrystalEntity> crystalEntity : worldMap.crystalEntity.entrySet()) {
+
+                /* 캐릭터 정보 */
+                CrystalEntity crystal = crystalEntity.getValue();
+                int crystalID = crystal.entityID;
+
+                /** 죽은 크리스탈은(..) 제외한다 */
+                float currentHP = crystal.hpComponent.currentHP;
+                if(currentHP <= 0){
+                    continue;
+                }
+
+                /** 1초동안 지속되는 회복 버프를 넣어준다 */
+
+                crystal.buffActionHistoryComponent.conditionHistory.add(
+                        createSystemActionEffect(
+                                SystemEffectType.SELF_RECOVERY, "체력회복", crystal.hpComponent.recoveryRateHP, crystalID));
+
+
+            }
+
+            /* 버프포탑에 대해 처리한다 */
+            for (HashMap.Entry<Integer, BuffTurretEntity> buffTurretEntity : worldMap.buffTurretEntity.entrySet()) {
+
+                /* 포탑 정보 */
+                BuffTurretEntity buffTurret = buffTurretEntity.getValue();
+                int turretID = buffTurret.entityID;
+
+                /** 죽은 포탑 제외한다 */
+                float currentHP = buffTurret.hpComponent.currentHP;
+                if(currentHP <= 0){
+                    continue;
+                }
+
+                /** 1초동안 지속되는 회복 버프를 넣어준다 */
+
+                buffTurret.buffActionHistoryComponent.conditionHistory.add(
+                        createSystemActionEffect(
+                                SystemEffectType.SELF_RECOVERY, "체력회복", buffTurret.hpComponent.recoveryRateHP, turretID));
+
+
+            }
+
+            /* 바리케이드에 대해 처리한다 */
+            for (HashMap.Entry<Integer, BarricadeEntity> barricadeEntity : worldMap.barricadeEntity.entrySet()) {
+
+                /* 바리케이듣 정보 */
+                BarricadeEntity barricade = barricadeEntity.getValue();
+                int barricadeID = barricade.entityID;
+
+                /** 죽은 바리케이드는 제외한다 */
+                float currentHP = barricade.hpComponent.currentHP;
+                if(currentHP <= 0){
+                    continue;
+                }
+
+                /** 1초동안 지속되는 회복 버프를 넣어준다 */
+
+                barricade.buffActionHistoryComponent.conditionHistory.add(
+                        createSystemActionEffect(
+                                SystemEffectType.SELF_RECOVERY, "체력회복", barricade.hpComponent.recoveryRateHP, barricadeID));
+
+
+            }
+
+
+
+
             remainCoolTime = COOL_TIME;
         }
     }
@@ -175,6 +244,82 @@ public class SelfRecoverySystem {
 
     }
 
+    public static BuffAction createSystemActionEffect(int type, String effectName, float recoveryAmount, int effectEntityID){
+
+        HashMap<Integer, HashMap<String, BuffInfo>> systemEffectList = GameDataManager.effectInfoList.get(EffectCauseType.SYSTEM);
+
+        /** 시스템 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
+        BuffInfo effectInfo = systemEffectList.get(type).get(effectName);
+        //effectInfo.printEffectInfo();
+
+        /** 효과의 지속시간을 구한다 (필요하다면) */
+        /*
+         * 조건 : 효과의 적중 타입이 '지속'이면서 효과정보 객체에 들어있는 지속시간 값이 0 이하인 경우
+         *
+         * 참고)) 현재, 몬스터 공격에 의한 효과(사실상 그냥 데미지)의 경우, 데미지 한 종류밖에 존재하지 않음..
+         *          나중에, 몬스터 공격에 의한 다른 효과 타입 등이 추가될 수 있으므로,
+         *          캐릭터 스킬 효과 생성 처리에서 사용했던 틀은 남겨두도록 함.
+         */
+        float effectDurationTime;
+        boolean needToGetDurationTime =
+                (( effectInfo.effectAppicationType == EffectApplicationType.지속)
+                        && ( effectInfo.effectDurationTime <= 0f)) ? true : false;
+        if(needToGetDurationTime){
+
+            effectDurationTime = effectInfo.effectDurationTime;
+        }
+        else{
+
+            effectDurationTime = effectInfo.effectDurationTime;
+        }
+
+
+
+        // 하드코딩 타입 보정....ㅜ
+        int skillType = 0;
+        if(type == SystemEffectType.WELL){
+            skillType = SkillType.WELL_RECOVERY;
+        }
+        else if(type == SystemEffectType.SELF_RECOVERY){
+
+            skillType = SkillType.NONE;
+        }
+
+
+
+
+        /** 효과 객체를 생성한다 (틀) */
+        // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
+        BuffAction newEffect = new BuffAction(skillType, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
+
+
+        /** 효과 내용을 채운다 */
+        // BuffAction 객체에, 실제 효과를 부여하기 위한 처리를 한다. 경우에 따라, 공격자 정보를 참조해야 한다.
+
+        int effectType = GameDataManager.getEffectTypeByParsingString(effectName);
+        boolean isConditionEffect = checkIsConditionEffect(effectType);
+        if(isConditionEffect){
+
+            /* 상태이상을 결정하는 효과 타입인 경우, boolParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionBoolParam conditionEffect = new ConditionBoolParam(effectType, true);
+            newEffect.addEffect(conditionEffect);
+        }
+        else{
+
+            /* 기존 스탯 등에 영향을 미치는 버프 OR 디버프 효과 타입인 경우, floatParam 클래스를 활용해 효과 내용을 채운다 */
+            ConditionFloatParam valueEffect = new ConditionFloatParam(ConditionType.hpRecoveryAmount, recoveryAmount);
+            newEffect.addEffect(valueEffect);
+
+        }
+
+        // 나중에.. 근거리 공격용? 매서드도 하나 만들자..
+        newEffect.unitID = effectEntityID;
+        newEffect.skillUserID = newEffect.unitID;
+
+        /* Output */
+        return newEffect;
+
+    }
 
     /**
      * 넘겨받은 효과가 상태 이상 타입의 효과인지 여부를 판단하는 매서드
