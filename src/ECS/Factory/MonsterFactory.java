@@ -951,6 +951,8 @@ public class MonsterFactory {
         AttackComponent monsterAttack = monster.attackComponent;
         DefenseComponent monsterDefense = monster.defenseComponent;
 
+        monster.monsterComponent.monsterLevel = level;
+
         /** 레벨에 따른 스탯 값 적용하기 */
 
         /*System.out.println("레벨 : " + level);
