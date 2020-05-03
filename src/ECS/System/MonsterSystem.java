@@ -1,21 +1,16 @@
 package ECS.System;
 
-import ECS.Classes.BuffAction;
-import ECS.Classes.ConditionBoolParam;
-import ECS.Classes.ConditionFloatParam;
 import ECS.Classes.DamageHistory;
-import ECS.Classes.Type.ConditionType;
 import ECS.Classes.Vector3;
 import ECS.Components.AttackComponent;
 import ECS.Components.ConditionComponent;
 import ECS.Entity.*;
 import ECS.Game.WorldMap;
-import RMI.RMI_Classes.RMI_Context;
-import RMI.RMI_Classes.RMI_ID;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
-import RMI.RMI_Common.server_to_client;
+import Network.RMI_Classes.RMI_Context;
+import Network.RMI_Classes.RMI_ID;
+import Network.RMI_Common.RMI_ParsingClasses.EntityType;
+import Network.RMI_Common.server_to_client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

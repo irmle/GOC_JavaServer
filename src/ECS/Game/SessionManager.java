@@ -2,7 +2,7 @@ package ECS.Game;
 
 import java.util.HashMap;
 
-import RMI.RMI_Classes.RMI_ID;
+import Network.RMI_Classes.RMI_ID;
 
 
 //로그인 토큰ID값과, RMI통신을 위해 할당된 RMI_ID를 매핑하여 관리하는 세션 클래스.

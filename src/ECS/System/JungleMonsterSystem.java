@@ -10,10 +10,10 @@ import ECS.Factory.MonsterFactory;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 import ECS.Classes.Type.Jungle.*;
-import RMI.RMI_Classes.RMI_Context;
-import RMI.RMI_Classes.RMI_ID;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
-import RMI.RMI_Common.server_to_client;
+import Network.RMI_Classes.RMI_Context;
+import Network.RMI_Classes.RMI_ID;
+import Network.RMI_Common.RMI_ParsingClasses.EntityType;
+import Network.RMI_Common.server_to_client;
 
 import java.util.ArrayList;
 import java.util.HashMap;

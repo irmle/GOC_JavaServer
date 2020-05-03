@@ -9,10 +9,8 @@ import ECS.Components.*;
 import ECS.Entity.*;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
-import org.omg.CORBA.INTERNAL;
+import Network.RMI_Common.RMI_ParsingClasses.EntityType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;

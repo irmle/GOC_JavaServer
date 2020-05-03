@@ -10,11 +10,10 @@ import ECS.Classes.Type.NotificationType;
 import ECS.Classes.Type.Upgrade.StoreUpgradeType;
 import ECS.Entity.CharacterEntity;
 import ECS.Entity.CrystalEntity;
-import RMI.AutoCreatedClass.StoreUpgradeBuffSlotData;
-import RMI.RMI_Classes.RMI_Context;
-import RMI.RMI_Classes.RMI_ID;
-import RMI.RMI_Common.server_to_client;
-import sun.rmi.server.InactiveGroupException;
+import Network.AutoCreatedClass.StoreUpgradeBuffSlotData;
+import Network.RMI_Classes.RMI_Context;
+import Network.RMI_Classes.RMI_ID;
+import Network.RMI_Common.server_to_client;
 
 import java.util.HashMap;
 

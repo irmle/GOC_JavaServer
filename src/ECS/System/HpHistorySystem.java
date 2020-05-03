@@ -12,10 +12,10 @@ import ECS.Components.HPComponent;
 import ECS.Entity.*;
 import ECS.Factory.SkillFactory;
 import ECS.Game.WorldMap;
-import RMI.RMI_Classes.RMI_Context;
-import RMI.RMI_Classes.RMI_ID;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
-import RMI.RMI_Common.server_to_client;
+import Network.RMI_Classes.RMI_Context;
+import Network.RMI_Classes.RMI_ID;
+import Network.RMI_Common.RMI_ParsingClasses.EntityType;
+import Network.RMI_Common.server_to_client;
 
 import java.util.HashMap;
 import java.util.List;

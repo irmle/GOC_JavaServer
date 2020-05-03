@@ -8,15 +8,11 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import ECS.Classes.CharDataFromJS;
-import ECS.Classes.PlayerGameScore;
-import ECS.Entity.CharacterEntity;
-import RMI.AutoCreatedClass.LoadingPlayerData;
+import Network.AutoCreatedClass.LoadingPlayerData;
 import ECS.Classes.Type.CharacterType;
-import RMI.RMI_Classes.RMI_Context;
-import RMI.RMI_Classes.RMI_ID;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
-import RMI.RMI_Common.server_to_client;
+import Network.RMI_Classes.RMI_Context;
+import Network.RMI_Classes.RMI_ID;
+import Network.RMI_Common.server_to_client;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -188,7 +184,6 @@ public class GameSessionRoom {
                         else
                             server_to_client.pickLogicIsVoipHost(rmi_id, RMI_Context.Reliable_AES256, false, getWorldMapID());
                     }
-                    isVoipHostReady = true;
                 }
 
 
@@ -266,20 +261,65 @@ public class GameSessionRoom {
                 tokenID, characterType);
     }
 
-    public void voiceChatServerOnReady()
+    //서버의 준비상태를 보고받는다.
+    //만약 isVoipHostReady 값이 false로, 생성에 실패했다면 다른 클라이언트에게 서버 역할을 위임하게 한다.(예정)
+    public void voiceChatServerOnReady(boolean isVoipHostReady)
     {
         if(voipHost == null)
             return;
 
-        RMI_ID[] List = getRMI_IDArray();
+        this.isVoipHostReady = isVoipHostReady;
 
-        for (int i = 0; i < List.length; i++) {
-            RMI_ID rmi_id = List[i];
+        //음성채팅 서버 생성 성공시
+        if(this.isVoipHostReady)
+        {
+            RMI_ID[] List = getRMI_IDArray();
 
-            if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
-                server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, true, getWorldMapID());
+            for (int i = 0; i < List.length; i++) {
+                RMI_ID rmi_id = List[i];
+
+                if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
+                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, this.isVoipHostReady, getWorldMapID());
+            }
+
+            voipHost = null;
         }
-        voipHost = null;
+        //음성채팅 서버 생성 실패시
+        else
+        {
+            RMI_ID[] List = getRMI_IDArray();
+
+            //다른 유저를 서버로 지정한다.
+            for (int i = 0; i < List.length; i++) {
+                RMI_ID rmi_id = List[i];
+
+                if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
+                {
+                    voipHost = rmi_id;
+                    break;
+                }
+            }
+
+
+            for (int i = 0; i < List.length; i++) {
+                RMI_ID rmi_id = List[i];
+
+                //지정된 유저는 음성채팅 서버를 open
+                if(rmi_id.rmi_host_id == voipHost.rmi_host_id)
+                {
+                    //새로이 Host로 선정됨을 알림.
+                    server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES256, true, getWorldMapID());
+                }
+                //나머지 유저는 음성채팅 서버가 열리기를 기다린다.
+                else
+                {
+                    //호스트가 아닌 클라이언트로 선정됨을 중계.
+                    RMI_ID newVoipUser = List[i];
+                    server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES256, false, getWorldMapID());
+                }
+            }
+
+        }
     }
 
     //유저가 준비완료 하였을 때. 같은 픽창 세션의 유저들에게 중계
@@ -406,7 +446,7 @@ public class GameSessionRoom {
         }
 
         //할당된 유저들과 함께, 새로운 월드맵을 생성한다. 동시에 유저들에게 픽이 종료되어 로딩 Scene을 불러오라고 중계함.
-        WorldMap newMap = new WorldMap(this.worldMapID, matchingList, matchingUserDataList);
+        WorldMap newMap = new WorldMap(this.worldMapID, matchingList, matchingUserDataList, voipHost);
 
         //생성된 월드맵을 월드맵 리스트에 삽입한다.
         MatchingManager.worldMapList.put(this.worldMapID, newMap);
