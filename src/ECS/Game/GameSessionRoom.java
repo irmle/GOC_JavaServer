@@ -237,7 +237,7 @@ public class GameSessionRoom {
 
 
     //유저가 캐릭터를 터치하여 선택하였을 때. 같은 픽창 세션의 유저들에게 중계
-    public void userOnSelectedCharacter(String tokenID, int characterType) {
+    public void userOnSelectedCharacter(String tokenID, int characterType, int guardianID) {
 
         LoadingPlayerData loadingPlayerData = gameSessionPlayerDataList.get(tokenID);
 

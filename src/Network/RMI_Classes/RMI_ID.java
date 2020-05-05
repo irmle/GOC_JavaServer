@@ -105,8 +105,7 @@ public class RMI_ID {
 
     public static RMI_ID[] getArray(Collection<RMI_ID> values)
     {
-        RMI_ID[] arr = new RMI_ID[values.size()];
-        return values.toArray(arr);
+        return values.toArray(new RMI_ID[0]);
     }
 
     public ChannelHandlerContext getTCP_ObjectHandler()

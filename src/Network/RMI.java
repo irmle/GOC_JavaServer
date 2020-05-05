@@ -732,7 +732,6 @@ public class RMI {
 
                             if(recvUDP != null && remote.getUDP_Object() != null /*&& remote.getUDP_Object().remoteAddress() == null*/)
                             {
-                                recvUDP = null;
                                 if(remote.isUDPConnectionAvailable)
                                     return;
 
@@ -740,7 +739,7 @@ public class RMI {
 
                                 remote.getUDP_Object().connect(UDP_Sender);
 
-                                //System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
+                                System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
                                 //System.out.println("포트 바인딩 : "+remote.getUDP_Object().remoteAddress() + " / 로컬:"+remote.getUDP_Object().localAddress());
                                 //remote.getUDP_Object().close();
                                 //System.out.println("close 포트 바인딩 : "+remote.getUDP_Object().remoteAddress()+ " / 로컬:"+remote.getUDP_Object().localAddress());
@@ -752,14 +751,40 @@ public class RMI {
 
                                 //연결 수립시 처리 담당.
                                 OnConnected.OnConnected(remote);
+
+                                recvUDP = null;
                             }
                         }
                         data = null;
                         return;
 
                     default:
+                    {
+                        RMI_ID unInitializedUser = RMI_ID.findRMI_HOST_ID(rmi_host_id);
+                        if(unInitializedUser != null && unInitializedUser.isUDPConnectionAvailable == false)
+                        {
+                            try {
+                                unInitializedUser.setUDP_ObjectHandler(ctx_handler);
 
-                        break;
+                                unInitializedUser.getUDP_Object().connect(UDP_Sender);
+
+                                System.out.println("2차 UDP 바인딩 완료 : "+unInitializedUser.getUDP_Object().localAddress());
+
+                                System.out.println("channelOnConnected : "+unInitializedUser.getTCP_Object().remoteAddress());
+
+                                //UDP 연결 상태를 Enable로 바꿈
+                                unInitializedUser.isUDPConnectionAvailable = true;
+
+                                //연결 수립시 처리 담당.
+                                OnConnected.OnConnected(unInitializedUser);
+                            }
+                            catch (IllegalArgumentException e)
+                            {
+                                System.out.println("2차 UDP 바인딩중 Error 발생" + e);
+                            }
+                        }
+                    }
+                    break;
                 }
             }
         }
