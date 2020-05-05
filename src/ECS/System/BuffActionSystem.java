@@ -6,11 +6,8 @@ import ECS.Classes.Type.*;
 import ECS.Classes.*;
 import ECS.Entity.*;
 import ECS.Game.*;
-import RMI.RMI_Classes.RMI_ID;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
+import Network.RMI_Classes.RMI_ID;
 
-import java.sql.Struct;
 import java.util.HashMap;
 import java.util.List;
 

@@ -6,11 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import RMI.RMI_Common.server_to_client;
-import RMI.RMI_Classes.*;
-import sun.awt.image.ImageWatched;
-
-import javax.security.auth.callback.LanguageCallback;
+import Network.RMI_Common.server_to_client;
+import Network.RMI_Classes.*;
 
 
 //매치메이킹을 담당하는 클래스

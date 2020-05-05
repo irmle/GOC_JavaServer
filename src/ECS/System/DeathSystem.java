@@ -2,12 +2,11 @@ package ECS.System;
 
 import ECS.Classes.*;
 import ECS.Classes.Type.Build.BuildSlotState;
-import ECS.Classes.Type.Jungle.JungleMobState;
 import ECS.Components.ConditionComponent;
 import ECS.Entity.*;
 import ECS.Factory.RewardFactory;
 import ECS.Game.WorldMap;
-import RMI.RMI_Common._RMI_ParsingClasses.EntityType;
+import Network.RMI_Common.RMI_ParsingClasses.EntityType;
 
 import java.util.Queue;
 

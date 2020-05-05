@@ -8,17 +8,17 @@ import ECS.ActionQueue.Skill.ActionUseAttack;
 import ECS.ActionQueue.Skill.ActionUseSkill;
 import ECS.ActionQueue.Upgrade.ActionStoreUpgrade;
 import ECS.Classes.Type.Jungle.JungleMobType;
-import RMI.AutoCreatedClass.*;
+import Network.AutoCreatedClass.*;
 
 import ECS.ActionQueue.Build.ActionInstallBuilding;
 import ECS.ActionQueue.Item.ActionBuyItem;
 import ECS.ActionQueue.Item.ActionSellItem;
 import ECS.ActionQueue.Item.ActionUseItem;
 import ECS.Classes.DTO.MapDTO;
-import RMI.AutoCreatedClass.ConditionData;
-import RMI.RMI_Common._RMI_ParsingClasses.*;
-import RMI.RMI_Common.*;
-import RMI.RMI_Classes.*;
+import Network.AutoCreatedClass.ConditionData;
+import Network.RMI_Common.RMI_ParsingClasses.*;
+import Network.RMI_Common.*;
+import Network.RMI_Classes.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -40,8 +40,6 @@ import Enum.MapComponents;
 import com.google.gson.*;
 import org.asynchttpclient.*;
 import org.asynchttpclient.util.HttpConstants;
-import org.omg.CORBA.INTERNAL;
-import org.omg.PortableInterceptor.INACTIVE;
 
 /**
  * 업뎃날짜 : 2020 02 27 목요일 권령희
@@ -136,6 +134,12 @@ public class WorldMap {
     public long gameElapsedTime;
 
     /* ***************************** */
+
+    //01 29 이수헌 보이스 채팅 재접속기능 추가.
+    //보이스채팅서버 호스트.
+    RMI_ID voipHost = null;
+    boolean isVoipHostReady = false;
+
 
 
     //Entity 목록
@@ -279,7 +283,7 @@ public class WorldMap {
 
 
     //WorldMap 생성자
-    public WorldMap(int worldMapID, RMI_ID[] matchingUserList, LoadingPlayerData[] matchingUserDataList) {
+    public WorldMap(int worldMapID, RMI_ID[] matchingUserList, LoadingPlayerData[] matchingUserDataList, RMI_ID VoIP_HostRMI_ID) {
 
         System.out.println("WorldMap [" + worldMapID + "] 초기화중...");
 
@@ -563,6 +567,12 @@ public class WorldMap {
         //월드맵 시작전 초기화!
         initWorldMap(matchingUserList, matchingUserDataList);
 
+
+        //보이스 채팅 Host설정
+        this.voipHost = VoIP_HostRMI_ID;
+        this.isVoipHostReady = true;
+
+
         /*
          * 슬롯에 지정된 몹을 실제로 생성하는 처리는, 정글몹 시스템이 슬롯 상태를 보고
          * EMPTY일 경우, 슬롯에 지정된 몬스터 정보에 따라 몬스터를 생성한다
@@ -779,6 +789,8 @@ public class WorldMap {
             //EntityID와 RMI_ID를 다시 세팅한다.
             worldMapRMI_IDList.put(entityID, rmi_id);
 
+
+
             //게임이 시작한 이후에만 중계하도록 한다 (로딩중에 튕긴것은 중계할 필요가 없다)
             if (isGameMapStarted) {
 
@@ -799,9 +811,6 @@ public class WorldMap {
                     public void run() {
                         //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 초기화 하도록 전송한다.
                         WorldMapDataListSet worldData = initData();
-                        server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable,
-                                worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
-                                worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
 
                         /** 2020 03 06 */
                         server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable, worldData.storeUpgradeBuffSlotData);
@@ -809,8 +818,25 @@ public class WorldMap {
                         //유저가 다시 접속하였으므로, 재연결 되었다는 메시지를 모든 클라이언트에게 중계한다
                         server_to_client.userReconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
 
+                        server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable,
+                                worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
+                                worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
                     }
-                }, 700, TimeUnit.MILLISECONDS);
+                }, 600, TimeUnit.MILLISECONDS);
+            }
+
+            //음성채팅서버 호스트가 선정되어있고, 재접속한 유저가 Host유저가 아니라면 음성채팅 세션에 재접속 하게끔 하는 부분.
+            if(voipHost != null && rmi_id.rmi_host_id != voipHost.rmi_host_id)
+            {
+                //연결이 끊겼던 유저가 재접속시, 음성채팅 클라이언트로 접속준비하게끔 알림.
+                server_to_client.pickLogicIsVoipHost(rmi_id, RMI_Context.Reliable_AES256, false, getWorldMapID());
+
+                //음성채팅 준비가 되어있는 상태라면 바로 재접속 하게끔 알림 전송
+                if(isVoipHostReady)
+                {
+                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, true, getWorldMapID());
+                }
+                //아니라면 Host로부터 Ready가 되었다는 확인메시지가 올때 실행되는 부분에서 같이 알림 전송.
             }
         }
     }
@@ -844,8 +870,112 @@ public class WorldMap {
                 RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
                 server_to_client.userDisconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
             }
+
+
+
+            //방에 참가했던 유저들이 2명이상이고, 나간 유저가 VoIP Host유저라면 세션 폭파후 재생성한다.
+            //그 후, Host유저를 선별한뒤 같은 월드맵ID로 음성채팅 세션 재생성
+            if(loadingProgressList.size() > 1
+                    && voipHost != null
+                    && rmi_id.rmi_host_id == voipHost.rmi_host_id )
+            {
+                //음성채팅방이 폭파되었으므로 null로 세팅.
+                voipHost = null;
+
+                //음성채팅방이 폭파되었으므로 false로 세팅.
+                isVoipHostReady = false;
+
+                //나간 유저를 제외한 나머지 유저의 목록
+                RMI_ID[] List = RMI_ID.getArray(worldMapRMI_IDList.values());
+
+                for (int i = 0; i < List.length; i++) {
+
+                    //남아있는 유저들 중 맨 앞에 있는 유저를 VoipHost로 한다.
+                    if(i == 0)
+                    {
+                        voipHost = List[i];
+
+                        //새로이 Host로 선정됨을 알림.
+                        server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES256, true, getWorldMapID());
+                    }
+                    else
+                    {
+                        //호스트가 아닌 클라이언트로 선정됨을 중계.
+                        RMI_ID newVoipUser = List[i];
+                        server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES256, false, getWorldMapID());
+                    }
+                }
+            }
+
         }
     }
+
+
+    //재접속시, 월드맵에 활성화중인 음성채팅서버가 있는지 체크.
+    //유효하다면 재접속. 아직 재생성중이라면 대기 후 voiceChatServerOnReady 시에 같이 재전송 받도록할 것
+
+
+    //월드맵에서 새로이 Host로 선정된 유저의 음성채팅준비가 완료되었다는 신호가 오면
+    //그 이외의 다른 유저들에게 해당 음성채팅서버로 접속하라는 것을 전송.
+    public void voiceChatServerOnReady(boolean isVoipHostReady)
+    {
+        if(voipHost == null)
+            return;
+
+        this.isVoipHostReady = isVoipHostReady;
+
+        //음성채팅 서버 생성 성공시
+        if(this.isVoipHostReady)
+        {
+            RMI_ID[] List = RMI_ID.getArray(worldMapRMI_IDList.values());
+
+            for (int i = 0; i < List.length; i++) {
+                RMI_ID rmi_id = List[i];
+
+                if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
+                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, this.isVoipHostReady, getWorldMapID());
+            }
+
+            voipHost = null;
+        }
+        //음성채팅 서버 생성 실패시
+        else
+        {
+            RMI_ID[] List = RMI_ID.getArray(worldMapRMI_IDList.values());
+
+            //다른 유저를 서버로 지정한다.
+            for (int i = 0; i < List.length; i++) {
+                RMI_ID rmi_id = List[i];
+
+                if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
+                {
+                    voipHost = rmi_id;
+                    break;
+                }
+            }
+
+
+            for (int i = 0; i < List.length; i++) {
+                RMI_ID rmi_id = List[i];
+
+                //지정된 유저는 음성채팅 서버를 open
+                if(rmi_id.rmi_host_id == voipHost.rmi_host_id)
+                {
+                    //새로이 Host로 선정됨을 알림.
+                    server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES256, true, getWorldMapID());
+                }
+                //나머지 유저는 음성채팅 서버가 열리기를 기다린다.
+                else
+                {
+                    //호스트가 아닌 클라이언트로 선정됨을 중계.
+                    RMI_ID newVoipUser = List[i];
+                    server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES256, false, getWorldMapID());
+                }
+            }
+
+        }
+    }
+
 
 
     public HashMap<String, LoadingPlayerData> loadingProgressList = new HashMap<>();
@@ -906,7 +1036,7 @@ public class WorldMap {
                 server_to_client.StartGame(TARGET, RMI_Context.Reliable_Public_AES256);
 
                 try {
-                    Thread.currentThread().sleep(1000);
+                    Thread.currentThread().sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -1,20 +1,11 @@
-import ECS.Classes.DTO.MapDTO;
-import ECS.Classes.MapInfo;
 import ECS.Classes.PlayerGameScore;
 import ECS.Classes.Vector3;
 import ECS.Entity.CharacterEntity;
-import ECS.Factory.MapFactory;
-import ECS.Factory.RewardFactory;
-import ECS.Game.GameDataManager;
-import ECS.Game.MapDataManager;
-import Enum.MapComponents;
-import RMI.RMI_NettyServer;
+import Network.NetworkManager;
 import com.google.gson.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 /*import ECS.Game.MapDataManager;*/
 
@@ -27,7 +18,7 @@ public class Start_GameServer {
         if(!testMode){
 
             //서버 객체 생성.
-            RMI_NettyServer gameserver = new RMI_NettyServer(); //생성자로 기본 bind port값 지정 가능.
+            NetworkManager gameserver = new NetworkManager(); //생성자로 기본 bind port값 지정 가능.
 
             //Java 옵션 인자값 지정.
             //서버 시작.

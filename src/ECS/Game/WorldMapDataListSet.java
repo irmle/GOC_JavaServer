@@ -1,8 +1,7 @@
 package ECS.Game;
 
 import java.util.LinkedList;
-import RMI.AutoCreatedClass.*;
-import sun.awt.image.ImageWatched;
+import Network.AutoCreatedClass.*;
 
 /**
  * WorldMap 에서, requestCreateEntity큐, requestDestroyEntity큐에 쌓인, 생성 삭제 요청을 처리할 때
