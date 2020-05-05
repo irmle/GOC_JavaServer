@@ -52,7 +52,7 @@ public class RMI_ {
     //송수신 로그 활성화 여부.
     //true로 설정되어있으면 Log 기록용 메소드인 onRMI_Call(송신시), onRMI_Recv(수신시) 메소드가 호출된다.
     //로그를 사용할 경우, onRMI_Call(송신시), onRMI_Recv(수신시) 메소드에 로그 기록 로직을 작성해야 한다.
-    public static boolean isLogEnable = false;
+    public static boolean isLogEnable = true;
 
 //=======================================================================================
 //RMI 설정 부분 종료.
@@ -260,8 +260,12 @@ public class RMI_ {
     //단일 송신 로직. UDP
     public static void sendByte_UDP(RMI_ID rmi_id, short rmi_ctx, short packetType, byte[] data)
     {
+        System.out.println("단일 송신 로직 UDP sendByte_UDP 매서드 호출, packetType = " + packetType);
+
         if(rmi_id == null)
         {
+
+            System.out.println("rmi_id가 널");
             return;
             //throw new IllegalArgumentException("sendByte_UDP()::RMI_ID는 null일 수 없습니다.");
         }
@@ -294,7 +298,7 @@ public class RMI_ {
 
         if(!rmi_id.isUDPConnectionAvailable)
         {
-            //System.out.println("UDP연결이 가능한 상태가 아님. sendByte_UDP 취소");
+            System.out.println("UDP연결이 가능한 상태가 아님. sendByte_UDP 취소");
             return;
         }
 
@@ -336,7 +340,7 @@ public class RMI_ {
             //가능하지 않다면 Queue에 쌓거나 release 한다.
             else
             {
-                //System.out.println("UDP SendBufferOver");
+                System.out.println("UDP SendBufferOver");
             }
         }
 
@@ -346,6 +350,9 @@ public class RMI_ {
     //범위 송신 로직. UDP
     public static void sendByte_UDP(RMI_ID[] rmi_id, short rmi_ctx, short packetType, byte[] data)
     {
+
+        System.out.println("범위 송신 로직 UDP sendByte_UDP 매서드 호출, packetType = " + packetType);
+
         if(rmi_id == null || rmi_id.length <= 0)
         {
             return;
@@ -378,8 +385,13 @@ public class RMI_ {
         for(int i=0;i<rmi_id.length;i++)
         {
             RMI_ID target = rmi_id[i];
+            System.out.println("송신 타겟의 udpConnectionAbailable : " + target.isUDPConnectionAvailable);
+            //System.out.println("ㄴ 주소 : " + target.getUDP_Object().remoteAddress().toString());
+
             if(target != null && !target.equals(RMI_ID.NONE) && target.isUDPConnectionAvailable)
             {
+                System.out.println("송신처리 수행");
+
                 Channel channel = target.getUDP_Object();
                 if(channel != null && channel.isActive())
                 {
@@ -411,7 +423,24 @@ public class RMI_ {
                         //channel.writeAndFlush( udpData );
                     }
                 }
+                else {
+                    System.out.println("채널이 NULL 이거나 활성화되어있지 않음");
+                }
             }
+
+            if(target == null){
+                System.out.println("target이 NULL");
+            }
+
+            else if(!target.isUDPConnectionAvailable){
+                System.out.println("isUDPConnectionAvailable이 false");
+            }
+
+            else if(target.equals(RMI_ID.NONE)){
+                System.out.println("RMI_ID가 NONE");
+            }
+
+
         }
 
         //ByteBuf객체를 해제
@@ -426,21 +455,27 @@ public class RMI_ {
     //암호화 키를 찾기위한 Object, byte[] 로부터 가져온 PacketType, ContextType, 그리고 RMI_Data를 가져옴.
     public static void recvByte(int rmi_host_id, short rmi_ctx, short packetType, byte[] data, InetSocketAddress UDP_Sender, ChannelHandlerContext ctx_handler)
     {
+
+        System.out.println("수신 로직 recvByte 매서드 호출, packetType = " + packetType);
+
         //적절한 RMI_Context인지 확인.
         if (!(RMI_Context.Reliable <= rmi_ctx && rmi_ctx <= RMI_Context.UnReliable_Public_AES256))
         {
             if(UDP_Sender == null)
             {
+
+                System.out.println("비정상적인 데이터를 보냈으므로 IPBan 처리");
+
                 //비정상적인 데이터를 보냈으므로 IPBan처리
                 InetSocketAddress IllegalIPAddress = (InetSocketAddress)ctx_handler.channel().remoteAddress();
                 IPFilterHandler.addIPBanList(IllegalIPAddress);
 
-                //System.out.println("rmi_ctx 비정상적인 TCP패킷 도달!");
+                System.out.println("rmi_ctx 비정상적인 TCP패킷 도달!");
                 ctx_handler.close();
             }
             else
             {
-                //System.out.println("rmi_ctx 비정상적인 UDP패킷 도달!");
+                System.out.println("rmi_ctx 비정상적인 UDP패킷 도달!");
                 UDP_Sender = null;
             }
 
@@ -455,10 +490,13 @@ public class RMI_ {
             //RMI_Connection 관련 패킷인지 확인.
             if(RMI_ConnectionPacketType.RMI_ProtocolVersionCheck <= packetType && packetType <= RMI_ConnectionPacketType.RMI_OverConnectionAnnounce)
             {
+                System.out.println("정상 패킷");
                 //정상 패킷! 아무것도 하지 않는다.
             }
             else
             {
+
+                System.out.println("비정상 패킷");
                 //비정상 패킷이므로 차단.
                 if(UDP_Sender == null)
                 {
@@ -466,16 +504,16 @@ public class RMI_ {
                     InetSocketAddress IllegalIPAddress = (InetSocketAddress)ctx_handler.channel().remoteAddress();
                     IPFilterHandler.addIPBanList(IllegalIPAddress);
 
-                    //System.out.println("packetType 비정상적인 TCP패킷 도달!");
+                    System.out.println("packetType 비정상적인 TCP패킷 도달!");
                     ctx_handler.close();
                 }
                 else
                 {
-                    //System.out.println("packetType 비정상적인 UDP패킷 도달!");
+                    System.out.println("packetType 비정상적인 UDP패킷 도달!");
                     UDP_Sender = null;
                 }
 
-                //System.out.println("packetType = "+ (packetType)+ " / rmi_ctx = " + (rmi_ctx));
+                System.out.println("packetType = "+ (packetType)+ " / rmi_ctx = " + (rmi_ctx));
                 data = null;
                 return; //비정상 패킷이므로 차단.
             }
@@ -581,6 +619,11 @@ public class RMI_ {
 
                             //복호화된 암호화키로 객체를 생성한다.
                             recvData1 = RMI_Send_EncryptedAES_Key.createRMI_Send_EncryptedAES_Key(recvPacket1);
+
+                            if(recvData1 == null){
+                                System.out.println("데이터 복호화 했는데 데이터가 널..?? ");
+                            }
+
                             recvPacket1 = null;
                         }
                         catch (Exception e)
@@ -597,9 +640,13 @@ public class RMI_ {
                             Channel udpChannel = RMI_NettyServer.popUDPChannel();
                             if(udpChannel == null)
                             {
+                                System.out.println("udp채널이 null.");
                                 send_OverConnectionAnnounce(ctx_handler);
                                 recvData1 = null;
                                 return;
+                            }
+                            else{
+                                System.out.println("채널이 null은 아님;");
                             }
 
                             //접속에 성공한 클라이언트수 증가.
@@ -661,6 +708,10 @@ public class RMI_ {
                             plainData = null;
                             //System.out.println("[Connection Procedure Complete]");
                         }
+                        else{
+
+                            System.out.println("revDatal 이 널");
+                        }
                         break;
                     case RMI_ConnectionPacketType.RMI_Send_EncryptedAccept_Data: //서버로부터 AES키 및 RMI_HostID, UDP initPort등의 정보를 수신시.
                         //서버에서는 호출될 일 없음. 클라이언트에서만 호출.
@@ -689,8 +740,8 @@ public class RMI_ {
             {
                 //이 패킷은 무시한다! 잘못된 값이므로.
 
-                //System.out.println("Invalidate Connection UDP 비정상적인 UDP패킷 도달!");
-                //System.out.println("rmi_ctx = " + RMI_Context.name(rmi_ctx)+ " / packetType = "+ RMI_PacketType.name(packetType));
+                System.out.println("Invalidate Connection UDP 비정상적인 UDP패킷 도달!");
+                System.out.println("rmi_ctx = " + RMI_Context.name(rmi_ctx)+ " / packetType = "+ RMI_PacketType.name(packetType));
 
                 //비정상적인 UDP패킷이 도달하였다면 BanList에 추가하여 차단한다!
                 IPFilterHandler.addIPBanList(UDP_Sender);
@@ -702,8 +753,13 @@ public class RMI_ {
         //기존에 접속중인 유저중.
         else
         {
+            System.out.println("기존에 접속중인 유저중");
+            System.out.println("패킷 타입 : " + packetType);
             if(UDP_Sender != null)
             {
+
+                System.out.println("UDP sender Null이 아님");
+                System.out.println("패킷 타입 : " + packetType);
                 switch (packetType)
                 {
                     case RMI_ConnectionPacketType.RMI_UDP_ConnectionConfirm:
@@ -758,10 +814,49 @@ public class RMI_ {
                         data = null;
                         return;
 
-                    default:
+                    default:  {
 
-                        break;
+                        System.out.println("디폴트...");
+
+                        RMI_ID unInitializedUser = RMI_ID.findRMI_HOST_ID(rmi_host_id);
+
+                        System.out.println(unInitializedUser.rmi_host_id);
+
+                        if(unInitializedUser != null && unInitializedUser.isUDPConnectionAvailable == false)
+                        {
+                            try {
+                                unInitializedUser.setUDP_ObjectHandler(ctx_handler);
+
+                                unInitializedUser.getUDP_Object().connect(UDP_Sender);
+
+                                System.out.println("2차 UDP 바인딩 완료 : "+unInitializedUser.getUDP_Object().localAddress());
+
+                                System.out.println("channelOnConnected : "+unInitializedUser.getTCP_Object().remoteAddress());
+
+                                //UDP 연결 상태를 Enable로 바꿈
+                                unInitializedUser.isUDPConnectionAvailable = true;
+
+                                //연결 수립시 처리 담당.
+                                OnConnected.OnConnected(unInitializedUser);
+                            }
+                            catch (IllegalArgumentException e)
+                            {
+                                System.out.println("2차 UDP 바인딩중 Error 발생" + e);
+                            }
+                        }
+                        else{
+
+                            if(unInitializedUser == null){
+                                System.out.println("unInitializedUser가 null");
+                            }
+                        }
+                    }
+                    break;
                 }
+            }
+            else{
+
+                System.out.println("UDP sender Null임..");
             }
         }
 

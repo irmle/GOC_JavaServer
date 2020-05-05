@@ -103,6 +103,7 @@ public class GameSessionRoom {
 
         /* 요청할 플레이어 정보(JS) 구성 */
         String requestPlayerInfoJS = getPlayerInfoForNicknameRequest(matchingList);
+        System.out.println("플레이어 닉네임 정보 요청 JS : " + requestPlayerInfoJS);
 
         /* 닉네임 요청 생성 및 전송 */
         Response response = requestPlayerNickName(requestPlayerInfoJS);
@@ -113,6 +114,9 @@ public class GameSessionRoom {
             return;
 
         }
+
+        System.out.println("플레이어 닉네임 정보 받아오는 데 성공");
+
 
         /** 응답 정보를 파싱하여 닉네임 정보를 얻음 */
         gameSessionNickNameList = getPlayerNickNameList(response, matchingList);

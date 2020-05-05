@@ -222,6 +222,7 @@ public class MatchingManager {
                 RMI_ID[] matchedUserList;
                 if(matchingList.size() >= userCount){
                     matchedUserList = new RMI_ID[userCount];
+                    //System.out.println("");
                 }
                 else{
                     matchedUserList = new RMI_ID[matchingList.size()];
@@ -236,11 +237,17 @@ public class MatchingManager {
 
                     //매칭된 유저수만큼 반복
                     while (keys.hasNext() && count < userCount) {
+
+                        System.out.println("매칭된 유저 수 : " + matchedUserList.length);
+                        System.out.println("설정된 유저카운트 : " + userCount);
+
                         //Key를 가져옴
                         String key = keys.next();
+                        System.out.println("키 : " + key);
 
                         //매칭리스트로부터 유저의 RMI_ID를 가져옴
                         matchedUserList[count] = matchingList.get(key);
+                        System.out.println("RMI ID : " + matchedUserList[count]);
 
                         //이후 Iterator.remove()를 이용하여 매칭 HashMap에서 제거한다.
                         keys.remove();
@@ -250,13 +257,20 @@ public class MatchingManager {
                         count++;
                     }
 
+                    System.out.println("게임세션룸을 생성합니다.");
+
                     //픽창으로 이동하도록 한다.
                     GameSessionRoom gameSessionRoom = new GameSessionRoom(matchedUserList);
+
+                    System.out.println("게임세션룸 생성 완료");
 
                     for (int i = 0; i < matchedUserList.length; i++) {
                         String tokenID = SessionManager.findTokenIDfromRMI_HostID(matchedUserList[i].rmi_host_id);
                         gameSessionList.put(tokenID, gameSessionRoom);
                     }
+
+                    System.out.println("게임세션룸에 유저별 토큰ID 세팅 완료.");
+
 
                     //매칭이 완료되었음을 반환한다.
                     return true;
