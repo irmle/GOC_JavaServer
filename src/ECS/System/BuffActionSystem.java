@@ -12,8 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 업뎃날짜 ; 2020 03 20 금 권령희 추가
+ * 업뎃날짜 ; 2020 05 05 화 권령희 추가
  * 업뎃내용 :
+ *
+ *          -- CharacterEntity에 shielAmount 처리 추가.
+ *
+ *
+ *
+ *          ================================================================================================
  *
  *          귀환 상태 케이스 추가
  *          ㄴ 귀환 지속시간이 끝날 경우, 스폰 지점으로 위치를 이동시켜 줌.
@@ -94,6 +100,15 @@ public class BuffActionSystem {
             /** 각 캐릭터 Entity에 최종적으로 반영될 Condition */
             ConditionComponent newCondition = new ConditionComponent();
 
+            /** 오후 8:05 2020-05-05 추가 **/
+
+            /*이전 상태 */
+            ConditionComponent oldCondition = character.conditionComponent;
+
+            /**********************************************************************/
+
+
+
             /* 버프액션 리스트 갯수만큼 반복한다 */
             for(int j=0; j<buffActionList.size(); j++){
 
@@ -124,7 +139,26 @@ public class BuffActionSystem {
 
                             break;
 
+                        /**
+                         * 오후 8:20 2020-05-05 추가
+                         * 쉴드 버프 지속시간 끝났을 때 처리
+                         */
+                        case SkillType.MAGICIAN_SHIELD :
+
+                            if((buffAction.floatParam.size() > 0)
+                                    && (buffAction.floatParam.get(0).type == ConditionType.shieldAmount)){
+
+                                character.hpComponent.shieldAmount = 0f;
+
+                            }
+
+                            break;
+
+                        default:
+
+                            break;
                     }
+
 
                     /************************************************/
 
@@ -548,6 +582,17 @@ public class BuffActionSystem {
                                 case ConditionType.mpRecoveryAmount:
 
                                     mpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, condition.value));
+                                    break;
+
+                                case ConditionType.shieldAmount :
+
+                                    /* 쉴드값을 처음 한 번만 적용해준다 */
+                                    if(oldCondition.isShieldActivated == false){
+
+                                        character.hpComponent.shieldAmount += condition.value;
+                                    }
+
+                                    newCondition.isShieldActivated = true;
                                     break;
 
                                 default:

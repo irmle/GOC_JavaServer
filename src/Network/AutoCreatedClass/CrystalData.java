@@ -13,6 +13,7 @@ public class CrystalData {
     public float maxHP;
     public float recoveryRateHP;
     public float shieldAmount;
+    public boolean isShieldActivated;
     public float defense;
     public float posX;
     public float posY;
@@ -75,6 +76,7 @@ public class CrystalData {
         this.maxHP = data.maxHP();
         this.recoveryRateHP = data.recoveryRateHP();
         this.shieldAmount = data.shieldAmount();
+        this.isShieldActivated = data.isShieldActivated();
         this.defense = data.defense();
         this.posX = data.posX();
         this.posY = data.posY();

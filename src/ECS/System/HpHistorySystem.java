@@ -129,6 +129,33 @@ public class HpHistorySystem {
             // 반영
             HPComponent hpComponent = character.hpComponent;
 
+            /** 오후 9:15 2020-05-05 추가 **************************/
+
+
+            /** 데미지인 경우만 처리한다..  */
+            if (sum < 0){
+
+                /** 데미지량이 쉴드값보다 작은 경우 */
+                if(( Math.abs(sum) < (hpComponent.shieldAmount))){
+
+                    hpComponent.shieldAmount -= (Math.abs(sum));
+                    sum = 0;
+                }
+                else{   /** 데미지량이 쉴드값을 넘어서는 경우 */
+
+                    sum += hpComponent.shieldAmount;
+                    hpComponent.shieldAmount = 0;
+
+                    /** 쉴드값이 소진되었으므로, 스킬 효과도 없애준다 */
+                    SkillFactory.cancelSkillBuffEffect(character, SkillType.MAGICIAN_SHIELD);
+                    // ㄴ 효과를 받고있지 않은 경우라면.. 뭐 아무일도 일어나지 않을 것이고.
+                }
+
+            }
+
+
+            /*********************************************************/
+
             float tempVal = hpComponent.currentHP + sum;
             if( tempVal <= 0f ){
                 hpComponent.currentHP = 0f;

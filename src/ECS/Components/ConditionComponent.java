@@ -1,9 +1,9 @@
 package ECS.Components;
 
 /**
- * 업뎃날짜 : 2020 03 20 금요일  권령희
+ * 업뎃날짜 : 2020 05 05 화요일  권령희
  * 업뎃 내용 :
- *      귀환중 상태 추가.
+ *      -- boolean isShieldActivated 추가.
  *
  */
 public class ConditionComponent implements Cloneable {
@@ -121,6 +121,9 @@ public class ConditionComponent implements Cloneable {
     public float criticalDamageRate;    // 크리티컬 적용 대미지 비율. (기본값 1)
 
 
+    /** 오후 7:37 2020-05-05 추가 */
+    public boolean isShieldActivated;
+
 
     public ConditionComponent() {
         //
@@ -186,6 +189,9 @@ public class ConditionComponent implements Cloneable {
 
         this.isReturning = false;
 
+        /** 오후 7:37 2020-05-05 추가 */
+        this.isShieldActivated = false;
+
     }
 
     public ConditionComponent(boolean isDisableMove, boolean isDisableAttack, boolean isDisableSkill, boolean isDisableItem, boolean isDamageImmunity, boolean isUnTargetable, float moveSpeedRate, float attackSpeedRate, float hpRecoveryRate, float mpRecoveryRate, float goldGainRate, float expGainRate, float buffDurationRate, float attackDamageRate, float defenseRate, float maxHPRate, float maxMPRate, float coolTimeReduceRate, float moveSpeedBonus, float attackDamageBonus, float defenseBonus, float maxHPBonus, float maxMPBonus) {
@@ -244,6 +250,9 @@ public class ConditionComponent implements Cloneable {
         this.isFlee = false;
         this.isSuppressed = false;
         this.isSleep = false;
+
+        /** 오후 7:37 2020-05-05 추가 */
+        this.isShieldActivated = false;
     }
 
     public ConditionComponent(boolean isDisableMove, boolean isDisableAttack, boolean isDisableSkill, boolean isDisableItem, boolean isDamageImmunity, boolean isUnTargetable, boolean isAirborneImmunity, boolean isAriborne, float moveSpeedRate, float attackSpeedRate, float hpRecoveryRate, float mpRecoveryRate, float goldGainRate, float expGainRate, float buffDurationRate, float attackDamageRate, float defenseRate, float maxHPRate, float maxMPRate, float coolTimeReduceRate, float moveSpeedBonus, float attackDamageBonus, float defenseBonus, float maxHPBonus, float maxMPBonus) {
@@ -307,6 +316,9 @@ public class ConditionComponent implements Cloneable {
 
         this.isReturning = false;
 
+        /** 오후 7:37 2020-05-05 추가 */
+        this.isShieldActivated = false;
+
     }
 
     public ConditionComponent(boolean isDisableMove, boolean isDisableAttack, boolean isDisableSkill, boolean isDisableItem, boolean isDamageImmunity, boolean isUnTargetable, boolean isAirborneImmunity, boolean isAriborne, boolean isGarrenQApplied, boolean isTargetingInvincible, boolean isArcherFireActivated, boolean isStunned, boolean isArcherHeadShotActivated, boolean isFreezing, boolean isSlow, boolean isSilence, boolean isBlind, boolean isSightBlocked, boolean isGrounding, boolean isPolymorph, boolean isDisarmed, boolean isSnare, boolean isKnockedAirborne, boolean isKnockback, boolean isSuspension, boolean isTaunt, boolean isCharm, boolean isFlee, boolean isSuppressed, boolean isSleep, float moveSpeedRate, float attackSpeedRate, float hpRecoveryRate, float mpRecoveryRate, float goldGainRate, float expGainRate, float buffDurationRate, float attackDamageRate, float defenseRate, float maxHPRate, float maxMPRate, float coolTimeReduceRate, float bloodSuckingRate, float moveSpeedBonus, float attackDamageBonus, float defenseBonus, float maxHPBonus, float maxMPBonus, float criticalChanceRate, float criticalDamageRate) {
@@ -363,6 +375,9 @@ public class ConditionComponent implements Cloneable {
 
 
         this.isReturning = false;
+
+        /** 오후 7:37 2020-05-05 추가 */
+        this.isShieldActivated = false;
     }
 
     @Override

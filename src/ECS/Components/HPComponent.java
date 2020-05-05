@@ -2,12 +2,10 @@ package ECS.Components;
 
 /**
  * -- 업뎃날짜 :
- *      오후 8:56 2020-04-08
+ *      오후 8:05 2020-05-05
  *
  * -- 업뎃내용 :
- *      # checkCurrentHpPercentage() 추가
- *          ㄴ 기능 : 현재 체력이 얼마나 남았는지 (getter 아님, percentage 비율 측정) 계산하여 반환
- *      #
+ *      # shieldAmount 추가
  *
  */
 public class HPComponent implements Cloneable {
@@ -17,6 +15,9 @@ public class HPComponent implements Cloneable {
     public float currentHP;
     public float maxHP;
     public float recoveryRateHP;
+
+    /** 오후 8:05 2020-05-05 추가 */
+    public float shieldAmount;
 
     public HPComponent( ) {
     }
@@ -28,6 +29,9 @@ public class HPComponent implements Cloneable {
         this.currentHP = maxHP;
         this.maxHP = maxHP;
         this.recoveryRateHP = recoveryRateHP;
+
+        /** 오후 8:05 2020-05-05 추가 */
+        this.shieldAmount = 0;
     }
 
 

@@ -16,6 +16,7 @@ public class MonsterData {
     public float maxHP;
     public float recoveryRateHP;
     public float shieldAmount;
+    public boolean isShieldActivated;
     public float currentMP;
     public float maxMP;
     public float recoveryRateMP;
@@ -93,6 +94,7 @@ public class MonsterData {
         this.maxHP = data.maxHP();
         this.recoveryRateHP = data.recoveryRateHP();
         this.shieldAmount = data.shieldAmount();
+        this.isShieldActivated = data.isShieldActivated();
         this.currentMP = data.currentMP();
         this.maxMP = data.maxMP();
         this.recoveryRateMP = data.recoveryRateMP();

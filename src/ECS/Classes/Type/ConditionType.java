@@ -1,9 +1,9 @@
 package ECS.Classes.Type;
 
 /**
- * 업뎃날짜 : 2020 03 20 권령희
+ * 업뎃날짜 : 2020 05 05 권령희
  * 업뎃 내용 :
- *          귀환중 상태 추가.
+ *          쉴드 추가.
  */
 public class ConditionType {
 
@@ -122,6 +122,8 @@ public class ConditionType {
     public static final int isReturning = 54;
 
 
+    // 쉴드
+    public static final int shieldAmount = 55;
 
 
 

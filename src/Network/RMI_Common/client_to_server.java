@@ -6,6 +6,9 @@ import Network.AutoCreatedClass.*;
 import Network.RMI_Classes.*;
 import Network.*;
 
+import java.util.LinkedList;
+
+
 public class client_to_server {
 
 

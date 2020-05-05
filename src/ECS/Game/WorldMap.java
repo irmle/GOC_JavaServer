@@ -42,7 +42,7 @@ import org.asynchttpclient.*;
 import org.asynchttpclient.util.HttpConstants;
 
 /**
- * 업뎃날짜 : 2020 02 27 목요일 권령희
+ * 업뎃날짜 : 2020 05 05 화요일 권령희
  *
  * 2020 02 10 월요일 추가
  * -- http 요청 관련 처리 ;
@@ -61,6 +61,13 @@ import org.asynchttpclient.util.HttpConstants;
  * 2020 02 27 목요일 추가
  * -- 정글몹 슬롯 목록 검색 및 초기화
  * -- 정글몹 시스템 생성 및 돌리기
+ *
+ * 2020 05 05 화요일 추가
+ * -- 캐릭터 정보 요청 시 정보에 guardianID 추가
+ * -- 캐릭터 중계 정보에 캐릭터 킬, 데스 카운트 추가
+ * -- 월드 중계 정보에 웨이브 총 몹 수, 살아있는 몹 카운트 추가
+ * -- 방호벽 중계 정보에 업그레이드 레벨 추가
+ *
  *
  */
 public class WorldMap {
@@ -227,6 +234,14 @@ public class WorldMap {
     long remainedSpawnCoolTime;   // ms단위. 500 ~ 800 고려중
     //스폰할 몬스터 목록
     Queue<Integer> monsterSpawnList;
+
+    /** 오후 7:18 2020-05-05 추가 */
+
+    int currentWaveEntireMobCount;
+    int currentWaveAliveMobCount;
+
+    /*********************************/
+
 
 
     /* 사망 객체 리스트 */
@@ -1387,6 +1402,43 @@ public class WorldMap {
                             RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
                             GameWorldStatus data = new GameWorldStatus();
                             data.currentGameworldTime = totalPlayTime;
+
+                            /** 오후 7:11 2020-05-05 추가 **********************************************/
+                            /**
+                             * 매번 이렇게 세지 말고, DeathSystem에서 몹 죽음 하나 처리할 때 마다 해줄까 했는데,
+                             * null 관련해서? 약간 오류가 있을 수 있을거 같아서
+                             * 일단은 이렇게 하는게 제일 정확하다고 생각.
+                             */
+
+                            /** 몬스터 마릿수를 전체 웨이브 마릿수로 초기화한다 */
+                            currentWaveAliveMobCount = currentWaveEntireMobCount;
+
+                            /** 죽은 몹의 카운트를 센다 */
+                            for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : monsterEntity.entrySet()){
+                                MonsterEntity monster = monsterEntity.getValue();
+
+                                /** 정글몬스터는 살아있는 몬스터 카운트에서 제외한다 */
+                                if(jungleMonsterSlotHashMap.containsKey(monster.entityID)){
+                                    continue;
+                                }
+
+                                /** 죽은 몹을 발견할 때 마다 마릿수를 1씩 차감한다 */
+                                if(monster.hpComponent.currentHP <= 0){
+                                    currentWaveEntireMobCount--;
+                                }
+                            }
+
+                            /** 월드 상태 정보에 몬스터 수를 반영한다 */
+
+                            data.entireWaveMobCount = currentWaveEntireMobCount;
+                            data.currentAliveMobCount = currentWaveAliveMobCount;
+
+
+
+                            /***************************************************************************/
+
+
+
                             server_to_client.broadcastingGameWorldStatusSnapshot(TARGET, RMI_Context.UnReliable, data);
                         }
 
@@ -1496,7 +1548,7 @@ public class WorldMap {
 
                                         /* 21웨이브 이상인 경우, 웨이브에 등장할 몬스터를 랜덤으로 정한다 */
 
-                                        /** 이번 웨이브에 총 등장할 몬스터의 마릿수를 결정한다 */
+                                        /** 이번 웨이브에 총 등장할 몬스터의 마릿수를 결정한다 (1인 플레이 기준) */
                                         int monsterCount = decideNextWaveMonsterCount(waveInfoCount);
 
 
@@ -1530,6 +1582,17 @@ public class WorldMap {
                                         }
 
                                     }
+
+                                    /** 오후 7:18 2020-05-05 추가 */
+
+                                    currentWaveEntireMobCount = monsterSpawnList.size();
+                                    currentWaveAliveMobCount = currentWaveEntireMobCount;
+
+
+                                    /*******************************/
+
+
+
 
                                     /* 웨이브 상태를 "진행중"으로 변경한다 */
                                     isWaveStarted = true;
@@ -2884,6 +2947,13 @@ public class WorldMap {
         return entity;
     }
 
+    /**
+     * 업뎃날짜 : 오후 6:48 2020-05-05
+     * 업뎃내용 :
+     *      -- 통신용 CharacterData에, 캐릭터의 게임 스코어 정보(몹킬, 데스 카운트) 추가
+     *      -- ㄴ shieldAmount 추가
+     *
+     */
     public CharacterData getCharacterDataFromEntity(CharacterEntity entity) {
 
         CharacterData characterData = new CharacterData();
@@ -2981,7 +3051,7 @@ public class WorldMap {
         characterData.isTargetingInvincible = entity.conditionComponent.isTargetingInvincible;
         characterData.isTaunt = entity.conditionComponent.isTaunt;
 
-        
+
         for(int i=0; i<entity.skillSlotComponent.skillSlotList.size(); i++){
 
             /* 현재 인덱스의 스킬 하나를 꺼내서, 통신용 데이터인 SkillSlotData 객체를 하나 생성해서 넣어준다  */
@@ -3013,6 +3083,20 @@ public class WorldMap {
             itemSlotData.itemInfo.itemType = itemSlot.itemInfo.itemType;
 
             characterData.itemSlot.add(itemSlotData);
+
+
+            /** 오후 6:40 2020-05-05 추가 ****************************/
+
+            /* KILL & DEATH 스코어 정보 추가 */
+            characterData.kill = playerGameScoreList.get(entity.entityID).monsterKillCount;
+            characterData.death = playerGameScoreList.get(entity.entityID).characterDeathCount;
+
+            /* SHIELD 값 추가 */
+            characterData.shieldAmount = entity.hpComponent.shieldAmount;
+            characterData.isShieldActivated = entity.conditionComponent.isShieldActivated;
+
+            /*********************************************************/
+
         }
 
 
@@ -3045,6 +3129,13 @@ public class WorldMap {
         return characterData;
     }
 
+
+    /**
+     * 업뎃날짜 : 오후 8:20 2020-05-05 추가
+     * 업뎃내용 :
+     *      -- shieldAmount 추가
+     *
+     */
     MonsterData getMonsterDataFromEntity(MonsterEntity entity) {
         MonsterData data = new MonsterData();
 
@@ -3127,9 +3218,23 @@ public class WorldMap {
         data.isTaunt = entity.conditionComponent.isTaunt;
 
 
+        /** 오후 8:20 2020-05-05 추가 */
+        data.shieldAmount = entity.hpComponent.shieldAmount;
+        data.isShieldActivated = entity.conditionComponent.isShieldActivated;
+
+        data.monsterLevel = entity.monsterComponent.monsterLevel;
+        data.monsterElemental = entity.attribute;
+
+
         return data;
     }
 
+    /**
+     * 업뎃날짜 : 오후 8:20 2020-05-05 추가
+     * 업뎃내용 :
+     *      -- shieldAmount 추가
+     *
+     */
     AttackTurretData getAttackTurretDataFromEntity(AttackTurretEntity entity) {
         AttackTurretData data = new AttackTurretData();
 
@@ -3178,9 +3283,21 @@ public class WorldMap {
         data.maxHPBonus = entity.conditionComponent.maxHPBonus;
         data.maxMPBonus = entity.conditionComponent.maxMPBonus;
 
+
+        /** 오후 8:20 2020-05-05 추가 */
+        data.shieldAmount = entity.hpComponent.shieldAmount;
+        data.isShieldActivated = entity.conditionComponent.isShieldActivated;
+
+
         return data;
     }
 
+    /**
+     * 업뎃날짜 : 오후 8:20 2020-05-05 추가
+     * 업뎃내용 :
+     *      -- shieldAmount 추가
+     *
+     */
     BuffTurretData getBuffTurretDataFromEntity(BuffTurretEntity entity) {
         BuffTurretData data = new BuffTurretData();
 
@@ -3227,9 +3344,21 @@ public class WorldMap {
         data.maxHPBonus = entity.conditionComponent.maxHPBonus;
         data.maxMPBonus = entity.conditionComponent.maxMPBonus;
 
+
+        /** 오후 8:20 2020-05-05 추가 */
+        data.shieldAmount = entity.hpComponent.shieldAmount;
+        data.isShieldActivated = entity.conditionComponent.isShieldActivated;
+
+
         return data;
     }
 
+    /**
+     * 업뎃날짜 : 오후 7:32 2020-05-05
+     * 업뎃내용 : 방호벽 정보에 방호벽 강화 레벨 추가
+     *              shieldAmount 추가
+     *
+     */
     BarricadeData getBarricadeDataFromEntity(BarricadeEntity entity) {
         BarricadeData data = new BarricadeData();
 
@@ -3274,9 +3403,28 @@ public class WorldMap {
         data.maxHPBonus = entity.conditionComponent.maxHPBonus;
         data.maxMPBonus = entity.conditionComponent.maxMPBonus;
 
+
+        /** 오후 7:32 2020-05-05 추가 ********************************/
+
+        data.upgradeLevel = entity.barricadeComponent.upgradeLevel;
+
+
+        data.shieldAmount = entity.hpComponent.shieldAmount;
+        data.isShieldActivated = entity.conditionComponent.isShieldActivated;
+
+
+        /*************************************************************/
+
+
         return data;
     }
 
+    /**
+     * 업뎃날짜 : 오후 8:20 2020-05-05 추가
+     * 업뎃내용 :
+     *      -- shieldAmount 추가
+     *
+     */
     CrystalData getCrystalDataFromEntity(CrystalEntity entity) {
         CrystalData data = new CrystalData();
 
@@ -3319,6 +3467,12 @@ public class WorldMap {
         data.defenseBonus = entity.conditionComponent.defenseBonus;
         data.maxHPBonus = entity.conditionComponent.maxHPBonus;
         data.maxMPBonus = entity.conditionComponent.maxMPBonus;
+
+
+        /** 오후 8:20 2020-05-05 추가 */
+        data.shieldAmount = entity.hpComponent.shieldAmount;
+        data.isShieldActivated = entity.conditionComponent.isShieldActivated;
+
 
         return data;
     }
@@ -3749,7 +3903,10 @@ public class WorldMap {
     // 파라미터랑 리턴값 바뀔 수 있음
 
     /**
-     *
+     * 업뎃날짜 : 오후 6:40 2020-05-05
+     * 업뎃내용 :
+     *      -- 캐릭터 정보 요청할 때, 클라로부터 받아온 guardianID를 요청JS에 추가해서 보냄
+     *      -- ㄴ 올바른 캐릭터 타입 & 장착 정보를 받아오기 위함.
      *
      */
     public String convertPlayerInfoToJSon(HashMap<String, LoadingPlayerData> playerInfo){
@@ -3769,6 +3926,7 @@ public class WorldMap {
 
             String tokenID = tokenEntry.getKey();
             int characterType = tokenEntry.getValue().characterType;
+            int guardianID = tokenEntry.getValue().guardianID;
 
             int dbCharType = 0;
             switch (characterType){
@@ -3785,7 +3943,15 @@ public class WorldMap {
 
             player = new JsonObject();
             player.addProperty("googleToken", tokenID);
-            player.addProperty("guardianType", dbCharType); // 디비상의 캐릭터타입이랑 번호가 달라서..
+            player.addProperty("guardianType", dbCharType);
+
+            /** 오후 6:40 2020-05-05 추가된 부분 ********************/
+
+            player.addProperty("guardianID", guardianID);
+
+            /********************************************************/
+
+
 
             String numStr = userNum + "";
             gameResult.add(numStr, player);
@@ -3818,11 +3984,10 @@ public class WorldMap {
     }
 
     /**
-     * 그.. db상 가디언 타입이랑, 인겜서버상 타입이랑 맞춰야 됨.
-     * 가디언 레벨이랑 겸치는 왜 필요한거지..
-     * @param characterData
-     * @param playerData
-     * @return
+     * 업뎃날짜 : 오후 8:05 2020-05-05
+     * 업뎃내용 :
+     *  hpComponent에 shieldAmount 처리 추가
+     *
      */
     public CharacterEntity createCharacterEntityFromData(CharDataFromJS characterData, LoadingPlayerData playerData){
 
@@ -3851,6 +4016,12 @@ public class WorldMap {
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
         entity.hpComponent.recoveryRateHP = characterData.hpRecoveryRate;
+
+        /** 오후 8:05 2020-05-05 추가 */
+        entity.hpComponent.shieldAmount = 0f;
+
+        /*******************************************************************/
+
 
         entity.mpComponent = new MPComponent();
         entity.mpComponent.originalMaxMP = characterData.mp;

@@ -494,7 +494,6 @@ public class GameSessionRoom {
 
             player = new JsonObject();
             player.addProperty("googleToken", tokenID);
-            // player.addProperty("guardianType", 0);
 
             String numStr = userNum + "";
             playerInfo.add(numStr, player);

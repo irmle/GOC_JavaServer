@@ -2102,6 +2102,11 @@ public class GameDataManager {
             case "방어력증가":
                 effectType = ConditionType.defenseBonus;
                 break;
+
+                /** 2020 05 05 추가*/
+            case "방어막":
+                effectType = ConditionType.shieldAmount;
+                break;
             case "장판 데미지":
                 effectType = ConditionType.damageAmount;
                 break;

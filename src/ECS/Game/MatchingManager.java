@@ -177,8 +177,12 @@ public class MatchingManager {
             if (!matchingList.containsKey(tokenID)) {
                 //현재 픽중이거나, 게임중인 tokenID가 아니여야 한다.
                 if (!playerWorldMapMappingList.containsKey(tokenID) && !gameSessionList.containsKey(tokenID)){
+
                     matchingList.put(tokenID, rmi_id);
                     matchingWaitTime.put(tokenID, waitTime);
+
+                    broadcastingCurrentMatchingPlayerCount();
+
                 }
                 else {
                     System.out.println("startMatching 요청이 있었으나 불가능한 상태!");
@@ -195,6 +199,9 @@ public class MatchingManager {
             if (matchingList.containsKey(tokenID)){
                 matchingList.remove(tokenID);
                 matchingWaitTime.remove(tokenID);
+
+                broadcastingCurrentMatchingPlayerCount();
+
             }
         }
     }
@@ -382,6 +389,25 @@ public class MatchingManager {
         }*/
 
         removeWorldmap.worldMapRMI_IDList.clear();
+    }
+
+    /**
+     *
+     */
+    public static void broadcastingCurrentMatchingPlayerCount(){
+
+        RMI_ID[] TARGET = new RMI_ID[matchingList.size()];
+        Iterator<String> keys = matchingList.keySet().iterator();
+
+        //매칭된 유저수만큼 반복
+        int count = 0;
+        while (keys.hasNext()) {
+
+            TARGET[count] = matchingList.get(keys.next());
+        }
+
+        server_to_client.broadcastingCurrentMatchingPlayerCount(TARGET, RMI_Context.Reliable, matchingList.size());
+
     }
 
 }

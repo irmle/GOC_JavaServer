@@ -1,12 +1,13 @@
 package Network.RMI_Common;
 
-import java.util.LinkedList;
-
 import Network.RMI_LogicMessages.server_to_client.*;
 import Network.RMI_Common.RMI_ParsingClasses.*;
 import Network.AutoCreatedClass.*;
 import Network.RMI_Classes.*;
 import Network.*;
+
+
+import java.util.LinkedList;
 
 public class server_to_client {
 

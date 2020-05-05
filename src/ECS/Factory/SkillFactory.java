@@ -5692,7 +5692,7 @@ public class SkillFactory {
 
             //character.buffActionHistoryComponent.conditionHistory.add(defenseBuff);
 
-            BuffAction defense = createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
+            BuffAction defense = createSkillEffect(skillType, "방어막", skillToUse.skillLevel, skillUser, skillUser.entityID);
             character.buffActionHistoryComponent.conditionHistory.add(defense);
 
         }
@@ -7994,6 +7994,7 @@ public class SkillFactory {
 
             /* '스킬 공격력 만큼' 효과를 주도록 되어있음.
                 나중에, skillInfoPerLevel 클래스에 항목을 추가해 처리할 것... */
+            case ConditionType.shieldAmount :
             case ConditionType.defenseBonus :
             case ConditionType.hpRecoveryAmount :
             case ConditionType.mpRecoveryAmount :
