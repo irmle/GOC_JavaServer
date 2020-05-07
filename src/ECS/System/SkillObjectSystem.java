@@ -376,33 +376,36 @@ public class SkillObjectSystem {
 
                     else if(targetsBuffAction.skillType == SkillType.MAGICIAN_ICE_FIELD){
 
-                        if(targetsBuffAction.floatParam.get(0).type == ConditionType.moveSpeedRate){
+                        if(targetsBuffAction.floatParam.size() > 0){
 
-                            boolean haveDamage = false;
-                            for(int q=0; q<buffActionList.size(); q++){
+                            if(targetsBuffAction.floatParam.get(0).type == ConditionType.moveSpeedRate){
 
-                                BuffAction buff = buffActionList.get(q);
-                                if(buff.unitID == buffActionList.get(q).unitID){
+                                boolean haveDamage = false;
+                                for(int q=0; q<buffActionList.size(); q++){
 
-                                    if(buff.floatParam.get(0).type == ConditionType.damageAmount){
+                                    BuffAction buff = buffActionList.get(q);
+                                    if(buff.unitID == buffActionList.get(q).unitID){
 
-                                        haveDamage = true;
-                                        break;
+                                        if(buff.floatParam.get(0).type == ConditionType.damageAmount){
 
+                                            haveDamage = true;
+                                            break;
+
+                                        }
                                     }
+                                }
+
+                                if(!haveDamage){
+
+                                    // 데미지
+                                    target.buffActionHistoryComponent.conditionHistory.add(
+                                            SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
+
+
                                 }
                             }
 
-                            if(!haveDamage){
-
-                                // 데미지
-                                target.buffActionHistoryComponent.conditionHistory.add(
-                                        SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
-
-
-                            }
                         }
-
 
                     }
 

@@ -1524,9 +1524,9 @@ public class WorldMap {
 
                                     }
 
-                                    flyingObjectEntity.clear();
-                                    skillObjectEntity.clear();
 
+                                    /** 2020 05 08 */
+                                    // 투사체랑 장판 목록 클리어하는 처리 지움.
 
 
                                     /** 다음 웨이브에서 생성할 몹 목록을 갱신한다 */
@@ -2518,7 +2518,10 @@ public class WorldMap {
             //파괴해야할 목록을 모든 클라이언트에 중계한다.
             server_to_client.destroyWorldMapEntityInfo(TARGET, RMI_Context.Reliable_Public_AES256, destroyEntityDataList);
 
-            destroyEntityDataList.clear();
+            /** 2020 05 08 */
+            // 원래 여기에 destroyEntityDataList.clear()를 해줬는데. 이게, 클라에서 일부 객체가 사라지지 않는 원인이 될 수도 잇어서.
+            // 지우기로 함.
+
         }
     }
 

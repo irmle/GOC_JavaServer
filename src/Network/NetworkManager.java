@@ -4,6 +4,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
 
+import ECS.Chatting.ChattingManager;
+import ECS.Chatting.LogManager;
 import ECS.Game.*;
 import ECS.Factory.*;
 
@@ -369,6 +371,16 @@ public class NetworkManager {
             MapDataManager.initMapData();
 
             MapFactory.initFactory();
+
+
+            /** 2020 05 08 */
+            // 채팅매니저 초기화
+            ChattingManager.initChattingManager();
+            // 로그매니저 초기화
+            LogManager.initLogManager();
+
+
+
 
             //팩토리 초기화
             AttackTurretFactory.initFactory();
