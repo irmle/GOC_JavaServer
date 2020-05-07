@@ -245,6 +245,8 @@ public class GameSessionRoom {
 
         LoadingPlayerData loadingPlayerData = gameSessionPlayerDataList.get(tokenID);
 
+        loadingPlayerData.guardianID = guardianID;
+
         System.out.println("캐릭터 타입 고른거 : " + characterType);
         switch (characterType) {
             case CharacterType.KNIGHT:
