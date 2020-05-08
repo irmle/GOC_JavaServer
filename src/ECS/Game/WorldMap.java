@@ -3166,8 +3166,10 @@ public class WorldMap {
         data.velY = entity.velocityComponent.velocity.y();
         data.velZ = entity.velocityComponent.velocity.z();
 
-        data.lookRadius = entity.sightComponent.lookRadius;
+        data.moveSpeed = entity.velocityComponent.moveSpeed;
 
+        data.lookRadius = entity.sightComponent.lookRadius;
+        
         data.isDisableAttack = entity.conditionComponent.isDisableAttack;
         data.isDisableMove = entity.conditionComponent.isDisableMove;
         data.isUnTargetable = entity.conditionComponent.isUnTargetable;
