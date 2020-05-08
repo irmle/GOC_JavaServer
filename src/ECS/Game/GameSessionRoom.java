@@ -287,8 +287,7 @@ public class GameSessionRoom {
                 if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
                     server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, this.isVoipHostReady, getWorldMapID());
             }
-
-            voipHost = null;
+            //voipHost = null;
         }
         //음성채팅 서버 생성 실패시
         else
