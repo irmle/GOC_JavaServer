@@ -46,7 +46,7 @@ public class RMI {
 
     //RMI 송수신용 프로토콜 버전.
     //이 값을 기반으로 버전 구분을 한다. 서버, 클라이언트 각각의 rmi_protocol_version 값이 일치해야 한다.
-    public static int rmi_protocol_version = 2019111101;
+    public static int rmi_protocol_version = 2020050901;
 
     //송수신 로그 활성화 여부.
     //true로 설정되어있으면 Log 기록용 메소드인 onRMI_Call(송신시), onRMI_Recv(수신시) 메소드가 호출된다.
@@ -509,6 +509,7 @@ public class RMI {
                 switch (packetType)
                 {
                     case RMI_ConnectionPacketType.RMI_ProtocolVersionCheck: //Protocol Version 체크시.
+
                         //접속제한수를 초과하지 않았는지 체크.
                         if(!NetworkManager.checkClient_Max_Connection())
                         {
@@ -539,7 +540,35 @@ public class RMI {
                         if(recvData != null && rmi_protocol_version != recvData.rmi_protocol_version)
                         {
                             System.out.println("접속한 클라이언트의 버전이 맞지 않습니다. 연결을 해제합니다. from:"+ctx_handler.channel().remoteAddress());
-                            ctx_handler.close();
+
+                            //접속한 클라이언트에게, 버전이 맞지 않음을 전송한다.
+                            RMI_ProtocolVersionCheck invalidVersion = new RMI_ProtocolVersionCheck();
+                            invalidVersion.rmi_protocol_version = RMI.rmi_protocol_version;
+
+                            //고정된 대칭키로 암호화!
+                            byte[] sendData = RMI_EncryptManager.encryptAES_256(invalidVersion.getBytes(), "RMI_Connection_Protocol", "RMI_Connection_Protocol");
+
+                            //보낼 데이터 만큼 directBuffer 할당.
+                            ByteBuf RMI_RSA_PublicKey = alloc.directBuffer(32768);
+
+                            RMI_RSA_PublicKey.writeIntLE(sendData.length); //길이값 지정.
+                            RMI_RSA_PublicKey.writeIntLE(RMI_ID.SERVER.rmi_host_id); //보내는 측의 rmi_host_id지정
+                            RMI_RSA_PublicKey.writeShortLE(RMI_Context.Reliable);
+                            RMI_RSA_PublicKey.writeShortLE(RMI_ConnectionPacketType.RMI_ProtocolVersionCheck);
+                            RMI_RSA_PublicKey.writeBytes(sendData);
+
+                            //클라이언트에게 접속용 RSA 공개키 전송완료!!
+                            ctx_handler.writeAndFlush(RMI_RSA_PublicKey);
+                            
+                            //1분뒤 자동 연결 해제
+                            ctx_handler.executor().schedule(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if( ctx_handler != null && !ctx_handler.isRemoved())
+                                        ctx_handler.close();
+                                }
+                            }, 1, TimeUnit.MINUTES);
+
                             recvData = null;
                             break;
                         }//버전체크 종료.
