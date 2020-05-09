@@ -3169,7 +3169,7 @@ public class WorldMap {
         data.moveSpeed = entity.velocityComponent.moveSpeed;
 
         data.lookRadius = entity.sightComponent.lookRadius;
-        
+
         data.isDisableAttack = entity.conditionComponent.isDisableAttack;
         data.isDisableMove = entity.conditionComponent.isDisableMove;
         data.isUnTargetable = entity.conditionComponent.isUnTargetable;
