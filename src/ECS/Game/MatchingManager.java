@@ -17,7 +17,7 @@ public class MatchingManager {
     public static int userCount = 3;
 
     //
-    public static float waitTime = 3f;
+    public static float waitTime = 9f;
 
 
     //매칭용 tokenID(String), RMI_ID 목록정보.
