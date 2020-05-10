@@ -233,8 +233,8 @@ public class TCP_InBoundHandler extends ByteToMessageDecoder {
     //에러 발생시 처리!
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
         System.out.println("[TCP_InBoundHandler] exceptionCaught 발생! "+cause.toString());
+        cause.printStackTrace();
         ctx.close();
     }
 

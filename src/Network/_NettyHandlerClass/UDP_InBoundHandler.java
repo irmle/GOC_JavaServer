@@ -121,9 +121,8 @@ public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
     //에러 발생시 처리!
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-
         System.out.println("[UDP_InBoundHandler] exceptionCaught 발생! "+cause.toString());
+        cause.printStackTrace();
     }
 
 } //class 종료 부분!
