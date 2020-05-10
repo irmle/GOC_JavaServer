@@ -113,6 +113,9 @@ public class GameSessionRoom {
 
         System.out.println("플레이어 닉네임 정보 받아오는 데 성공");
 
+        System.out.println("닉네임 응답 내용 : ");
+        System.out.println(response);
+
 
         /** 응답 정보를 파싱하여 닉네임 정보를 얻음 */
         gameSessionNickNameList = getPlayerNickNameList(response, matchingList);
