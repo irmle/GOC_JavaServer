@@ -1,5 +1,6 @@
 package Network;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollServerSocketChannel;
@@ -288,6 +290,8 @@ public class NetworkManager {
                     //부트스트랩에 그룹을 할당한다.
 
                     //.option(EpollChannelOption.MAX_DATAGRAM_PAYLOAD_SIZE, 131072) //128KB 131072
+
+                    //.option(ChannelOption.SO_REUSEADDR, true) //같은 포트 재사용
 
 
                     .option(ChannelOption.SO_RCVBUF, 131072) //128KB 131072

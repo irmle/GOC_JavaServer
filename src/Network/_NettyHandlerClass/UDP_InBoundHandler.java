@@ -54,7 +54,7 @@ public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
 
         DatagramPacket received_datagram = ((DatagramPacket)msg);
 
-        //System.out.println("received_datagram = "+received_datagram.sender()+"/"+received_datagram.recipient());
+        //System.out.println("received_datagram = ["+received_datagram.sender()+"]["+received_datagram.recipient()+"]");
 
         //받아온 데이터그램에서 ByteBuf를 가져온다.
         ByteBuf receive_data = received_datagram.content();
@@ -66,7 +66,7 @@ public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
         if(32768 < packet_size || packet_size < 0)
         {
             //비정상적인 데이터를 보냈으므로 IPBan처리
-            InetSocketAddress IllegalIPAddress = (InetSocketAddress)ctx.channel().remoteAddress();
+            InetSocketAddress IllegalIPAddress = received_datagram.sender();
             IPFilterHandler.addIPBanList(IllegalIPAddress);
 
             //사용된 메모리를 반환한다!

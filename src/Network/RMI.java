@@ -328,7 +328,7 @@ public class RMI {
                 packet.writeBytes(data);
 
                 //정상적일 경우 데이터 송신.
-                DatagramPacket udpData = new DatagramPacket(packet, remoteAddress, localAddress);
+                DatagramPacket udpData = new DatagramPacket(packet, remoteAddress/*, localAddress*/);
 
                 rmi_id.getUDP_ObjectHandler().writeAndFlush( udpData );
             }
@@ -399,7 +399,7 @@ public class RMI {
                     if(channel.isWritable())
                     {
                         //UDP 송신을 위한 DatagramPacket 생성.
-                        DatagramPacket udpData = new DatagramPacket( packet.retainedDuplicate(), remoteAddress, localAddress);
+                        DatagramPacket udpData = new DatagramPacket( packet.retainedDuplicate(), remoteAddress/*, localAddress*/);
 
                         target.getUDP_ObjectHandler().writeAndFlush( udpData );
                     }
@@ -768,11 +768,8 @@ public class RMI {
 
                                 remote.getUDP_Object().connect(UDP_Sender);
 
-                                System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
-                                //System.out.println("포트 바인딩 : "+remote.getUDP_Object().remoteAddress() + " / 로컬:"+remote.getUDP_Object().localAddress());
-                                //remote.getUDP_Object().close();
-                                //System.out.println("close 포트 바인딩 : "+remote.getUDP_Object().remoteAddress()+ " / 로컬:"+remote.getUDP_Object().localAddress());
-
+                                //System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
+                                System.out.println("UDP 포트 바인딩-> remote["+remote.getUDP_Object().remoteAddress() + "] local["+remote.getUDP_Object().localAddress()+"]");
                                 System.out.println("channelOnConnected : "+remote.getTCP_Object().remoteAddress());
 
                                 //UDP 연결 상태를 Enable로 바꿈
