@@ -83,11 +83,11 @@ public class Start_GameServer {
 
                 }
 
-                System.out.println("플레이어들" + players.toString());
+                //System.out.println("플레이어들" + players.toString());
                 //System.out.println("플레이어들 스트링" + playersStringTemp);
 
 
-                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
                 SimpleDateFormat elapsedformat = new SimpleDateFormat("HHmmss");
 
 
@@ -136,7 +136,7 @@ public class Start_GameServer {
 
                 resultJsonStr = gson.toJson(gameResult);
 
-                System.out.println(resultJsonStr);
+                //System.out.println(resultJsonStr);
 
                 // return resultJsonStr;
 
@@ -314,7 +314,7 @@ public class Start_GameServer {
                     int entityID = i;
 
                     int level = 1;
-                    System.out.println("레벨 : " + level);
+                    //System.out.println("레벨 : " + level);
 
                     player = new JsonObject();
                     //player.addProperty("googleToken", "tokennen");
@@ -337,8 +337,8 @@ public class Start_GameServer {
                 System.out.println("플레이어들스트링" + playersStringTemp);
 
 
-                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-                SimpleDateFormat elapsedformat = new SimpleDateFormat("HHmmss");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+                SimpleDateFormat elapsedformat = new SimpleDateFormat("HH:mm:ss");
 
 
                 Date startTime = new Date();

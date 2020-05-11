@@ -6,8 +6,8 @@ import Network.AutoCreatedClass.*;
 import Network.RMI_Classes.*;
 import Network.*;
 
-import java.util.LinkedList;
 
+import java.util.LinkedList;
 
 public class client_to_server {
 
@@ -214,6 +214,24 @@ public class client_to_server {
                 Logic_useItem.RMI_Packet(rmi_id, rmi_ctx, r25.worldMapID, r25.userEntityID, r25.itemSlotNum, r25.itemCount);
                 RMI.onRMI_Recv(rmi_ctx, packetType, r25);
                 r25 = null;
+                break;
+            case RMI_PacketType.request_ChangeLobbyChannel:
+                request_ChangeLobbyChannel r26 = request_ChangeLobbyChannel.createrequest_ChangeLobbyChannel(RMIdata);
+                Logic_request_ChangeLobbyChannel.RMI_Packet(rmi_id, rmi_ctx, r26.channelNum);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r26);
+                r26 = null;
+                break;
+            case RMI_PacketType.request_SendChattingMessage:
+                request_SendChattingMessage r27 = request_SendChattingMessage.createrequest_SendChattingMessage(RMIdata);
+                Logic_request_SendChattingMessage.RMI_Packet(rmi_id, rmi_ctx, r27.messageType, r27.messageData);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r27);
+                r27 = null;
+                break;
+            case RMI_PacketType.request_BroadcastPlayerEvent:
+                request_BroadcastPlayerEvent r28 = request_BroadcastPlayerEvent.createrequest_BroadcastPlayerEvent(RMIdata);
+                Logic_request_BroadcastPlayerEvent.RMI_Packet(rmi_id, rmi_ctx, r28.messageType, r28.broadcastingDataJS);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r28);
+                r28 = null;
                 break;
                 
             default:
@@ -796,6 +814,64 @@ public class client_to_server {
         byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
         callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.useItem, RMIdata);
         RMI.onRMI_Call(rmi_ctx, RMI_PacketType.useItem, _data__1);
+        _data__1 = null;
+    }
+
+    public static void request_ChangeLobbyChannel(RMI_ID rmi_id, short rmi_ctx, int channelNum) {
+        request_ChangeLobbyChannel _data__1 = new request_ChangeLobbyChannel();
+        _data__1.channelNum = channelNum;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.request_ChangeLobbyChannel, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.request_ChangeLobbyChannel, _data__1);
+        _data__1 = null;
+    }
+
+    public static void request_ChangeLobbyChannel(RMI_ID[] rmi_id, short rmi_ctx, int channelNum) {
+        request_ChangeLobbyChannel _data__1 = new request_ChangeLobbyChannel();
+        _data__1.channelNum = channelNum;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.request_ChangeLobbyChannel, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.request_ChangeLobbyChannel, _data__1);
+        _data__1 = null;
+    }
+
+    public static void request_SendChattingMessage(RMI_ID rmi_id, short rmi_ctx, int messageType, String messageData) {
+        request_SendChattingMessage _data__1 = new request_SendChattingMessage();
+        _data__1.messageType = messageType;
+        _data__1.messageData = messageData;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.request_SendChattingMessage, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.request_SendChattingMessage, _data__1);
+        _data__1 = null;
+    }
+
+    public static void request_SendChattingMessage(RMI_ID[] rmi_id, short rmi_ctx, int messageType, String messageData) {
+        request_SendChattingMessage _data__1 = new request_SendChattingMessage();
+        _data__1.messageType = messageType;
+        _data__1.messageData = messageData;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.request_SendChattingMessage, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.request_SendChattingMessage, _data__1);
+        _data__1 = null;
+    }
+
+    public static void request_BroadcastPlayerEvent(RMI_ID rmi_id, short rmi_ctx, int messageType, String broadcastingDataJS) {
+        request_BroadcastPlayerEvent _data__1 = new request_BroadcastPlayerEvent();
+        _data__1.messageType = messageType;
+        _data__1.broadcastingDataJS = broadcastingDataJS;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.request_BroadcastPlayerEvent, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.request_BroadcastPlayerEvent, _data__1);
+        _data__1 = null;
+    }
+
+    public static void request_BroadcastPlayerEvent(RMI_ID[] rmi_id, short rmi_ctx, int messageType, String broadcastingDataJS) {
+        request_BroadcastPlayerEvent _data__1 = new request_BroadcastPlayerEvent();
+        _data__1.messageType = messageType;
+        _data__1.broadcastingDataJS = broadcastingDataJS;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.request_BroadcastPlayerEvent, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.request_BroadcastPlayerEvent, _data__1);
         _data__1 = null;
     }
 

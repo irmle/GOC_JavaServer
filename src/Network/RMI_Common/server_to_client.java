@@ -415,6 +415,42 @@ public class server_to_client {
                 RMI.onRMI_Recv(rmi_ctx, packetType, r59);
                 r59 = null;
                 break;
+            case RMI_PacketType.broadcastChattingMessage:
+                broadcastChattingMessage r60 = broadcastChattingMessage.createbroadcastChattingMessage(RMIdata);
+                Logic_broadcastChattingMessage.RMI_Packet(rmi_id, rmi_ctx, r60.message);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r60);
+                r60 = null;
+                break;
+            case RMI_PacketType.broadcastNoticeMessage:
+                broadcastNoticeMessage r61 = broadcastNoticeMessage.createbroadcastNoticeMessage(RMIdata);
+                Logic_broadcastNoticeMessage.RMI_Packet(rmi_id, rmi_ctx, r61.message);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r61);
+                r61 = null;
+                break;
+            case RMI_PacketType.response_lobbyChannelAllocated:
+                response_lobbyChannelAllocated r62 = response_lobbyChannelAllocated.createresponse_lobbyChannelAllocated(RMIdata);
+                Logic_response_lobbyChannelAllocated.RMI_Packet(rmi_id, rmi_ctx, r62.channelNum, r62.message);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r62);
+                r62 = null;
+                break;
+            case RMI_PacketType.response_lobbyChannelChanged:
+                response_lobbyChannelChanged r63 = response_lobbyChannelChanged.createresponse_lobbyChannelChanged(RMIdata);
+                Logic_response_lobbyChannelChanged.RMI_Packet(rmi_id, rmi_ctx, r63.channelNum, r63.message);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r63);
+                r63 = null;
+                break;
+            case RMI_PacketType.response_sessionChannelAllocated:
+                response_sessionChannelAllocated r64 = response_sessionChannelAllocated.createresponse_sessionChannelAllocated(RMIdata);
+                Logic_response_sessionChannelAllocated.RMI_Packet(rmi_id, rmi_ctx, r64.channelNum, r64.message);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r64);
+                r64 = null;
+                break;
+            case RMI_PacketType.response_sessionChannelReleased:
+                response_sessionChannelReleased r65 = response_sessionChannelReleased.createresponse_sessionChannelReleased(RMIdata);
+                Logic_response_sessionChannelReleased.RMI_Packet(rmi_id, rmi_ctx, r65.message);
+                RMI.onRMI_Recv(rmi_ctx, packetType, r65);
+                r65 = null;
+                break;
                 
             default:
                 System.out.println("[server_to_client] 그룹에 존재하지 않는 RMI콜. 패킷 무시.");
@@ -1564,6 +1600,120 @@ public class server_to_client {
         byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
         callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.destroyWorldMapEntityInfo, RMIdata);
         RMI.onRMI_Call(rmi_ctx, RMI_PacketType.destroyWorldMapEntityInfo, _data__1);
+        _data__1 = null;
+    }
+
+    public static void broadcastChattingMessage(RMI_ID rmi_id, short rmi_ctx, MessageData message) {
+        broadcastChattingMessage _data__1 = new broadcastChattingMessage();
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.broadcastChattingMessage, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.broadcastChattingMessage, _data__1);
+        _data__1 = null;
+    }
+
+    public static void broadcastChattingMessage(RMI_ID[] rmi_id, short rmi_ctx, MessageData message) {
+        broadcastChattingMessage _data__1 = new broadcastChattingMessage();
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.broadcastChattingMessage, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.broadcastChattingMessage, _data__1);
+        _data__1 = null;
+    }
+
+    public static void broadcastNoticeMessage(RMI_ID rmi_id, short rmi_ctx, MessageData message) {
+        broadcastNoticeMessage _data__1 = new broadcastNoticeMessage();
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.broadcastNoticeMessage, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.broadcastNoticeMessage, _data__1);
+        _data__1 = null;
+    }
+
+    public static void broadcastNoticeMessage(RMI_ID[] rmi_id, short rmi_ctx, MessageData message) {
+        broadcastNoticeMessage _data__1 = new broadcastNoticeMessage();
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.broadcastNoticeMessage, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.broadcastNoticeMessage, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_lobbyChannelAllocated(RMI_ID rmi_id, short rmi_ctx, int channelNum, MessageData message) {
+        response_lobbyChannelAllocated _data__1 = new response_lobbyChannelAllocated();
+        _data__1.channelNum = channelNum;
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_lobbyChannelAllocated, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_lobbyChannelAllocated, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_lobbyChannelAllocated(RMI_ID[] rmi_id, short rmi_ctx, int channelNum, MessageData message) {
+        response_lobbyChannelAllocated _data__1 = new response_lobbyChannelAllocated();
+        _data__1.channelNum = channelNum;
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_lobbyChannelAllocated, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_lobbyChannelAllocated, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_lobbyChannelChanged(RMI_ID rmi_id, short rmi_ctx, int channelNum, MessageData message) {
+        response_lobbyChannelChanged _data__1 = new response_lobbyChannelChanged();
+        _data__1.channelNum = channelNum;
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_lobbyChannelChanged, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_lobbyChannelChanged, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_lobbyChannelChanged(RMI_ID[] rmi_id, short rmi_ctx, int channelNum, MessageData message) {
+        response_lobbyChannelChanged _data__1 = new response_lobbyChannelChanged();
+        _data__1.channelNum = channelNum;
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_lobbyChannelChanged, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_lobbyChannelChanged, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_sessionChannelAllocated(RMI_ID rmi_id, short rmi_ctx, int channelNum, MessageData message) {
+        response_sessionChannelAllocated _data__1 = new response_sessionChannelAllocated();
+        _data__1.channelNum = channelNum;
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_sessionChannelAllocated, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_sessionChannelAllocated, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_sessionChannelAllocated(RMI_ID[] rmi_id, short rmi_ctx, int channelNum, MessageData message) {
+        response_sessionChannelAllocated _data__1 = new response_sessionChannelAllocated();
+        _data__1.channelNum = channelNum;
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_sessionChannelAllocated, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_sessionChannelAllocated, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_sessionChannelReleased(RMI_ID rmi_id, short rmi_ctx, MessageData message) {
+        response_sessionChannelReleased _data__1 = new response_sessionChannelReleased();
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_sessionChannelReleased, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_sessionChannelReleased, _data__1);
+        _data__1 = null;
+    }
+
+    public static void response_sessionChannelReleased(RMI_ID[] rmi_id, short rmi_ctx, MessageData message) {
+        response_sessionChannelReleased _data__1 = new response_sessionChannelReleased();
+        _data__1.message = message;
+        byte[] RMIdata = _data__1.getBytes(); //_data__1.getBytes()
+        callRMI_Method(rmi_id, rmi_ctx, RMI_PacketType.response_sessionChannelReleased, RMIdata);
+        RMI.onRMI_Call(rmi_ctx, RMI_PacketType.response_sessionChannelReleased, _data__1);
         _data__1 = null;
     }
 
