@@ -1,6 +1,7 @@
 package Network._NettyHandlerClass;
 
 import java.net.InetSocketAddress;
+import java.net.PortUnreachableException;
 
 import Network.RMI;
 import Network.RMI_Classes.RMI_ID;
@@ -121,6 +122,13 @@ public class UDP_InBoundHandler extends ChannelInboundHandlerAdapter
     //에러 발생시 처리!
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+
+        if(cause instanceof PortUnreachableException)
+        {
+            System.out.println("[UDP_InBoundHandler] exceptionCaught 발생! ["+cause.getMessage()+"] remoteAddress=>["+ctx.channel().remoteAddress()+"]"+" localAddress=>["+ctx.channel().localAddress()+"]");
+            return;
+        }
+
         System.out.println("[UDP_InBoundHandler] exceptionCaught 발생! "+cause.toString());
         cause.printStackTrace();
     }

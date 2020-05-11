@@ -787,7 +787,7 @@ public class RMI {
                     default:
                     {
                         RMI_ID unInitializedUser = RMI_ID.findRMI_HOST_ID(rmi_host_id);
-                        if(unInitializedUser != null && unInitializedUser.isUDPConnectionAvailable == false)
+                        if(unInitializedUser != null && !unInitializedUser.isUDPConnectionAvailable)
                         {
                             try {
                                 unInitializedUser.setUDP_ObjectHandler(ctx_handler);

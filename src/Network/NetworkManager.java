@@ -321,7 +321,6 @@ public class NetworkManager {
                     */
 
                     //.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(32768))
-
                     .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(32768)
                             .respectMaybeMoreData(false).maxMessagesPerRead(5))
                     //1회에 처리하는 데이터그램 최대 크기 및 처리량 관련 옵션.
