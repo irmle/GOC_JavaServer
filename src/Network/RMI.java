@@ -766,7 +766,8 @@ public class RMI {
 
                                 remote.setUDP_ObjectHandler(ctx_handler);
 
-                                remote.getUDP_Object().connect(UDP_Sender);
+                                remote.getUDP_ObjectHandler().connect(UDP_Sender);
+                                //remote.getUDP_Object().connect(UDP_Sender);
 
                                 //System.out.println("UDP 바인딩 완료 bindPort : "+recvUDP.checkUDP_Connection);
                                 System.out.println("UDP 포트 바인딩-> remote["+remote.getUDP_Object().remoteAddress() + "] local["+remote.getUDP_Object().localAddress()+"]");
@@ -792,7 +793,8 @@ public class RMI {
                             try {
                                 unInitializedUser.setUDP_ObjectHandler(ctx_handler);
 
-                                unInitializedUser.getUDP_Object().connect(UDP_Sender);
+                                unInitializedUser.getUDP_ObjectHandler().connect(UDP_Sender);
+                                //unInitializedUser.getUDP_Object().connect(UDP_Sender);
 
                                 System.out.println("2차 UDP 바인딩 완료 : "+unInitializedUser.getUDP_Object().localAddress());
 
