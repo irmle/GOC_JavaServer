@@ -50,7 +50,7 @@ public class LogManager {
     /**
      * 경로 구하는 매서드
      */
-    public String getLogPath(long currentTime, int channelType){
+    public static String getLogPath(long currentTime, int channelType){
 
         String path = "";
 
@@ -74,8 +74,22 @@ public class LogManager {
      * 이외의 경우(0보다 큰, 즉 채널 로그)
      *  ㄴ 경로에다 이름 붙이고, 이름 뒤에 채널번호 붙여서 씀.
      *
+     *
+     * 이거일단 인쓰는걸로. 아래걸로
      */
     public void writeLog(LogMessage logMessage){
+
+
+
+
+    }
+
+    /**
+     * 흠..
+     * 여기서 경로의 파일 열고 쓰는 처리 수행.
+     * @param logMessage
+     */
+    public static void writeLog(String path, String logMessage){
 
 
 
@@ -88,15 +102,15 @@ public class LogManager {
     /**
      * 메시지 쌓기
      */
-    public void enqueueLogMessage(LogMessage logMessage){
+    public static void enqueueLogMessage(LogMessage logMessage){
 
-        this.logLogMessageQueue.add(logMessage);
+        logLogMessageQueue.add(logMessage);
     }
 
     /**
      * 메시지 꺼내서 처리
      */
-    static private void dequeueLogMessage(){
+    private static void dequeueLogMessage(){
 
         int messageCount = logLogMessageQueue.size();
 
@@ -105,13 +119,20 @@ public class LogManager {
             LogMessage logMessage = logLogMessageQueue.poll();
 
 
+            // 로그 메시지 객체를 가지고, 실제로 쓸 포맷을 만든다.
+            String logStr = logMessage.toString();  // 당연히 고쳐야지...
 
 
 
+            // 경로 구하는 처리
+            String pathStr = getLogPath(logMessage.getCurrentTime(), logMessage.getChannelType());
+
+
+
+            // 경로의 파일을 열거나 생성 후, 쓰기 처리
+            writeLog(pathStr, logStr);
 
         }
-
-
 
     }
 
@@ -140,8 +161,6 @@ public class LogManager {
             catch (InterruptedException e){
                 e.printStackTrace();
             }
-
-
 
         }
     }

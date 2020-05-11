@@ -84,8 +84,6 @@ public class GameSessionRoom {
         gameSessionPlayerDataList = new HashMap<>();
 
 
-
-
         /**
          * 2020 03 16
          * 매칭된 유저들의 닉네임 정보를 웹서버에 요청
@@ -157,6 +155,19 @@ public class GameSessionRoom {
         //월드맵ID 발급.
          this.worldMapID = MatchingManager.worldMapIDGenerater.getAndIncrement();
 
+        /**
+         * 채팅관련 처리 추가
+         * 1. 위에서 발급된 worldMapID를 채널번호 삼아, 매칭 인원들을 세션 채널에 등록하는 처리
+         * 2. 게임 세션채널에 참가하게 되었음을 알리는 메시지를 생성, 유저들에게 통지
+         * ㄴ .. 위 처리를 모두 진행하게끔 묶어놓은 매서드를, 채팅매니저에 만들어두는게 좋을라나..
+         *      인자로 3명 유저 정보 주고말임.
+         */
+
+
+
+
+
+
         //픽창에 진입하였음을 해당 유저들에게 중계함.
         server_to_client.pickLogicStart(getRMI_IDArray(), RMI_Context.Reliable_Public_AES256, new LinkedList<>(gameSessionPlayerDataList.values()));
 
@@ -174,7 +185,6 @@ public class GameSessionRoom {
         public void run() {
 
             try {
-
 
                 Thread.currentThread().sleep(600);
 

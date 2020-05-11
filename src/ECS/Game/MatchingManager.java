@@ -226,7 +226,6 @@ public class MatchingManager {
                 RMI_ID[] matchedUserList;
                 if(matchingList.size() >= userCount){
                     matchedUserList = new RMI_ID[userCount];
-                    //System.out.println("");
                 }
                 else{
                     matchedUserList = new RMI_ID[matchingList.size()];

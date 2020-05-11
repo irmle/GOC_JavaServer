@@ -225,7 +225,7 @@ public class ChattingManager {
     /**
      * 채널(로비) 번호 할당 매서드 ( 막 접속한 유저에게 채널 할당 해주는거임 )
      */
-    public int allocChannelNum(){
+    public static int allocChannelNum(){
 
         long seedValue = System.currentTimeMillis();
 

@@ -4,6 +4,9 @@ import ECS.Game.MatchingManager;
 import ECS.Game.WorldMap;
 import Network.RMI_Classes.*;
 
+/**
+ * 이거는.. 언제 호출되는 거지?
+ */
 public class Logic_requestReconnectWorldMap {
 
     public static void RMI_Packet(RMI_ID rmi_id, short rmi_ctx, int worldMapID, String googleIDToken)
