@@ -3,6 +3,7 @@ package ECS.Chatting;
 import ECS.Chatting.Classes.ChattingUser;
 import ECS.Chatting.Type.ChannelType;
 import Network.RMI_Classes.RMI_ID;
+import Network.RMI_Common.server_to_client;
 
 import java.io.CharArrayReader;
 import java.util.HashMap;
@@ -60,11 +61,16 @@ public class ChattingManager {
         // 유저가 속한 채널을 찾음
         LinkedList<ChattingUser> channel = lobbyChannelMap.get(user.lobbyChannelNum);
 
-        for (ChattingUser channelMember : channel){
+
+        RMI_ID[] targetToBroadcast = new RMI_ID[channel.size()];
+        for(int i=0; i<targetToBroadcast.length; i++){
+        //for (ChattingUser channelMember : channel){
 
             // 머.. RMI_ID 하나를 대상으로? 혹은 여럿을 대상으로 하는 RMI broadcasting 매서드를 호출하면 되겟지.
-
+            targetToBroadcast[i] = channel.get(i).rmi_id;
         }
+
+        
 
     }
 

@@ -1,7 +1,10 @@
 package ECS.Chatting;
 
 import ECS.Chatting.Classes.LogMessage;
+import ECS.Chatting.Type.ChannelType;
 
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -52,16 +55,38 @@ public class LogManager {
      */
     public static String getLogPath(long currentTime, int channelType){
 
-        String path = "";
+        String finalPath = "";
+
+        String commonPath = Paths.get("").toAbsolutePath().toString();
+        commonPath += "/GameServerLog/Chatting";
+
+        Date currentDate = new Date(currentTime);
+        commonPath += "/" + currentDate.getYear();
+        commonPath += "/" + currentDate.getMonth();
+        commonPath += "/" + currentDate.getDate();
+
+        switch (channelType){
+
+            case ChannelType.LOBBY :
+                finalPath = commonPath + "/Lobby";
+                break;
+
+            case ChannelType.SESSION :
+                finalPath = commonPath + "/Session";
+                break;
+
+            case ChannelType.GUILD :
+                finalPath = commonPath + "/Guild";
+                break;
+
+            default:
+                finalPath = commonPath + "/";
+                break;
+
+        }
 
 
-
-
-
-
-
-
-        return path;
+        return finalPath;
     }
 
 
@@ -128,9 +153,35 @@ public class LogManager {
             String pathStr = getLogPath(logMessage.getCurrentTime(), logMessage.getChannelType());
 
 
+            // 파일명 붙임처리
+            String filePath = "";
+            switch (logMessage.getChannelType()){
+
+                case ChannelType.LOBBY :
+
+                    filePath = pathStr + "/chatLog_channel_" + logMessage.getChannelNum();
+                    break;
+
+                case ChannelType.SESSION :
+
+                    filePath = pathStr + "/chatLog_world_" + logMessage.getChannelNum();
+                    break;
+
+                case ChannelType.GUILD :
+
+                    filePath = pathStr + "/chatLog_guild_" + logMessage.getChannelNum();
+                    break;
+
+                default:
+
+                    filePath = pathStr + "/serverLog";
+                    break;
+
+            }
+
 
             // 경로의 파일을 열거나 생성 후, 쓰기 처리
-            writeLog(pathStr, logStr);
+            writeLog(filePath, logStr);
 
         }
 

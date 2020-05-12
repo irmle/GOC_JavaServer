@@ -137,4 +137,12 @@ public class LogMessage {
     public void setChannelType(int channelType) {
         this.channelType = channelType;
     }
+
+    public int getChannelNum() {
+        return channelNum;
+    }
+
+    public void setChannelNum(int channelNum) {
+        this.channelNum = channelNum;
+    }
 }
