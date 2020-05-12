@@ -70,7 +70,7 @@ public class ChattingManager {
             targetToBroadcast[i] = channel.get(i).rmi_id;
         }
 
-        
+
 
     }
 

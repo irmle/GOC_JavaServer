@@ -21,6 +21,7 @@ public class CharDataFromJS {
 
     /* 멤버 변수 */
     public int userToken;
+    public String nickName;
 
     public int guardianType;
     public int guardianLV;
@@ -53,6 +54,8 @@ public class CharDataFromJS {
         System.out.println("캐릭터 JS 파싱 처리 시작 ");
 
         this.userToken = playerInfo.get("userToken").getAsInt();
+
+        this.nickName = playerInfo.get("nickName").getAsString();
 
         int dbCharType = playerInfo.get("guardianType").getAsInt();
         switch (dbCharType){

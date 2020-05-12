@@ -614,13 +614,16 @@ public class WorldMap {
         /** 캐릭터 정보 요청을 위한 요청데이터(JS) 구성 */
 
         HashMap<String, LoadingPlayerData> playerInfo = new HashMap<>();
+        HashMap<String, String> nickName_googleTokenList = new HashMap<>();
+        HashMap<String, RMI_ID> googleToken_rmiIDList = new HashMap<>();
+
         for(int i=0; i< matchingUserDataList.length; i++){
 
             LoadingPlayerData loadingPlayerData = matchingUserDataList[i];
             RMI_ID rmi_id = matchingUserList[i];
-            String tokenID = SessionManager.findTokenIDfromRMI_HostID(rmi_id.rmi_host_id);
+            String tokenID = loadingPlayerData.tokenID;
 
-            if(false){  // 테스트 출력
+            if(true){  // 테스트 출력
 
                 System.out.println("플레이어 " + i);
                 System.out.println("rmi_id : " + rmi_id);
@@ -630,10 +633,16 @@ public class WorldMap {
             }
             playerInfo.put(tokenID, loadingPlayerData);
 
+            String nickName = loadingPlayerData.characterName;
+
+            nickName_googleTokenList.put(nickName, tokenID);
+
+            googleToken_rmiIDList.put(tokenID, rmi_id);
         }
 
         String requestInfo = convertPlayerInfoToJSon(playerInfo);
 
+        System.out.println("캐릭터 요청을 보냄");
 
         /** 캐릭터 정보 요청을 보낸다 */
         /*
@@ -714,27 +723,28 @@ public class WorldMap {
 
                 System.out.println(userStr + " : " + infoJSO + "\n");
 
-                LoadingPlayerData loadingPlayerData = matchingUserDataList[i];
-                RMI_ID rmi_id = matchingUserList[i];
-                String tokenID = SessionManager.findTokenIDfromRMI_HostID(rmi_id.rmi_host_id);
-
-
                 newCharData = parsePlayerInfoJSonToData(infoJSO);
+
+
+
+                LoadingPlayerData loadingPlayerData;
+                String tokenId = nickName_googleTokenList.get(newCharData.nickName);
+                loadingPlayerData = playerInfo.get(tokenId);
+                RMI_ID rmi_id = googleToken_rmiIDList.get(tokenId);
+
                 newCharEntity = createCharacterEntityFromData(newCharData, loadingPlayerData);
 
 
 
-
-
                 //불러온 tokenID를 List에 추가. tokenID를 기준으로 EntityID를 불러온다.
-                worldMapTokenIDList.put(tokenID, newCharEntity.entityID);
+                worldMapTokenIDList.put(tokenId, newCharEntity.entityID);
 
                 //EntityID, RMI_ID를 매핑하는 Map. 이 Map의 경우에는 도중에 플레이어가 접속이 끊길때마다, 비워지게된다.
                 //같은 TokenID로 들어올때마다 바뀔 수 있도록 해야할 것.
                 worldMapRMI_IDList.put(newCharEntity.entityID, rmi_id);
 
                 // 2020 02 10 추가. db상의 토큰과 매칭
-                dbUserTokenListByGoogle.put(tokenID, newCharData.userToken);
+                dbUserTokenListByGoogle.put(tokenId, newCharData.userToken);
                 dbUserTokenListByEntity.put(newCharEntity.entityID, newCharData.userToken);
 
                 //이후, 각각의 rmi_id에 맞게 캐릭터 Entity를 생성하고 월드맵의 Entity목록에 추가한다.
@@ -743,7 +753,7 @@ public class WorldMap {
 
                 //모든 클라이언트와 동시에 게임을 시작하기 위해서는, 모든 클라이언트들이 준비가 되었는지 확인이 필요한데,
                 //월드맵Scene 로딩 준비가 모두 끝났는지 확인하는 프로세스를 위한 항목.
-                loadingProgressList.put(tokenID, loadingPlayerData);
+                loadingProgressList.put(tokenId, loadingPlayerData);
 
                 /* 2020 01 16 목 */
                 // 접속한 유저 캐릭터에 게임 스코어 객체 할당.
