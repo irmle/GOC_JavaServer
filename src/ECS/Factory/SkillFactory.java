@@ -2889,7 +2889,7 @@ public class SkillFactory {
         boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
 
-        isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
+        isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;
 
 
 
@@ -3104,7 +3104,7 @@ public class SkillFactory {
         boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
 
-        isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
+        isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;
 
         /** 판별 결과에 따른 처리 */
         if(isAbleToUseSkill){   /* 스킬 시전이 가능하다면 */
@@ -3302,7 +3302,7 @@ public class SkillFactory {
         boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
 
-        isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
+        isAbleToUseSkill = ((!userCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;
 
         /** 판별 결과에 따른 처리 */
         if(isAbleToUseSkill){   /* 스킬 시전이 가능하다면 */
@@ -4517,7 +4517,9 @@ public class SkillFactory {
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
         // 전사는 mp가 없어, 충분한 mp를 가지고 있는지를 판단하는 처리는 이번에 제외함. 이후 기존에 구현된 전사 스킬들도 수정할 것.
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
+        boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
+
+        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;
         if(!isAbleToUseSkill){
             return;
         }
@@ -4718,7 +4720,8 @@ public class SkillFactory {
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
         // 전사는 mp가 없어, 충분한 mp를 가지고 있는지를 판단하는 처리는 이번에 제외함. 이후 기존에 구현된 전사 스킬들도 수정할 것.
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
+        boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
+        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;
         if(!isAbleToUseSkill){
             return;
         }
@@ -4880,8 +4883,8 @@ public class SkillFactory {
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
         // 전사는 mp가 없어, 충분한 mp를 가지고 있는지를 판단하는 처리는 이번에 제외함. 이후 기존에 구현된 전사 스킬들도 수정할 것.
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
-        if(!isAbleToUseSkill){
+        boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
+        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;if(!isAbleToUseSkill){
             return;
         }
 
@@ -5023,8 +5026,8 @@ public class SkillFactory {
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
         // 전사는 mp가 없어, 충분한 mp를 가지고 있는지를 판단하는 처리는 이번에 제외함. 이후 기존에 구현된 전사 스킬들도 수정할 것.
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
-        if(!isAbleToUseSkill){
+        boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
+        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;if(!isAbleToUseSkill){
             return;
         }
 
@@ -5123,8 +5126,8 @@ public class SkillFactory {
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
         // 전사는 mp가 없어, 충분한 mp를 가지고 있는지를 판단하는 처리는 이번에 제외함. 이후 기존에 구현된 전사 스킬들도 수정할 것.
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
-        if(!isAbleToUseSkill){
+        boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
+        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;if(!isAbleToUseSkill){
             return;
         }
 
@@ -5216,8 +5219,8 @@ public class SkillFactory {
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
         // 전사는 mp가 없어, 충분한 mp를 가지고 있는지를 판단하는 처리는 이번에 제외함. 이후 기존에 구현된 전사 스킬들도 수정할 것.
         boolean isCoolTimeZero = (skillToUse.remainCoolTime <= 0) ? true : false;
-        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero) ? true : false;
-        if(!isAbleToUseSkill){
+        boolean hasEnoughMp = (skillUser.mpComponent.currentMP >= skillToUse.skillinfo.reqMP) ? true : false;
+        boolean isAbleToUseSkill = ((!skillUserCondition.isDisableSkill) && isCoolTimeZero && hasEnoughMp) ? true : false;if(!isAbleToUseSkill){
             return;
         }
 
