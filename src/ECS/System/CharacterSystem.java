@@ -55,7 +55,14 @@ public class CharacterSystem {
             /** 2020 02 19 변경, 이동될 위치를 구하는 부분은 기존과 똑같음. */
             boolean isMovable = character.conditionComponent.isDisableMove ? false : true;
             if(isMovable){
-/*
+
+                if(worldMap.charNextPosList_gotStuck.containsKey(character.entityID)){
+                    System.out.println("건물에 끼엇음.. ");
+                    continue;
+
+                }
+
+                /*
                 System.out.println("이동 가능함");
                 System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
 */

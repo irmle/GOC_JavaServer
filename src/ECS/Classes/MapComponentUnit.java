@@ -68,14 +68,32 @@ public class MapComponentUnit implements Cloneable {
 
     public void setMapInfoMovable(boolean isMovable){
 
+        /** 이동 가능여부 세팅 */
         MapInfo mapInfo;
         for (int i=0; i<occupyingTilesList.size(); i++){
 
             mapInfo = occupyingTilesList.get(i);
             mapInfo.canMove = isMovable;
+        }
+/*
+        *//** 세팅값에 따른 처리 *//*
+        if(!isMovable){
+
+            *//** 이동 가능 -->> 불가능하게 세팅된 경우의 처리 *//*
+            //this.processWhenMapBeingNotMovable();
 
         }
+        else{
+
+            *//** 이동 불가능 -->> 불\가능하게 세팅된 경우의 처리 *//*
+            //this.processWhenMapBeingMovable();
+
+        }*/
+
     }
+
+
+
 
 
     /**

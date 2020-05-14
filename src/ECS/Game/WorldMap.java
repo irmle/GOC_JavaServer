@@ -287,6 +287,11 @@ public class WorldMap {
     public HashMap<Integer, Vector3> charNextPosList;
     PositionSystem positionSystem;
 
+    /** 2020 05 14 추가, 건물에 끼는 경우 */
+    public HashMap<Integer, Vector3> charNextPosList_gotStuck;  // 건물 등에 끼인 경우
+
+
+
     /** 2020 02 19 추가, 몬스터 충돌 관련 */
     MonsterSystem3 monsterSystem3;
 
@@ -551,6 +556,7 @@ public class WorldMap {
         /** 2020 02 19 추가, 위치 관련 */
         charNextPosList = new HashMap<>();
         positionSystem = new PositionSystem(this);
+        charNextPosList_gotStuck = new HashMap<>();
 
         /** 2020 02 19 추가, 몬스터 충돌 관련 */
         monsterSystem3 = new MonsterSystem3(this);

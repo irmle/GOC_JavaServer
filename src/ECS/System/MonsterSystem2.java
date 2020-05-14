@@ -216,6 +216,7 @@ public class MonsterSystem2 {
                     case EntityType.MonsterEntity :
                     case EntityType.SkillObjectEntity :
                     case EntityType.FlyingObjectEntity :
+                    //case EntityType.BuffTurretEntity :
                         continue;
 
                 }

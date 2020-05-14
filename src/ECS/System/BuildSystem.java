@@ -14,11 +14,14 @@ import ECS.Entity.*;
 import ECS.Factory.AttackTurretFactory;
 import ECS.Factory.BarricadeFactory;
 import ECS.Factory.BuffTurretFactory;
+import ECS.Factory.MapFactory;
 import ECS.Game.GameDataManager;
 import ECS.Game.WorldMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import Enum.MapComponents;
 import Network.RMI_Classes.RMI_Context;
@@ -651,6 +654,10 @@ public class BuildSystem {
 
                 slot.mapPosition.setComponentType(MapComponents.TURRET);
                 slot.mapPosition.setMapInfoMovable(false);
+
+                processWhenMapBeingNotMovable(slot.mapPosition, EntityType.CharacterEntity);
+                processWhenMapBeingNotMovable(slot.mapPosition, EntityType.MonsterEntity);
+
                 break;
 
         }
@@ -1202,6 +1209,76 @@ public class BuildSystem {
 
 
 
+
+    public void processWhenMapBeingNotMovable(MapComponentUnit mapArea, int entityType){
+
+        switch (entityType){
+
+            case EntityType.CharacterEntity :
+
+                for ( CharacterEntity characterEntity : worldMap.characterEntity.values()){
+
+                    Vector3 charPos = characterEntity.positionComponent.position;
+
+                    boolean haveToMove = false;
+                    for(int i=0; i<mapArea.occupyingTilesList.size(); i++){
+
+                        MapInfo currentTile = mapArea.occupyingTilesList.get(i);
+                        boolean isStand = MapFactory.checkTile(currentTile, charPos.x(), charPos.z());
+                        if(isStand){
+                            haveToMove = true;
+                            break;
+                        }
+                    }
+
+                    if(haveToMove){
+
+                        Vector3 escapeDir = (worldMap.crystalEntity.get(worldMap.crystalID)).positionComponent.position;
+
+                        worldMap.charNextPosList_gotStuck.put(characterEntity.entityID, escapeDir);
+                        System.out.println("캐릭터 " + characterEntity.characterComponent.characterName + "를 gotStuck에 집어넣음");
+
+                    }
+
+                }
+
+                break;
+
+            case EntityType.MonsterEntity :
+
+
+                for ( MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
+
+                    Vector3 mobPos = monsterEntity.positionComponent.position;
+
+                    boolean haveToMove = false;
+                    for(int i=0; i<mapArea.occupyingTilesList.size(); i++){
+
+                        MapInfo currentTile = mapArea.occupyingTilesList.get(i);
+                        boolean isStand = MapFactory.checkTile(currentTile, mobPos.x(), mobPos.z());
+                        if(isStand){
+                            haveToMove = true;
+                            break;
+                        }
+                    }
+
+                    if(haveToMove){
+
+                        Vector3 escapeDir = (worldMap.crystalEntity.get(worldMap.crystalID)).positionComponent.position;
+
+                        worldMap.charNextPosList_gotStuck.put(monsterEntity.entityID, escapeDir);
+                        System.out.println("몬스터 " + monsterEntity.monsterComponent.monsterName + "를 gotStuck에 집어넣음");
+
+                    }
+
+                }
+
+                break;
+
+        }
+
+
+    }
 
 
 

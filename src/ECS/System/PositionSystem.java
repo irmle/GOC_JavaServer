@@ -2,9 +2,14 @@ package ECS.System;
 
 import ECS.Classes.MapInfo;
 import ECS.Classes.Vector3;
+import ECS.Components.PositionComponent;
+import ECS.Components.VelocityComponent;
 import ECS.Entity.CharacterEntity;
+import ECS.Entity.Entity;
+import ECS.Entity.MonsterEntity;
 import ECS.Factory.MapFactory;
 import ECS.Game.WorldMap;
+import Network.RMI_Common.RMI_ParsingClasses.EntityType;
 
 import java.util.HashMap;
 
@@ -168,6 +173,130 @@ public class PositionSystem {
 
             }
         }
+
+
+
+        /** 2020 05 14 */
+        /** 끼인거 처리; 일단은 캐릭터만. */
+        /*for(HashMap.Entry<Integer, Vector3> stuckEntity : worldMap.charNextPosList_gotStuck.entrySet()){
+
+            CharacterEntity characterEntity = worldMap.characterEntity.get(stuckEntity.getKey());
+
+            Vector3 charPos = characterEntity.positionComponent.position;
+            VelocityComponent charVelocity = characterEntity.velocityComponent;
+
+
+
+
+
+            *//* 이동할 위치를 가져온다 *//*
+            Vector3 movedPos = (Vector3) stuckEntity.getValue().clone();
+            //MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
+
+            *//* 이동 단위 벡터를 구한다 *//*
+            Vector3 unitVec3 = Vector3.getTargetDirection(charPos, movedPos);
+            unitVec3 = unitVec3.normalize();
+            unitVec3.setSpeed(deltaTime);   // 흠..
+
+
+            System.out.println("이동량 : " + unitVec3.x() + ", "
+                    + unitVec3.y() + ", " + unitVec3.z());
+
+
+            *//* 이동 가능한 지점 혹은 목표지점에 도달할 때 까지 반복 *//*
+            while (true){
+
+                *//* 캐릭터의 기존 위치에, 단위벡터를 더한다(단위백터만큼 이동시킨다) *//*
+                Vector3 currentPos = (Vector3)charPos.clone();
+                currentPos.movePosition(currentPos, unitVec3);
+
+                charPos.set(currentPos);
+
+                *//* 위 좌표의 타일을 검사한다 *//*
+                MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
+
+                *//** 이동 가능한 타일인 경우  *//*
+                if(currentTile.canMove == true){
+                    break;
+                }
+
+            }
+
+            //worldMap.charNextPosList_gotStuck.remove(characterEntity.entityID);
+
+        }
+
+        worldMap.charNextPosList_gotStuck.clear();
+*/
+
+        for(HashMap.Entry<Integer, Vector3> stuckEntity : worldMap.charNextPosList_gotStuck.entrySet()){
+
+            int type = worldMap.entityMappingList.get(stuckEntity.getKey());
+            Entity entity;
+
+            Vector3 entityPos;
+            VelocityComponent entityVelocity;
+            switch (type){
+
+                case EntityType.CharacterEntity :
+
+                    entity = worldMap.characterEntity.get(stuckEntity.getKey());
+                    entityPos = entity.positionComponent.position;
+                    entityVelocity = ((CharacterEntity) entity).velocityComponent;
+
+                    break;
+
+                case EntityType.MonsterEntity :
+
+                    entity = worldMap.monsterEntity.get(stuckEntity.getKey());
+                    entityPos = entity.positionComponent.position;
+                    entityVelocity = ((MonsterEntity) entity).velocityComponent;
+
+                    break;
+
+                default:
+
+                    continue;
+            }
+
+
+            /* 이동할 위치를 가져온다 */
+            Vector3 movedPos = (Vector3) stuckEntity.getValue().clone();
+            //MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
+
+            /* 이동 단위 벡터를 구한다 */
+            Vector3 unitVec3 = Vector3.getTargetDirection(entityPos, movedPos);
+            unitVec3 = unitVec3.normalize();
+            unitVec3.setSpeed(deltaTime);   // 흠..
+
+
+            System.out.println("이동량 : " + unitVec3.x() + ", "
+                    + unitVec3.y() + ", " + unitVec3.z());
+
+
+            /* 이동 가능한 지점 혹은 목표지점에 도달할 때 까지 반복 */
+            while (true){
+
+                /* 캐릭터의 기존 위치에, 단위벡터를 더한다(단위백터만큼 이동시킨다) */
+                Vector3 currentPos = (Vector3)entityPos.clone();
+                currentPos.movePosition(currentPos, unitVec3);
+
+                entityPos.set(currentPos);
+
+                /* 위 좌표의 타일을 검사한다 */
+                MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
+
+                /** 이동 가능한 타일인 경우  */
+                if(currentTile.canMove == true){
+                    break;
+                }
+
+            }
+
+        }
+
+        worldMap.charNextPosList_gotStuck.clear();
+
     }
 
 }
