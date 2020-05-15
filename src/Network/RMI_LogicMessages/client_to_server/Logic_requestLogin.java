@@ -5,7 +5,9 @@ import java.util.concurrent.TimeUnit;
 
 import ECS.Chatting.ChattingManager;
 import ECS.Chatting.Classes.ChattingUser;
+import ECS.Chatting.Type.MessageType;
 import ECS.Game.*;
+import Network.AutoCreatedClass.MessageData;
 import Network.RMI_Classes.*;
 import Network.RMI_Common.server_to_client;
 
@@ -38,15 +40,13 @@ public class Logic_requestLogin {
          *      ㄴ 이걸.. 아래 로그인OK 이전에 처리해야 할지, 이후에 처리해야 할지..
          */
 
-
         ChattingUser newUser = ChattingManager.joinChattingServer(rmi_id);
 
-        int newLobbyChannelNum = ChattingManager.allocChannelNum();
-        ChattingManager.joinLobbyChannel(newLobbyChannelNum, newUser);
+        int lobbyChannelNum = newUser.getLobbyChannelNum();
+        MessageData channelAllocMessage
+                = ChattingManager.createMessageData(MessageType.LOBBY_JOIN_CHANNEL, newUser);
 
-
-
-
+        server_to_client.response_lobbyChannelAllocated(rmi_id, rmi_ctx, lobbyChannelNum, channelAllocMessage);
 
 
         /***************************************************************************************************************/
@@ -72,6 +72,10 @@ public class Logic_requestLogin {
 
 
 
+
+
+
+            /**************************************************************************************/
 
             //300ms 후에 재접속 시퀀스를 송신한다.
             rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {

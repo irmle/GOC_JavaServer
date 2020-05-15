@@ -6223,7 +6223,7 @@ public class SkillFactory {
         BuffAction afterUsing = new BuffAction();
         afterUsing.unitID = skillUser.entityID;     // 스킬 시전자가 본인에게 거는 것.
         afterUsing.skillUserID = skillUser.entityID;
-        afterUsing.remainTime = skillInfo.durationTime;      // 애니메이션 재생 속도가 얼마나 될지 모르겟지만.. 0.2초동안 지속되도록 함 문제있음 나중에 수정
+        afterUsing.remainTime = 0.1f;      // 애니메이션 재생 속도가 얼마나 될지 모르겟지만.. 0.2초동안 지속되도록 함 문제있음 나중에 수정
         afterUsing.remainCoolTime = -1f;    // 남은 쿨타임 없음
         afterUsing.coolTime = -1f;  // 쿨타임 없음
 

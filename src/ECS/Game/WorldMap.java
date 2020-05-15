@@ -854,6 +854,7 @@ public class WorldMap {
                                 worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
                     }
                 }, 600, TimeUnit.MILLISECONDS);
+
             }
 
             //음성채팅서버 호스트가 선정되어있고, 재접속한 유저가 Host유저가 아니라면 음성채팅 세션에 재접속 하게끔 하는 부분.

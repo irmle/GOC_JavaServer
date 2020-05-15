@@ -1,5 +1,7 @@
 package ECS.Chatting.Classes;
 
+import ECS.Game.MatchingManager;
+import ECS.Game.SessionManager;
 import Network.RMI_Classes.RMI_ID;
 
 /**

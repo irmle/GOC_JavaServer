@@ -2,13 +2,27 @@ package ECS.Chatting;
 
 import ECS.Chatting.Classes.ChattingUser;
 import ECS.Chatting.Type.ChannelType;
+import ECS.Chatting.Type.MessageType;
+import ECS.Game.GameSessionRoom;
+import ECS.Game.SessionManager;
+import Network.AutoCreatedClass.MessageData;
 import Network.RMI_Classes.RMI_ID;
 import Network.RMI_Common.server_to_client;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.asynchttpclient.*;
+import org.asynchttpclient.util.HttpConstants;
 
 import java.io.CharArrayReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ChattingManager {
 
@@ -27,6 +41,8 @@ public class ChattingManager {
     //동기화 제어용 모니터객체
     final Object locking = new Object();
 
+    public static AsyncHttpClient httpClient;
+
 
     /** 생성자 & 초기화 매서드 */
     public static void initChattingManager(){
@@ -44,6 +60,7 @@ public class ChattingManager {
 
 
         // 그 외 추가 초기화 필요한 경우 작업 작성
+        initChattingManager();
 
 
         System.out.println("ChattingManager 초기화 완료");
@@ -54,6 +71,150 @@ public class ChattingManager {
 
 
     /** 매서드 */
+
+    public void initHttpClient(){
+
+        httpClient = Dsl.asyncHttpClient();
+
+    }
+
+    public static String getPlayerInfoForNicknameRequest(RMI_ID accessPlayer){
+
+        String playerInfoJS = null;
+
+        Gson gson = new Gson();
+        JsonObject playerInfo = new JsonObject();
+        playerInfo.addProperty("count", 1); // 2020 05 14.. 플레이어 하나의 정보를 요청함.
+
+        /** 플레이어 Json 정보를 구성 */
+        JsonObject player;
+
+        String tokenID = SessionManager.findTokenIDfromRMI_HostID(accessPlayer.rmi_host_id);
+
+        player = new JsonObject();
+        player.addProperty("googleToken", tokenID);
+
+        int userNum = 1;
+        String numStr = userNum + "";
+        playerInfo.add(numStr, player);
+
+        playerInfoJS = gson.toJson(playerInfo);
+        System.out.println("접속자 정보 요청을 위한 최종 JS : " + playerInfoJS);
+
+
+        return playerInfoJS;
+    }
+
+    public static Response RQ_getPlayerNickInfo(String playerRequestInfo){
+
+        Response response = null;
+        //String ipAddr = "http://112.221.220.205/result/getnick.php";
+        String ipAddr = "http://ngnl.xyz/result/getnick.php";
+
+        Future<Response> future =
+                httpClient.preparePost(ipAddr)
+                        .addFormParam("data", playerRequestInfo)
+                        .execute(new AsyncCompletionHandler<Response>() {
+                            @Override
+                            public Response onCompleted(Response response) throws Exception {
+                                System.out.println("요청에 대한 응답 : " + response);
+                                // httpClient.close();
+                                return response;
+                            }
+
+                            @Override
+                            public void onThrowable(Throwable t) {
+                                System.out.println("오류?");
+                                super.onThrowable(t);
+                            }
+
+                            @Override
+                            public State onStatusReceived(HttpResponseStatus status) throws Exception {
+                                System.out.println("상태 코드 : " + status);
+                                return super.onStatusReceived(status);
+                            }
+                        });
+
+        try {
+            response = future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            return response;
+        }
+
+    }
+
+    public static Response requestPlayerNickName(String playerRequestInfo){
+
+        Response response = null;
+
+        int requestCount = 0;
+        final int MAX_RQ_COUNT = 5;
+
+        boolean requestSucceed = false;
+        while(true){
+
+            if(requestCount == MAX_RQ_COUNT){
+
+                response = null;
+
+                System.out.println("요청 횟수가 5회에 도달했습니다.");
+                break;
+            }
+
+            requestCount++;
+
+            response = RQ_getPlayerNickInfo(playerRequestInfo);   // 요청을 보내고, 응답이 올 때까지 기다림.
+            if((response != null) && response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200){
+
+                /** 응답을 성공적으로 받았을 때의 처리를 작성 */
+                System.out.println("플레이어 닉네임 정보를 성공적으로 받음");
+
+                requestSucceed = true;
+
+                break;
+            }
+            else{
+                /** 실패?했을 때의 처리를 작성 */
+
+                System.out.println("닉넴 정보를 받아오는 데 실패..");
+            }
+
+        }
+
+
+        return response;
+
+    }
+
+    public static void parseAndSetUserInfo(Response response, ChattingUser user) {
+
+        String playerInfoString = response.getResponseBody().toString();
+
+        int index = playerInfoString.indexOf("{");
+        String testStr = playerInfoString.substring(index);
+
+        JsonParser parser = new JsonParser();
+        JsonElement jsonElement = parser.parse(testStr);
+        JsonObject playerInfoJSO = jsonElement.getAsJsonObject();
+
+
+        /* 2020 03 17 화요일 구글토큰 관련 수정 권령희 */
+        String userStr = 1 + "";
+        JsonObject infoJSO = playerInfoJSO.getAsJsonObject(userStr);
+
+        String tokenID = infoJSO.getAsJsonObject("userInfo").get("googleToken").getAsString();
+        String nickname = infoJSO.getAsJsonObject("userInfo").get("nickName").getAsString();
+        int userToken = infoJSO.getAsJsonObject("userInfo").get("userToken").getAsInt();
+
+        user.setNickName(nickname);
+        user.setUserToken(userToken);
+
+        return;
+    }
 
 
     public static void broadcastChatMsg_Lobby(ChattingUser user, String Message){
@@ -110,13 +271,47 @@ public class ChattingManager {
 
 
     /**
-     * 접속유저 생성.. 굳이 이렇게 안해도 될지도??
+     * 접속유저 생성..
      */
     public static ChattingUser joinChattingServer(RMI_ID rmi_id){
 
+
+        /** 1. 접속자 관리를 위한 객체를 하나 생성한다 */
         ChattingUser newUser = new ChattingUser(rmi_id);
 
+
+        /** 2. 유저의 닉네임 정보를 요청 */
+
+        /* 요청할 플레이어 정보(JS) 구성 */
+        String requestPlayerInfoJS = getPlayerInfoForNicknameRequest(rmi_id);
+
+        /* 닉네임 요청 생성 및 전송 */
+        Response response = requestPlayerNickName(requestPlayerInfoJS);
+        if(response == null){
+
+            System.out.println("유저의 닉네임 정보를 받아오는 데 실패했습니다.. 세션을 종료합니다.");
+            return null;
+        }
+
+        System.out.println("플레이어 닉네임 정보 받아오는 데 성공");
+
+        /* 응답 정보를 파싱하여 닉네임 정보를 얻음, 세팅 */
+        parseAndSetUserInfo(response, newUser);
+
+        /* 접속자 목록에 집어넣음 */
         chattingUserList.add(newUser);
+
+        /***************************************************************************************************************/
+
+
+        /** 3. 로비 채널 번호를 할당한다 */
+
+        int lobbyChannelNum = allocChannelNum();
+
+        /** 4. 해당 로비 채널에 가입 */
+        joinLobbyChannel(lobbyChannelNum, newUser);
+
+
 
         return  newUser;
 
@@ -452,6 +647,61 @@ public class ChattingManager {
      *  -- 나중에 캐릭터 소환, 아이템 강화, 캐릭터 승급/강화 등등등 처리하려면.
      *      각 구조에 맞는 JS 파싱이 필요할 것.
      */
+
+
+    /**
+     * 각종 메시지Data(통신용으로 클라에 전달해줄) 생성 매서드 :
+     */
+    public static MessageData createMessageData(int messageType, ChattingUser user){
+
+        MessageData newMessage = new MessageData();
+
+        /** 메시지 공통 영역 채우기 */
+        newMessage.messageType = messageType;
+        newMessage.nickName = user.getNickName();
+        newMessage.sendTime = getCurrentTimeStr();
+
+        /** 메시지 타입별 */
+        switch (messageType){
+
+            case MessageType.LOBBY_JOIN_CHANNEL :
+
+                newMessage.channelNum = user.getLobbyChannelNum();
+                newMessage.messageContent = newMessage.channelNum + "번 채널에 입장했습니다.";
+
+                break;
+
+
+            default:
+
+                newMessage.channelNum = 0;
+                newMessage.messageContent = "메시지 내용";
+
+                break;
+
+        }
+
+
+
+
+
+
+
+
+        return newMessage;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static String getCurrentTimeStr(){
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+        Date currentTime = new Date(System.currentTimeMillis());
+
+        return format.format(currentTime);
+    }
 
 
 
