@@ -243,6 +243,7 @@ public class client_to_server {
                 break;
         }
         } catch (Exception e) {
+            e.printStackTrace();
         System.out.println("Packet파싱중 에러발생! 데이터 손상! rmi_ctx="+rmi_ctx+" packetType="+packetType+" RMIdata="+RMIdata.length + "\n" + e.toString());
         }
     }

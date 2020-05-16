@@ -60,8 +60,9 @@ public class ChattingManager {
 
 
         // 그 외 추가 초기화 필요한 경우 작업 작성
-        initChattingManager();
+        //initChattingManager();
 
+        initHttpClient();
 
         System.out.println("ChattingManager 초기화 완료");
 
@@ -72,7 +73,7 @@ public class ChattingManager {
 
     /** 매서드 */
 
-    public void initHttpClient(){
+    public static void initHttpClient(){
 
         httpClient = Dsl.asyncHttpClient();
 
