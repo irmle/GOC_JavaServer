@@ -3638,6 +3638,10 @@ public class WorldMap {
             // 왜 죽은 횟수에 +1 해줬냐면, 캐릭터가 한 번도 죽지 않았을 경우 나누기 0이 되어 값이.. 무한대가 나온다고 해야하나..
             // 일단 이걸 피하기 위해서.
 
+            if(gameScore.finalScore < 0){
+                gameScore.finalScore= 0f;
+            }
+
             gameScores.add(gameScore);
 
         }
