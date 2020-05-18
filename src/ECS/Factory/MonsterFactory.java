@@ -1147,7 +1147,7 @@ public class MonsterFactory {
         //monsterAttack.attackRange *= statRate;
 
         /* 시야 */
-        monsterSight.lookRadius *= statRate;
+        //monsterSight.lookRadius *= statRate;
 
    }
 
@@ -1195,7 +1195,7 @@ public class MonsterFactory {
         //monsterAttack.attackRange *= statRate;
 
         /* 시야 */
-        monsterSight.lookRadius *= statRate;
+        //monsterSight.lookRadius *= statRate;
 
     }
 

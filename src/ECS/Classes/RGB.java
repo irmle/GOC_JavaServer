@@ -93,19 +93,26 @@ public class RGB {
         /* 결과값 적용*/
         if(isRed){
             result = ElementalType.RED;
+            System.out.println("빨");
         }
         else if(isGreen){
             result = ElementalType.GREEN;
+            System.out.println("초");
         }else if(isBlue){
             result = ElementalType.BLUE;
+            System.out.println("파");
         }else if(isYellow){
             result = ElementalType.YELLOW;
+            System.out.println("노");
         }else if(isPink){
             result = ElementalType.PINK;
+            System.out.println("분");
         }else if(isSkyBlue){
             result = ElementalType.SKY_BLUE;
+            System.out.println("하");
         }else if(isWhite){
             result = ElementalType.WHITE;
+            System.out.println("흰");
         } else{
             System.out.println("?? ");
         }

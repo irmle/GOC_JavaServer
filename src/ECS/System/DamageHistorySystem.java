@@ -711,7 +711,7 @@ public class DamageHistorySystem {
 
 
         float DEFENSE_COEFFIECIENT = 0.5f;
-        float ATTACK_DAMAGE_COEFFIECIENT = 1f;
+        float ATTACK_DAMAGE_COEFFIECIENT = 0.1f;
         float ATTACK_SPEED_COEFFIECIENT = 10f;
         float HP_COEFFIECIENT = 0.05f;
         float MP_COEFFIECIENT = 0.05f;
@@ -722,15 +722,17 @@ public class DamageHistorySystem {
 
             case CharacterType.ARCHER :
 
-                resultDamage = defaultDamage * ATTACK_DAMAGE_COEFFIECIENT;
+                resultDamage = defaultDamage;
 
                 resultDamage += charAttack.attackSpeed * ATTACK_SPEED_COEFFIECIENT;
+
+                resultDamage += charAttack.attackDamage * ATTACK_DAMAGE_COEFFIECIENT;
 
                 break;
 
             case CharacterType.KNIGHT :
 
-                resultDamage = defaultDamage * ATTACK_DAMAGE_COEFFIECIENT;
+                resultDamage = defaultDamage;
 
                 resultDamage += charDefense.defense * DEFENSE_COEFFIECIENT;
 
@@ -738,14 +740,17 @@ public class DamageHistorySystem {
 
                 resultDamage += charHp.maxHP * HP_COEFFIECIENT;
 
+                resultDamage += charAttack.attackDamage * ATTACK_DAMAGE_COEFFIECIENT;
 
                 break;
 
             case CharacterType.MAGICIAN :
 
-                resultDamage = defaultDamage * ATTACK_DAMAGE_COEFFIECIENT;
+                resultDamage = defaultDamage;
 
                 resultDamage += charMp.originalMaxMP * MP_COEFFIECIENT;
+
+                resultDamage += charAttack.attackDamage * ATTACK_DAMAGE_COEFFIECIENT;
 
                 break;
 

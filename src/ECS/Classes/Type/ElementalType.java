@@ -79,6 +79,8 @@ public class ElementalType {
         /* 세팅된 RGB값을 가지고, 속성 조합 처리를 한다 */
         mixedElemental = rgb.getMixedRGB();
 
+        System.out.println("조합색상 : " + mixedElemental);
+
         return mixedElemental;
     }
 

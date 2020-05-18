@@ -4507,12 +4507,18 @@ public class WorldMap {
         /** 팀 전투력을 계산한다 */
         float teamStrengthPower = GameDifficultyGrade.calculateTeamStrengthPower(characterEntity);
 
+        System.out.println("전투력 : " + teamStrengthPower);
+
         /** 전투력이 속한 등급을 찾는다 */
         int grade = GameDifficultyGrade.decideGameGrade(teamStrengthPower);
+
+        System.out.println("등급 : " + grade);
         //grade = 1;
 
         /** 등장하는 몬스터의 레벨을 구한다 */
         int level = GameDifficultyGrade.decideMonsterExpLevel(grade, teamStrengthPower);
+
+        System.out.println("몹 레벨 : " + level);
 
         /** 월드에 세팅 */
         this.monsterExpLevel = level;

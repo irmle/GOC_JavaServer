@@ -5696,8 +5696,12 @@ public class SkillFactory {
 
             //character.buffActionHistoryComponent.conditionHistory.add(defenseBuff);
 
-            BuffAction defense = createSkillEffect(skillType, "방어막", skillToUse.skillLevel, skillUser, skillUser.entityID);
+            BuffAction defense = createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
             character.buffActionHistoryComponent.conditionHistory.add(defense);
+
+
+            BuffAction shield = createSkillEffect(skillType, "방어막", skillToUse.skillLevel, skillUser, skillUser.entityID);
+            character.buffActionHistoryComponent.conditionHistory.add(shield);
 
         }
 
@@ -8014,6 +8018,11 @@ public class SkillFactory {
 
                 }
 
+                /** 보호막 */
+                if((skillType == SkillType.MAGICIAN_SHIELD) && effectName.contains("방어력증가")) {
+
+                    effectValue *= 0.1f;
+                }
 
                 break;
 

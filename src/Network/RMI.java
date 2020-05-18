@@ -46,7 +46,7 @@ public class RMI {
 
     //RMI 송수신용 프로토콜 버전.
     //이 값을 기반으로 버전 구분을 한다. 서버, 클라이언트 각각의 rmi_protocol_version 값이 일치해야 한다.
-    public static int rmi_protocol_version = 2020050901;
+    public static int rmi_protocol_version = 2020051801;
 
     //송수신 로그 활성화 여부.
     //true로 설정되어있으면 Log 기록용 메소드인 onRMI_Call(송신시), onRMI_Recv(수신시) 메소드가 호출된다.

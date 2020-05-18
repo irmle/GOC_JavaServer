@@ -64,13 +64,6 @@ public class PositionSystem {
                 Vector3 movedPos = worldMap.charNextPosList.get(character.entityID);
                 MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
 
-/*
-                System.out.println("최종목적 좌표 : " + movedPos.x() + ", "
-                        + movedPos.z() );
-
-                System.out.println("최종목적 타일 : " + movedTile.arrayX + ", "
-                        + movedTile.arrayY );
-*/
 
                 /* 이동 단위 벡터를 구한다 */
                 //Vector3 unitVec3 = (Vector3) movedPos.clone();
