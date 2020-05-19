@@ -1827,7 +1827,7 @@ public class WorldMap {
                         System.out.println( "레벨업 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //몬스터AI, 상태, 행동 관련 처리
-                        monsterSystem2.onUpdate(tickRate * 0.001f);
+                        //monsterSystem2.onUpdate(tickRate * 0.001f);
 
                         System.out.println( "몬스터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
