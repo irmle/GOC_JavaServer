@@ -94,11 +94,40 @@ public class PositionSystem {
 
                     /** 벽 등 이동 불가능한 타일인 경우  */
                     if(currentTile.canMove == false){
-/*
-                        System.out.println("이동 불가능한 지점에 다다라서 멈춤");
-                        System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
-                                + character.positionComponent.position.z() );
-*/
+
+                        /**
+                         * 작성날짜 : 2020 05 19 화요일
+                         * 목    적 : 벽 등 이동 불가능한 지점에 도달했을 때,
+                         *              벽을 향해 수직/수평으로 달리고 있는 게 아니라면
+                         *              마냥 제자리걸음 하지 말고
+                         *              이동하고자 하는 방향에 가깝게 벽을 타고 내려가든 달려가든
+                         *              매끄러운 처리가 되도록 수정.
+                         *
+                         * 로    직 :
+                         *      if 이동 방향 벡터가, 타일에 대해 수직/수평이 아니라면 (.. 헐! 이거 어케 따지지 여기서 따지기 가능한가? )
+                         *
+                         *          새로운 백터를 만든다..
+                         *          ㄴ ( x = 현 위치 x, z = 원래 가려던 목적지 z )
+                         *          ..로 이동처리 한다!
+                         *
+                         *      // 되게 허접해보이네 잘 동작하려나;
+                         *
+                         */
+
+                        // 머라 이름 짓기가 곤란;
+                        boolean isHorizontal = ( Math.round(character.velocityComponent.velocity.z()) == 0) ? true : false;
+                        boolean isVertical = ( Math.round(character.velocityComponent.velocity.x()) == 0) ? true : false;
+
+                        if(!(isHorizontal || isVertical)){
+
+                            System.out.println("막힘 처리.. ");
+
+                            Vector3 newPos = (Vector3) currentPos.clone();
+                            newPos.z(movedPos.z());
+                            character.positionComponent.position.set(newPos);
+
+                        }
+
                        break;
                     }
 
