@@ -65,6 +65,7 @@ public class PositionSystem {
                 MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
 
 
+
                 /* 이동 단위 벡터를 구한다 */
                 //Vector3 unitVec3 = (Vector3) movedPos.clone();
                 Vector3 unitVec3 = Vector3.getTargetDirection(character.positionComponent.position, movedPos);
@@ -103,32 +104,41 @@ public class PositionSystem {
                          *              이동하고자 하는 방향에 가깝게 벽을 타고 내려가든 달려가든
                          *              매끄러운 처리가 되도록 수정.
                          *
-                         * 로    직 :
-                         *      if 이동 방향 벡터가, 타일에 대해 수직/수평이 아니라면 (.. 헐! 이거 어케 따지지 여기서 따지기 가능한가? )
-                         *
-                         *          새로운 백터를 만든다..
-                         *          ㄴ ( x = 현 위치 x, z = 원래 가려던 목적지 z )
-                         *          ..로 이동처리 한다!
-                         *
-                         *      // 되게 허접해보이네 잘 동작하려나;
                          *
                          */
 
-                        // 머라 이름 짓기가 곤란;
+                        /* 아래 조건 안쓰임. 일단 남겨둠.
                         boolean isHorizontal = ( Math.round(character.velocityComponent.velocity.z()) == 0) ? true : false;
                         boolean isVertical = ( Math.round(character.velocityComponent.velocity.x()) == 0) ? true : false;
 
-                        if(!(isHorizontal || isVertical)){
-
-                            System.out.println("막힘 처리.. ");
-
-                            Vector3 newPos = (Vector3) currentPos.clone();
-                            newPos.z(movedPos.z());
-                            character.positionComponent.position.set(newPos);
+                        if(!(isHorizontal && isVertical)){
 
                         }
+                        */
 
-                       break;
+                        System.out.println("매끄럽게 이동 ");
+
+                        /** ... */
+
+                        Vector3 newPosXChanged = (Vector3) character.positionComponent.position.clone();
+                        newPosXChanged.x(movedPos.x());
+
+                        Vector3 newPosZChanged = (Vector3) character.positionComponent.position.clone();
+                        newPosZChanged.z(movedPos.z());
+
+                        if(MapFactory.findTileByPosition(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()).canMove == true){
+
+                            character.positionComponent.position.set(newPosXChanged);
+                        }
+                        else if(MapFactory.findTileByPosition(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z()).canMove == true){
+
+                            character.positionComponent.position.set(newPosZChanged);
+                        }
+
+                        worldMap.charNextPosList.remove(character.entityID);
+
+
+                        break;
                     }
 
 
