@@ -73,7 +73,10 @@ public class CharacterSpawnPointWellSystem {
                 boolean isInTargetRange = false;
 
                 float targetHP = character.hpComponent.currentHP;
-                if( (currentDistance < buffAreaRange) && (targetHP < character.hpComponent.maxHP)) {
+                float targetMP = character.mpComponent.currentMP;
+
+                if( (currentDistance < buffAreaRange)
+                        && ((targetHP < character.hpComponent.maxHP) || (targetMP < character.mpComponent.maxMP))) {
                     isInTargetRange = true;
 
                 }

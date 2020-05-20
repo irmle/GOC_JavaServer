@@ -4327,7 +4327,6 @@ public class WorldMap {
 
             /** 슬롯에 들어갈 몬스터를 결정한다 */
             monsterType = decideJungleMonsterToBeSpawned();
-            monsterType = JungleMobType.LIZARD;
 
             /** 결정된 정글 몬스터의 정보를 참조 */
             jungleInfo = jungleMonsterInfoList.get(monsterType);
@@ -4443,8 +4442,6 @@ public class WorldMap {
         this.monsterExpLevel = level;
         this.gameGrade = grade;
 
-        this.gameGrade = 1;
-        this.monsterExpLevel = 1;
 
     }
 

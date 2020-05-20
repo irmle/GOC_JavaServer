@@ -191,11 +191,13 @@ public class MapFactory implements Cloneable {
         int tileX = (int) Math.floor(Math.abs((posY / tileSize)));
 
 
+/*
         System.out.println("최종목적 좌표 : " + posX + ", "
                 + posY );
 
         System.out.println("최종목적 타일 : " + tileX + ", "
                 + tileY );
+*/
 
 
 

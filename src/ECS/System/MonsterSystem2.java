@@ -209,7 +209,7 @@ public class MonsterSystem2 {
                         targetHpHistory = ((BarricadeEntity) currentTarget).hpHistoryComponent;
                         targetBuff = ((BarricadeEntity) currentTarget).buffActionHistoryComponent;
 
-                        System.out.println("바리케이드 : " + targetID);
+                        //System.out.println("바리케이드 : " + targetID);
                         break;
 
                     /* 객체가 몬스터, 스킬 오브젝트, 투사체인 경우는 패스한다 */
@@ -270,7 +270,7 @@ public class MonsterSystem2 {
             /* 타겟 지정 여부 */
             boolean targetHasSelected = (finalTargetID > 0) ? true : false;
 
-            System.out.println("타겟 지정 되었는가? :  " + targetHasSelected);
+            //System.out.println("타겟 지정 되었는가? :  " + targetHasSelected);
 
             /* 타겟이 지정된 경우, 해당 타겟을 공격할 수 있는지 판별한다 */
             boolean isTargetWithinAttackRange
@@ -284,11 +284,11 @@ public class MonsterSystem2 {
                     = (isTargetWithinAttackRange
                     && isAbleToAttack && isRemainCoolTimeZero) ? true : false;
 
-            System.out.println("쿨타임제로? :  " + isRemainCoolTimeZero + " , " + monster.attackComponent.remainCoolTime);
+            /*System.out.println("쿨타임제로? :  " + isRemainCoolTimeZero + " , " + monster.attackComponent.remainCoolTime);
             System.out.println("몹이 공격 가능한 상태인가? :  " + isAbleToAttack);
             System.out.println("타겟이 범위 내에 있는가? :  " + isTargetWithinAttackRange);
             System.out.println("공격하기로 했는가? :  " + decidedToAttack);
-
+*/
 
             /* 행동 결정 */
             if(isTargetWithinAttackRange){
@@ -303,7 +303,7 @@ public class MonsterSystem2 {
             }
             else{
 
-                System.out.println("타겟이 공격범위 내에 있지 않아");
+                //System.out.println("타겟이 공격범위 내에 있지 않아");
 
                 if(ableToMove){
                     if(targetHasSelected){ //인식범위 내에는 들어있는데, 공격 범위내에 있는 건 아님 => 쫒아간다
@@ -314,7 +314,7 @@ public class MonsterSystem2 {
                          */
                         monster.monsterComponent.movePathType = PathType.NONE;
 
-                        System.out.println("타겟은 선택되었는데, 공격 범위 내에 있는 건 아니다.. 쫒아가야 함");
+                        //System.out.println("타겟은 선택되었는데, 공격 범위 내에 있는 건 아니다.. 쫒아가야 함");
 
                     }
                     else {   // 인식된 타겟이 존재하지 않음 -->> 이동 지점을 따라 이동한다
@@ -323,7 +323,7 @@ public class MonsterSystem2 {
                         if(monster.monsterComponent.movePathType != PathType.NONE){
                             toDoAction = MonsterActionType.MOVE;
 
-                            System.out.println("타겟은 선택되지 않았음, 지정된 Path타입에 따라 이동해야 함.");
+                            //System.out.println("타겟은 선택되지 않았음, 지정된 Path타입에 따라 이동해야 함.");
                         }
                         else{
                             //toDoAction = MonsterActionType.DO_NOTHING;
@@ -332,7 +332,7 @@ public class MonsterSystem2 {
                             MapInfo nearMovePoint = MapFactory.findNearMovePointVer20200213(worldMap, monsterPos);
                             if(nearMovePoint == null){
 
-                                System.out.println("타겟은 선택되지 않았음, 근처 이동포인트가 null임, 그래서 아무것도 안하려고..");
+                                //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트가 null임, 그래서 아무것도 안하려고..");
 
                                 toDoAction = MonsterActionType.DO_NOTHING;
                             }
@@ -356,7 +356,7 @@ public class MonsterSystem2 {
 
                                 toDoAction = MonsterActionType.MOVE;
 
-                                System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
+                                //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
 
 
                             }
@@ -369,15 +369,15 @@ public class MonsterSystem2 {
                 else{
                     toDoAction = MonsterActionType.DO_NOTHING;
 
-                    System.out.println("이동이 불가능함.");
+                    //System.out.println("이동이 불가능함.");
                 }
             }
 
 
             // 테스트
             if(true){
-                System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
-                System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);
+                /*System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
+                System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);*/
             }
 
             Vector3 movedPosition = new Vector3();
@@ -388,7 +388,7 @@ public class MonsterSystem2 {
 
                 case MonsterActionType.DO_NOTHING :
 
-                    System.out.println("아무것도 하지 않는다");
+                    //System.out.println("아무것도 하지 않는다");
 
                     /* 공격 쿨타임을 업데이트한다 */
                     if(monster.attackComponent.remainCoolTime > 0){
@@ -400,7 +400,7 @@ public class MonsterSystem2 {
 
                 case MonsterActionType.ATTACK_TARGET :
 
-                    System.out.println("타겟을 공격한다");
+                    //System.out.println("타겟을 공격한다");
 
 
                     Vector3 targetDir = Vector3.getTargetDirection(monsterPos, finalTargetPosition);
@@ -728,7 +728,7 @@ public class MonsterSystem2 {
                     /** 이동 방향을 결정한다 */
                     if(willBeCrash){
 
-                        System.out.println("충돌이다");
+                        //System.out.println("충돌이다");
 
                         Vector3 crashMobPos = crashMob.positionComponent.position;
 
@@ -1104,7 +1104,7 @@ public class MonsterSystem2 {
         }
         else {
 
-            System.out.println("평행임... 어카지... 왠지그냥 아무 방향으로 줘도 될 것 같은데.. ");
+            //System.out.println("평행임... 어카지... 왠지그냥 아무 방향으로 줘도 될 것 같은데.. ");
             turnedDirection = targetDir;
 
         }

@@ -1794,7 +1794,6 @@ public class GameDataManager {
         float maxMPCoefficient = Float.parseFloat(removePercentage(tokenizer.nextToken()));
 
 
-
         /** 생성 */
 
         float skillCooTime = skillInfoList.get(skillTypeID).skillCoolTime;
