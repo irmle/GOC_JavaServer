@@ -1827,7 +1827,7 @@ public class WorldMap {
                         System.out.println( "레벨업 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //몬스터AI, 상태, 행동 관련 처리
-                        monsterSystem2.onUpdate(tickRate * 0.001f);
+                        //monsterSystem2.onUpdate(tickRate * 0.001f);
 
                         System.out.println( "몬스터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
@@ -3129,7 +3129,11 @@ public class WorldMap {
         for(int i=0; i<size; i++){
 
             BuffAction currentBuff = entity.buffActionHistoryComponent.conditionHistory.get(i);
+
+            System.out.println("스킬타입 =" + currentBuff.skillType + ", 템타입 = " + currentBuff.itemType);
+
             if((currentBuff.skillType == 0) && (currentBuff.itemType == 0)){
+
                 continue;
             }
 
@@ -4037,6 +4041,7 @@ public class WorldMap {
         entity.itemSlotComponent = new ItemSlotComponent();
 
         entity.hpComponent = new HPComponent();
+        characterData.hp *= 10;
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
@@ -4056,7 +4061,7 @@ public class WorldMap {
 
         entity.attackComponent = new AttackComponent();
         entity.attackComponent.attackRange = characterData.attackRange;
-        entity.attackComponent.attackSpeed = characterData.attackSpeed;
+        entity.attackComponent.attackSpeed = characterData.attackSpeed * 5;
         entity.attackComponent.attackDamage = characterData.attackDamage;
 
 
@@ -4084,7 +4089,6 @@ public class WorldMap {
         entity.velocityComponent = new VelocityComponent();
         entity.velocityComponent.velocity = new Vector3(0f, 0f, 0f);
         entity.velocityComponent.moveSpeed = characterData.moveSpeed;
-        //entity.velocityComponent.moveSpeed = 10f;
 
         entity.buffActionHistoryComponent = new BuffActionHistoryComponent();
         entity.buffActionHistoryComponent.conditionHistory = new ArrayList<>();
@@ -4112,92 +4116,6 @@ public class WorldMap {
     /** 2020 02 10 추가한 매서드 끝*/
 
 
-    /** 2020 02 28 정글몹 지정 하드코딩함 권령희 */
-    public void setJungleMonsterSetting(){
-
-        for(int i=0; i<jungleMonsterSlots.size(); i++){
-
-            JungleMonsterSlot slot = jungleMonsterSlots.get(i);
-            switch (slot.slotNum ){
-
-                /*case 1 :
-                case 9 :
-                    slot.jungleMobType = JungleMobType.HUMAN1;
-                    slot.regenTime = 1.5f * 60;
-                    break;
-                case 2 :
-                case 10 :
-                    slot.jungleMobType = JungleMobType.HUMAN2;
-                    slot.regenTime = 1.5f * 60;
-                    break;
-                case 3 :
-                case 11 :
-                    slot.jungleMobType = JungleMobType.HUMAN3;
-                    slot.regenTime = 1.5f * 60;
-                    break;
-                case 4 :
-                case 12 :
-                    slot.jungleMobType = JungleMobType.HUMAN4;
-                    slot.regenTime = 1.5f * 60;
-                    break;
-                case 5 :
-                case 13 :
-                    slot.jungleMobType = JungleMobType.LIZARD;
-                    slot.regenTime = 3f * 60;
-                    break;
-                case 6 :
-                case 14 :
-                    slot.jungleMobType = JungleMobType.FAIRY;
-                    slot.regenTime = 3f * 60;
-                    break;
-                case 7 :
-                case 15 :
-                    slot.jungleMobType = JungleMobType.DRAGON;
-                    slot.regenTime = 5f * 60;
-                    break;
-                case 8 :
-                case 16 :
-                    slot.jungleMobType = JungleMobType.DEVIL;
-                    slot.regenTime = 5f * 60;
-                    break;*/
-
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    slot.jungleMobType = JungleMobType.LIZARD;
-                    slot.regenTime = 3f * 60;
-                    break;
-
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    slot.jungleMobType = JungleMobType.FAIRY;
-                    slot.regenTime = 3f * 60;
-                    break;
-
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                    slot.jungleMobType = JungleMobType.DRAGON;
-                    slot.regenTime = 5f * 60;
-                    break;
-
-                case 13:
-                case 14:
-                case 15:
-                case 16:
-                    slot.jungleMobType = JungleMobType.DEVIL;
-                    slot.regenTime = 5f * 60;
-                    break;
-
-            }
-
-
-        }
-    }
 
     /** 2020 03 09 월요일 권령희 작성 */
     /**
@@ -4409,6 +4327,7 @@ public class WorldMap {
 
             /** 슬롯에 들어갈 몬스터를 결정한다 */
             monsterType = decideJungleMonsterToBeSpawned();
+            monsterType = JungleMobType.LIZARD;
 
             /** 결정된 정글 몬스터의 정보를 참조 */
             jungleInfo = jungleMonsterInfoList.get(monsterType);
@@ -4513,7 +4432,7 @@ public class WorldMap {
         int grade = GameDifficultyGrade.decideGameGrade(teamStrengthPower);
 
         System.out.println("등급 : " + grade);
-        //grade = 1;
+
 
         /** 등장하는 몬스터의 레벨을 구한다 */
         int level = GameDifficultyGrade.decideMonsterExpLevel(grade, teamStrengthPower);
@@ -4523,6 +4442,9 @@ public class WorldMap {
         /** 월드에 세팅 */
         this.monsterExpLevel = level;
         this.gameGrade = grade;
+
+        this.gameGrade = 1;
+        this.monsterExpLevel = 1;
 
     }
 

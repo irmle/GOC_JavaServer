@@ -1105,7 +1105,7 @@ public class MonsterFactory {
         AttackComponent monsterAttack = monster.attackComponent;
         DefenseComponent monsterDefense = monster.defenseComponent;
         SightComponent monsterSight = monster.sightComponent;
-        VelocityComponent monstserMove = monster.velocityComponent;
+        VelocityComponent monsterMove = monster.velocityComponent;
 
         /** 비율에 맞게, 스탯을 적용함 */
 
@@ -1127,7 +1127,7 @@ public class MonsterFactory {
         monsterAttack.attackSpeed *= statRate;
 
         /* 이동속도 */
-        monstserMove.moveSpeed *= statRate;
+        monsterMove.moveSpeed += statRate;
 
         /* 사거리 */
         /**
@@ -1147,7 +1147,7 @@ public class MonsterFactory {
         //monsterAttack.attackRange *= statRate;
 
         /* 시야 */
-        //monsterSight.lookRadius *= statRate;
+        monsterSight.lookRadius += statRate;
 
    }
 

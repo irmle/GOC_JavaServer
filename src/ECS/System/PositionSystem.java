@@ -145,10 +145,14 @@ public class PositionSystem {
                     /** 경계타일인 경우 */
                     /* 현재 타일이 경계인지 아닌지 확인한다 */
                     int mapSize = worldMap.gameMap.length;
-                    boolean isBorderTile =
+                    /*boolean isBorderTile =
                             ((currentTile.arrayX == (mapSize-1))
                                     || (currentTile.arrayY == (mapSize-1)))
-                            ? true : false;
+                            ? true : false;*/
+                    boolean isBorderTile =
+                            ((currentTile.arrayX >= (mapSize-1)) || (currentTile.arrayX <= 0)
+                                    || (currentTile.arrayY >= (mapSize-1)) || (currentTile.arrayY <= 0))
+                                    ? true : false;
 
                     if(isBorderTile){
                         /* 경계 타일(현재 타일)의 중점 좌표를 최종 좌표로 지정한다 */

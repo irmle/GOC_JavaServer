@@ -953,10 +953,6 @@ public class GameDataManager {
                     /* id를 얻는다. */
                     String id = tokenizer.nextToken();
 
-                    // 예외..
-                    if(Integer.parseInt(id) < 5){
-                        //continue;
-                    }
                     switch (id){
 
                         /*
@@ -2074,6 +2070,9 @@ public class GameDataManager {
             case "데미지":
                 effectType = ConditionType.damageAmount;
                 break;
+            case "공격력증가" :
+                effectType = ConditionType.attackDamageRate;
+                break;
             case "이동속도":
             case "이동속도증가":
                 effectType = ConditionType.moveSpeedRate;
@@ -2082,6 +2081,7 @@ public class GameDataManager {
                 effectType = ConditionType.bloodSuckingRate;
                 break;
             case "공격속도":
+            case "공격속도증가":
                 effectType = ConditionType.attackSpeedRate;
                 break;
             case "최대체력증가":

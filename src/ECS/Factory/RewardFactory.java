@@ -186,6 +186,8 @@ public class RewardFactory {
      */
     public static Reward createRewardByKillJungleMonster(int deadEntityType, int deadEntityID, int deadEntityLevel){
 
+        System.out.println("정글몹 타입 번호 : " + deadEntityType);
+
         Reward reward;
 
         int rewardType = RewardType.KILL_MONSTER_JUNGLE_MONSTER;
@@ -317,7 +319,7 @@ public class RewardFactory {
      */
     public static BuffAction createJungleBuffEffect(int jungleMobType, String effectName, int effectEntityID){
 
-        /** 터렛 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
+        /** 정글 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
         BuffInfo effectInfo = jungleBuffEffectInfoLIST.get(jungleMobType).get(effectName);
 
         /** 효과의 지속시간을 구한다 (필요하다면) */
@@ -347,6 +349,7 @@ public class RewardFactory {
         // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
         BuffAction newEffect = new BuffAction(jungleMobType, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
 
+        System.out.println("정글효과객체 생성 - 정글몹 타입 번호 : " + jungleMobType);
 
         /** 효과 내용을 채운다 */
         // BuffAction 객체에, 실제 효과를 부여하기 위한 처리를 한다. 경우에 따라, 스킬 시전자 정보 혹은 스킬레벨 정보를 참조해야 한다.
