@@ -4041,7 +4041,7 @@ public class WorldMap {
         entity.itemSlotComponent = new ItemSlotComponent();
 
         entity.hpComponent = new HPComponent();
-        characterData.hp *= 10;
+        //characterData.hp *= 10;
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
@@ -4061,7 +4061,7 @@ public class WorldMap {
 
         entity.attackComponent = new AttackComponent();
         entity.attackComponent.attackRange = characterData.attackRange;
-        entity.attackComponent.attackSpeed = characterData.attackSpeed * 5;
+        entity.attackComponent.attackSpeed = characterData.attackSpeed;
         entity.attackComponent.attackDamage = characterData.attackDamage;
 
 

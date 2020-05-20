@@ -1772,6 +1772,29 @@ public class GameDataManager {
         float maxHPIncrRate = Float.parseFloat(removePercentage(tokenizer.nextToken()));
 
 
+        /**
+         * 작성날짜 : 2020 05 20 수
+         * 작성내용 :
+         *      -- 스킬별, 스킬 레벨별, 스탯별 적용 계수값
+         */
+
+        /* 공격력 계수 */
+        float attackDamageCoefficient = Float.parseFloat(removePercentage(tokenizer.nextToken()));
+
+        /* 방어력 계수 */
+        float defenseCoefficient = Float.parseFloat(removePercentage(tokenizer.nextToken()));
+
+        /* 공격속도 계수 */
+        float attackSpeedCoefficient = Float.parseFloat(removePercentage(tokenizer.nextToken()));
+
+        /* 최대체력 계수 */
+        float maxHPCoefficient = Float.parseFloat(removePercentage(tokenizer.nextToken()));
+
+        /* 최대마력 계수 */
+        float maxMPCoefficient = Float.parseFloat(removePercentage(tokenizer.nextToken()));
+
+
+
         /** 생성 */
 
         float skillCooTime = skillInfoList.get(skillTypeID).skillCoolTime;
@@ -1779,7 +1802,8 @@ public class GameDataManager {
                 attackDamage, skillRange, attackRange,
                 flyingObjSpeed,
                 moveSpeedIncrRate, attackSpeedIncrRate, bloodSuckingRate, maxHPIncrRate, freezingTime,
-                criticalAppearProbRate, criticalDamageRate,criticalBonusDamRate);
+                criticalAppearProbRate, criticalDamageRate,criticalBonusDamRate,
+                attackDamageCoefficient, defenseCoefficient, attackSpeedCoefficient, maxHPCoefficient, maxMPCoefficient);
 
         return newSkillInfo;
     }

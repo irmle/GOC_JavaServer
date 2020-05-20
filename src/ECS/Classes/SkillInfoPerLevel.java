@@ -36,7 +36,15 @@ public class SkillInfoPerLevel implements Cloneable {
     public float requireMP;
 
 
-    public SkillInfoPerLevel(int level, float durationTime, float coolTime, float attackDamage, float range, float attackRange, float flyingObjectSpeed, float moveSpeedRate, float attackSpeedRate, float bloodSuckingRate, float maxHpRate, float freezingTime, float criticalChanceRate, float criticalDamageRate, float criticalBonusDamageRate) {
+    /* 2020 05 20 추가 ; 스킬 데미지 계산 시 적용할 각종 스탯 계수 */
+    public float attackDamageCoefficient;
+    public float defenseCoefficient;
+    public float attackSpeedCoefficient;
+    public float maxHPCoefficient;
+    public float maxMPCoefficient;
+
+
+    public SkillInfoPerLevel(int level, float durationTime, float coolTime, float attackDamage, float range, float attackRange, float flyingObjectSpeed, float moveSpeedRate, float attackSpeedRate, float bloodSuckingRate, float maxHpRate, float freezingTime, float criticalChanceRate, float criticalDamageRate, float criticalBonusDamageRate, float attackDamageCoefficient, float defenseCoefficient, float attackSpeedCoefficient, float maxHPCoefficient, float maxMPCoefficient) {
         this.level = level;
         this.durationTime = durationTime;
         this.coolTime = coolTime;
@@ -52,6 +60,13 @@ public class SkillInfoPerLevel implements Cloneable {
         this.criticalChanceRate = criticalChanceRate;
         this.criticalDamageRate = criticalDamageRate;
         this.criticalBonusDamageRate = criticalBonusDamageRate;
+
+        this.attackDamageCoefficient = attackDamageCoefficient;
+        this.defenseCoefficient = defenseCoefficient;
+        this.attackSpeedCoefficient = attackSpeedCoefficient;
+        this.maxHPCoefficient = maxHPCoefficient;
+        this.maxMPCoefficient = maxMPCoefficient;
+
     }
 
     // 기존 스킬 &  새로 추가된 변수들을 사용하지 않는 경우에 사용하는 생성자. >> 이것도.. 나중에 좀 더 정교하게 바뀔 것.
@@ -74,6 +89,13 @@ public class SkillInfoPerLevel implements Cloneable {
         criticalDamageRate = 0f;
         criticalBonusDamageRate = 0f;
         requireMP = 0f;
+
+        this.attackDamageCoefficient = 1;
+        this.defenseCoefficient = 1;
+        this.attackSpeedCoefficient = 1;
+        this.maxHPCoefficient = 1;
+        this.maxMPCoefficient = 1;
+
     }
 
     /**

@@ -7931,6 +7931,16 @@ public class SkillFactory {
 
         }
 
+
+        /**
+         * 작성날짜 : 2020 05 21
+         * 작성내용 : 계수 적용 처리
+         */
+
+        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillLevel);
+        effectValue = applyCoefficientValue(effectValue, skillUser, skillInfo);
+
+
         /* 예외처리
             ; 일반 '데미지' 타입인 경우, 해당 공격이 평탄지, 크리티컬인지 판정도 거처야 한다. */
 
@@ -7949,6 +7959,36 @@ public class SkillFactory {
 
         return valueEffect;
 
+    }
+
+
+    /**
+     * 작성날짜 : 2020 05 21 목 새벽
+     * 작성내용 :
+     *      -- 계수 적용 부분
+     */
+    public static float applyCoefficientValue(float effectValue, CharacterEntity skillUser, SkillInfoPerLevel skillInfo){
+
+        /** 참조 */
+
+        AttackComponent attackComponent = skillUser.attackComponent;
+        DefenseComponent defenseComponent =skillUser.defenseComponent;
+        HPComponent hpComponent = skillUser.hpComponent;
+        MPComponent mpComponent = skillUser.mpComponent;
+
+
+        /** 적용 */
+
+        float sumOfCoefficientValue
+                = ( attackComponent.attackDamage * skillInfo.attackDamageCoefficient)
+                + ( defenseComponent.defense * skillInfo.defenseCoefficient)
+                + ( attackComponent.attackSpeed * skillInfo.attackSpeedCoefficient)
+                + ( hpComponent.originalMaxHp * skillInfo.maxHPCoefficient)
+                + ( mpComponent.originalMaxMP * skillInfo.maxMPCoefficient);
+
+        effectValue += sumOfCoefficientValue;
+
+        return effectValue;
     }
 
 
@@ -8066,6 +8106,8 @@ public class SkillFactory {
                 break;
 
         }
+
+
 
         return effectValue;
     }

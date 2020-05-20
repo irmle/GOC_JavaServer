@@ -265,7 +265,7 @@ public class DamageHistorySystem {
                         attackerAttack = ((CharacterEntity)attacker).attackComponent;
                         attackerCondition = ((CharacterEntity)attacker).conditionComponent;
 
-                        defaultDamage = getMaxDamByCharacterTypeForCalculatingFlatDam(defaultDamage, (CharacterEntity)attacker);
+                        //defaultDamage = getMaxDamByCharacterTypeForCalculatingFlatDam(defaultDamage, (CharacterEntity)attacker);
                         break;
                     case EntityType.MonsterEntity :
                         attacker = worldMap.monsterEntity.get(currentDamage.unitID);
