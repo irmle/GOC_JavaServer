@@ -427,6 +427,19 @@ public class SkillFactory {
 
                         skillType = SkillType.MAGICIAN_NORMAL_ATTACK;
                         skillInfo = skillInfoPerLevelLIST.get(SkillType.MAGICIAN_NORMAL_ATTACK).get(1);
+
+                        /**
+                         * 2020 05 21
+                         * 마나 소모 추가
+                         */
+                        MPComponent mpComponent = attackerEntity.mpComponent;
+                        if(mpComponent.currentMP < skillInfo.requireMP){
+                            return;
+                        }
+
+                        // 마나 소모.
+                        attackerEntity.mpComponent.currentMP -= skillInfo.requireMP;
+
                         break;
                     }
                     case CharacterType.ARCHER: {
