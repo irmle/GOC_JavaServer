@@ -154,6 +154,20 @@ public class BuffActionSystem {
 
                             break;
 
+
+                        case SkillType.KNIGHT_INCR_HP :
+                        case SkillType.JUNGLE_BUFF_LIZARD :
+
+                            HPComponent hpComponent = character.hpComponent;
+                            hpComponent.maxHP = hpComponent.originalMaxHp;
+                            break;
+
+                        case SkillType.JUNGLE_BUFF_FAIRY :
+
+                            MPComponent mpComponent = character.mpComponent;
+                            mpComponent.maxMP = mpComponent.originalMaxMP;
+                            break;
+
                         default:
 
                             break;
