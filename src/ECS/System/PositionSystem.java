@@ -116,7 +116,7 @@ public class PositionSystem {
                         }
                         */
 
-                        System.out.println("매끄럽게 이동 ");
+                        //System.out.println("매끄럽게 이동 ");
 
                         /** ... */
 
@@ -306,8 +306,8 @@ public class PositionSystem {
             unitVec3.setSpeed(deltaTime);   // 흠..
 
 
-            System.out.println("이동량 : " + unitVec3.x() + ", "
-                    + unitVec3.y() + ", " + unitVec3.z());
+            /*System.out.println("이동량 : " + unitVec3.x() + ", "
+                    + unitVec3.y() + ", " + unitVec3.z());*/
 
 
             /* 이동 가능한 지점 혹은 목표지점에 도달할 때 까지 반복 */

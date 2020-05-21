@@ -98,7 +98,7 @@ public class FlyingObjectSystem {
 
                     if(turretNotExist){
                         attackTurret  = null;
-                        System.out.println("투사체를 생성한 포탑이 파괴되었습니다.");
+                        //System.out.println("투사체를 생성한 포탑이 파괴되었습니다.");
                     }
                     else{
                         attackTurret = worldMap.attackTurretEntity.get(flyingObjectComponent.userEntityID);
@@ -283,7 +283,7 @@ public class FlyingObjectSystem {
                                                     turretType, "데미지", attackTurret, attackTurret.entityID));
                                 }
                                 else{
-                                    System.out.println("투사체를 생성한 포탑이 파괴되어, 해당 투사체의 데미지 처리를 하지 않습니다.");
+                                    //System.out.println("투사체를 생성한 포탑이 파괴되어, 해당 투사체의 데미지 처리를 하지 않습니다.");
                                 }
 
                             }

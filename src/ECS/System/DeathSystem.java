@@ -318,7 +318,7 @@ public class DeathSystem {
         }
 
 
-        System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
+        //System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
 
 
         /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
@@ -596,7 +596,7 @@ public class DeathSystem {
 
 
 
-        System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
+        //System.out.println("킬수 : " + worldMap.playerGameScoreList.get(killer.entityID).monsterKillCount);
 
         /* 죽은 몹을 삭제 요청 목록에 넣어준다 */
         worldMap.requestDeleteQueue.add(deadMonster);
@@ -604,7 +604,7 @@ public class DeathSystem {
         //사망처리된 몬스터를 목록에서 삭제한다.
         worldMap.monsterEntity.remove(death.deadEntityID);
         worldMap.entityMappingList.remove(death.deadEntityID);
-        System.out.println("몬스터 죽음 처리 완료");
+        //System.out.println("몬스터 죽음 처리 완료");
 
     }
 

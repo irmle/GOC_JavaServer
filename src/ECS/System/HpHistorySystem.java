@@ -178,7 +178,7 @@ public class HpHistorySystem {
                                         // 일단 아래 코드가 동작하지 않도록 제어.. 사망 시스템 나중에 돌리자
             if(characterIsDead){
 
-                System.out.println("캐릭터가 죽었습니다..");
+                //System.out.println("캐릭터가 죽었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int deadCharacter = character.entityID;
@@ -254,7 +254,7 @@ public class HpHistorySystem {
                     sum -= damageHistory.amount;
                     lastDamagedEntity = damageHistory.unitID;
 
-                    System.out.println(monster.monsterComponent.monsterName + monster.entityID + "가 데미지" + damageHistory.amount + "를 받습니다.");
+                    //System.out.println(monster.monsterComponent.monsterName + monster.entityID + "가 데미지" + damageHistory.amount + "를 받습니다.");
 
                     /* 2020 01 24 추가 ; 흡혈 처리 */
                     //blooldSuck(lastDamagedEntity, damageHistory.amount);
@@ -394,7 +394,7 @@ public class HpHistorySystem {
                 /** 죽은 몬스터 앤티티를, 앤티티 삭제 요청 큐에 집어넣는다. */
                 worldMap.requestDeleteQueue.add(monster);
 
-                System.out.println( monster.monsterComponent.monsterName + monster.entityID  +"가 죽었습니다.");
+                //System.out.println( monster.monsterComponent.monsterName + monster.entityID  +"가 죽었습니다.");
 
             }
 
@@ -444,7 +444,7 @@ public class HpHistorySystem {
             boolean barriIsDestroyed = (hpComponent.currentHP <= 0) ? true : false;
             if(barriIsDestroyed) {
 
-                System.out.println("바리케이드가 파괴되었습니다..");
+                //System.out.println("바리케이드가 파괴되었습니다..");
 
                 // 사망 정보를 담은 객체를 하나 만들어
                 int destroyedBarri = barricade.entityID;

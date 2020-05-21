@@ -71,6 +71,12 @@ public class SkillType {
     public static final int WELL_RECOVERY = 101;
 
 
+    /*********************** 정글 버프 처리를 위해 임시(?)로 여기에 추가 *******/
+
+    public static final int JUNGLE_BUFF_LIZARD = 201;
+    public static final int JUNGLE_BUFF_FAIRY = 202;
+    public static final int JUNGLE_BUFF_DRAGON = 203;
+    public static final int JUNGLE_BUFF_DEVIL = 204;
 
 
 

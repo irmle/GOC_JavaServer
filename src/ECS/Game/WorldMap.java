@@ -2372,7 +2372,7 @@ public class WorldMap {
         int size = this.requestCreateQueue.size();
         if (size > 0) {
 
-            System.out.println("생성하려는 Entity의 갯수 : " + size);
+            //System.out.println("생성하려는 Entity의 갯수 : " + size);
 
             for (int i = 0; i < size; i++) {
                 Entity target = requestCreateQueue.poll();
@@ -2455,7 +2455,7 @@ public class WorldMap {
             //다 송신하였으면 재사용을 위해 clear처리!
             worldEntityData.clear();
 
-            System.out.println("CreateRequestQueue : " + size);
+            //System.out.println("CreateRequestQueue : " + size);
         }
     }
 
@@ -2529,7 +2529,7 @@ public class WorldMap {
             //다 담아졌으면, 이 월드맵에 접속중인 유저들의 RMI_ID목록을 가져옴.
             RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
 
-            System.out.println("DestroyRequestQueue : " + size);
+            //System.out.println("DestroyRequestQueue : " + size);
 
             //파괴해야할 목록을 모든 클라이언트에 중계한다.
             server_to_client.destroyWorldMapEntityInfo(TARGET, RMI_Context.Reliable_Public_AES256, destroyEntityDataList);
@@ -3130,7 +3130,7 @@ public class WorldMap {
 
             BuffAction currentBuff = entity.buffActionHistoryComponent.conditionHistory.get(i);
 
-            System.out.println("스킬타입 =" + currentBuff.skillType + ", 템타입 = " + currentBuff.itemType);
+            //System.out.println("스킬타입 =" + currentBuff.skillType + ", 템타입 = " + currentBuff.itemType);
 
             if((currentBuff.skillType == 0) && (currentBuff.itemType == 0)){
 
@@ -4003,7 +4003,7 @@ public class WorldMap {
      */
     public CharDataFromJS parsePlayerInfoJSonToData(JsonObject playerInfo){
 
-        System.out.println("혹시 가디언인포라는 이름이 없어서 널이 뜬다던가??");
+        //System.out.println("혹시 가디언인포라는 이름이 없어서 널이 뜬다던가??");
 
         CharDataFromJS charData = new CharDataFromJS(playerInfo.getAsJsonObject("guardianINFO"));
 

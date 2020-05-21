@@ -202,7 +202,7 @@ public class SkillFactory {
         ConditionComponent attackerCondition = attacker.conditionComponent;
         AttackComponent attackerAttack = attacker.attackComponent;
 
-        System.out.println("doAttack 캐릭터 타입 : " + attacker.characterComponent.characterType);
+        //System.out.println("doAttack 캐릭터 타입 : " + attacker.characterComponent.characterType);
 
         /* 캐릭터 타입(직업)별 평타 혹은 특수 처리 */
         switch (attacker.characterComponent.characterType) {
@@ -217,7 +217,7 @@ public class SkillFactory {
                 /* 난사 스킬 효과가 지속되고 있는 경우 */
                 if(attackerCondition.isArcherFireActivated){
 
-                    System.out.println("궁수 난사 스킬이 적용된 공격" );
+                    //System.out.println("궁수 난사 스킬이 적용된 공격" );
 
                     /* 난사스킬 활성화 시 평타 공격 처리 */
                     doAttack_onArcherFire(targetWorldMap, attacker);
@@ -225,7 +225,7 @@ public class SkillFactory {
                 }
                 else if(attackerCondition.isArcherHeadShotActivated){
 
-                    System.out.println("궁수 헤드샷 스킬 적용된 공격");
+                    //System.out.println("궁수 헤드샷 스킬 적용된 공격");
 
                     /* 헤드샷 스킬 사용 직후 평타 공격 처리 */
                     doAttack_onArcherHeadShot(targetWorldMap, attacker, event);
@@ -253,9 +253,9 @@ public class SkillFactory {
                 CharacterEntity attackerEntity = targetWorldMap.characterEntity.get(event.attackerEntityID);
 
                 //대상Entity의 종류가 몬스터이므로 몬스터의 위치를 지정한다.
-                System.out.println(event.targetEntityID);
+                //System.out.println(event.targetEntityID);
                 MonsterEntity targetEntity = targetWorldMap.monsterEntity.get(event.targetEntityID);
-                System.out.println(event.targetEntityID);
+                //System.out.println(event.targetEntityID);
                 if(targetEntity == null){
                     System.out.println("널이라네..왜지");
                 }
@@ -400,7 +400,7 @@ public class SkillFactory {
 
                 //투사체를 생성하는 원거리 캐릭터의 경우.
 
-                System.out.println("투사체를 생성함. ");
+                //System.out.println("투사체를 생성함. ");
 
                 SkillInfoPerLevel skillInfo;
                 int skillType;
@@ -594,7 +594,7 @@ public class SkillFactory {
      */
     public static void useSkill2(WorldMap worldMap, ActionUseSkill event){
 
-        System.out.println("클라이언트가 보낸 슬롯 넘버 : " + event.skillSlotNum);
+        //System.out.println("클라이언트가 보낸 슬롯 넘버 : " + event.skillSlotNum);
 
         /* 스킬 시전자 및 시전 스킬 정보 */
         CharacterEntity skillUser =  worldMap.characterEntity.get(event.userEntityID);
@@ -623,9 +623,9 @@ public class SkillFactory {
             for(int i=0; i<skillUser.skillSlotComponent.skillSlotList.size(); i++){
                 slot = skillUser.skillSlotComponent.skillSlotList.get(i);
 
-                System.out.println("슬롯 사이즈 : " + skillUser.skillSlotComponent.skillSlotList.size());
+                //System.out.println("슬롯 사이즈 : " + skillUser.skillSlotComponent.skillSlotList.size());
 
-                System.out.println("슬롯 번호 : " + slot.slotNum);
+                //System.out.println("슬롯 번호 : " + slot.slotNum);
 
                 if(slot.slotNum == event.skillSlotNum){
                     skillType = slot.skillinfo.skillType;
@@ -644,14 +644,14 @@ public class SkillFactory {
         }
         /* ㄴ 보니까.. 이 매서드 내에선 쓸 데 없는데... 왜 했지?? */
 
-        System.out.println("스킬 타입 : " + skillType );
+        //System.out.println("스킬 타입 : " + skillType );
 
         switch (skillType){
 
             /** 궁수 */
             case SkillType.ARCHER_NORMAL_ATTACK :
 
-                System.out.println("궁수 평타 사용");
+                //System.out.println("궁수 평타 사용");
                 break;
             case SkillType.ARCHER_POWER_SHOT :
 
@@ -2756,12 +2756,12 @@ public class SkillFactory {
 
             startPosition.movePosition(startPosition, direction);
 
-            System.out.println("스킬 거리비율 : " + event.skillDistanceRate);
+            /*System.out.println("스킬 거리비율 : " + event.skillDistanceRate);
             System.out.println("장판 시작 위치 : ");
             startPosition.printVectorInfo();
             System.out.println("스킬 시전방향 : ");
             direction.printVectorInfo();
-
+*/
 
 
 
@@ -5808,12 +5808,12 @@ public class SkillFactory {
 
         startPosition.movePosition(startPosition, skillDir);
 
-
+/*
         System.out.println("스킬 거리비율 : " + event.skillDistanceRate);
         System.out.println("장판 시작 위치 : ");
         startPosition.printVectorInfo();
         System.out.println("스킬 시전방향 : ");
-        skillDir.printVectorInfo();
+        skillDir.printVectorInfo();*/
 
 
         /* skillObject component */

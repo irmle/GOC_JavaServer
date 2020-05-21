@@ -1189,7 +1189,7 @@ public class MonsterFactory {
         monsterAttack.attackSpeed *= statRate;
 
         /* 이동속도 */
-        monstserMove.moveSpeed *= statRate;
+        //monstserMove.moveSpeed *= statRate;
 
         /* 사거리 */
         //monsterAttack.attackRange *= statRate;

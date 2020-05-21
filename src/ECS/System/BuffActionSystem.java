@@ -122,7 +122,7 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    System.out.println("버프를 제거합니다.");
+                    //System.out.println("버프를 제거합니다.");
 
                     /** 2020 03 20 권령희 추가 */
                     /**
@@ -680,7 +680,7 @@ public class BuffActionSystem {
                 /** 버프액션의 남은 시간을 계산 후 깎는다 */
                 buffAction.remainTime -= deltaTime;
 
-                System.out.println("남은  지속시간 : " + buffAction.remainTime);
+                //System.out.println("남은  지속시간 : " + buffAction.remainTime);
 
                 if(buffAction.remainTime < 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
@@ -1981,7 +1981,7 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
+                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 

@@ -11,7 +11,7 @@ public class Logic_moveCharacter {
     public static void RMI_Packet(RMI_ID rmi_id, short rmi_ctx, int worldMapID, CharacterMoveData characterMoveData)
     {
         //do something.
-        System.out.println("worldMapID = "+worldMapID+ " / entityID ="+ characterMoveData.entityID+" "+characterMoveData.posX+"/"+characterMoveData.posY+"/"+characterMoveData.posZ);
+        //System.out.println("worldMapID = "+worldMapID+ " / entityID ="+ characterMoveData.entityID+" "+characterMoveData.posX+"/"+characterMoveData.posY+"/"+characterMoveData.posZ);
 
         /* 유저가 속한 월드를 찾는다 */
         WorldMap worldmap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
@@ -39,13 +39,13 @@ public class Logic_moveCharacter {
             character.velocityComponent.velocity.set(characterMoveData.velX, characterMoveData.velY, characterMoveData.velZ);
         }*/
 
-        System.out.println("이동 좌표 : " + characterMoveData.posX + ", "
+        /*System.out.println("이동 좌표 : " + characterMoveData.posX + ", "
                 + characterMoveData.posY + ", " + characterMoveData.posZ );
         System.out.println("회전방향 : " + characterMoveData.quarternionY + ", "
                 + characterMoveData.quarternionZ );
         System.out.println("속력 : " + characterMoveData.velX + ", "
                 + characterMoveData.velY + ", " + characterMoveData.velZ );
-
+*/
 
         character.rotationComponent.y = characterMoveData.quarternionY;
         character.rotationComponent.z = characterMoveData.quarternionZ;

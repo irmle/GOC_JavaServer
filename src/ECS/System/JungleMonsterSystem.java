@@ -534,28 +534,28 @@ public class JungleMonsterSystem {
 
     public void moveTo(MonsterEntity monster, MapInfo targetTile){
 
-        System.out.println("moveTo");
+        //System.out.println("moveTo");
         /* 몹 정보 */
         PositionComponent monsterPos = monster.positionComponent;
         Vector3 currentPos = monsterPos.position;
-        System.out.println("몬스터 위치 : " + currentPos.x() + ", " + currentPos.z());
+        //System.out.println("몬스터 위치 : " + currentPos.x() + ", " + currentPos.z());
 
         float mobMoveSpeed = monster.velocityComponent.moveSpeed;
         float moveSpeedBonus = monster.conditionComponent.moveSpeedBonus;
         float moveSpeedRate = monster.conditionComponent.moveSpeedRate;
 
-        System.out.println("몬스터 속도 : " + mobMoveSpeed);
+        /*System.out.println("몬스터 속도 : " + mobMoveSpeed);
         System.out.println("몬스터 속도보너스 : " + moveSpeedBonus);
         System.out.println("몬스터 속도비율 : " + moveSpeedRate);
 
         System.out.println("타겟 위치 : " + targetTile.getPixelPosition().x() + ", " +
                 targetTile.getPixelPosition().z());
         System.out.println("타겟 위치 타일 : " + targetTile.arrayX + ", " + targetTile.arrayY);
-
+*/
         Vector3 targetPos = targetTile.getPixelPosition();
         Vector3 directionToTarget
                 = Vector3.normalizeVector(currentPos, targetPos);
-        System.out.println("단위백터 : " + directionToTarget.x() + ", " + directionToTarget.z());
+        //System.out.println("단위백터 : " + directionToTarget.x() + ", " + directionToTarget.z());
         float movementSpeedToTarget
                 = 0.1f * (mobMoveSpeed + moveSpeedBonus) * moveSpeedRate;
         Vector3 moveVectorToTarget
@@ -564,7 +564,7 @@ public class JungleMonsterSystem {
         Vector3 movementPosToTarget = (Vector3) currentPos.clone();
         movementPosToTarget.movePosition(movementPosToTarget, moveVectorToTarget);
 
-        System.out.println("이동 위치 : " + movementPosToTarget.x() + ", " + movementPosToTarget.z());
+        //System.out.println("이동 위치 : " + movementPosToTarget.x() + ", " + movementPosToTarget.z());
 
         currentPos.set(movementPosToTarget);
 
@@ -732,7 +732,7 @@ public class JungleMonsterSystem {
      */
     public void regenMonster(JungleMonsterSlot slot){
 
-        System.out.println("몸 리벤 처리 함 ");
+        //System.out.println("몸 리벤 처리 함 ");
 
         /** GDM 데이터 참조 */
         HashMap<Integer, MonsterInfo> jungleMonsterInfoList = GameDataManager.jungleMonsterInfoList;
@@ -740,8 +740,8 @@ public class JungleMonsterSystem {
 
         /** 다음에 생성될 정글 몬스터를 랜덤으로 결정한다 */
         int newType = worldMap.decideJungleMonsterToBeSpawned();
-        System.out.println("기존 타입 : " + slot.jungleMobType);
-        System.out.println("결정된 타입 : " + newType);
+        //System.out.println("기존 타입 : " + slot.jungleMobType);
+        //System.out.println("결정된 타입 : " + newType);
 
         /** 생성될 몹 타입을 슬롯에 지정한다 */
         jungleInfo = jungleMonsterInfoList.get(newType);
@@ -839,7 +839,7 @@ public class JungleMonsterSystem {
         boolean needRecovery = monsterHp.checkIfNeedHpRecovery();
         if(needRecovery){
 
-            System.out.println("정글 회복 효과를 적용합니다 ");
+            //System.out.println("정글 회복 효과를 적용합니다 ");
 
             /** 회복효과 생성 및 적용 */
             monsterBuffList.conditionHistory.add(
