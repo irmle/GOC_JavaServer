@@ -607,7 +607,16 @@ public class BuffActionSystem {
 
             /* 지금까지 누적된 컴포넌트 정보로 캐릭터의 상태를 업데이트해준다. */
             character.conditionComponent = newCondition;  // 얉은복사(?)로 문제없으려나.. => 나중에 문제생기면, clone() 쓰지머.
-            applyNewCharCondValue(character);
+
+            HPComponent hpComponent = character.hpComponent;
+            if(hpComponent.originalMaxHp == hpComponent.maxHP){
+                applyNewCharCondValue_HP(character);
+            }
+
+            MPComponent mpComponent = character.mpComponent;
+            if(mpComponent.originalMaxMP == mpComponent.maxMP){
+                applyNewCharCondValue_MP(character);
+            }
 
 
             /** 테스트용 로그 출력 */
@@ -2819,11 +2828,10 @@ public class BuffActionSystem {
      * 아 이거 공식이.. 어느쪽을 먼저 적용해야 되는거지...
      * @param character
      */
-    public void applyNewCharCondValue(CharacterEntity character){
+    public void applyNewCharCondValue_HP(CharacterEntity character){
 
         ConditionComponent condition = character.conditionComponent;
         HPComponent hpComponent = character.hpComponent;
-        MPComponent mpComponent = character.mpComponent;
 
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
@@ -2833,6 +2841,12 @@ public class BuffActionSystem {
         if(hpComponent.currentHP > hpComponent.maxHP){
             hpComponent.currentHP = hpComponent.maxHP;
         }
+    }
+
+    public void applyNewCharCondValue_MP(CharacterEntity character){
+
+        ConditionComponent condition = character.conditionComponent;
+        MPComponent mpComponent = character.mpComponent;
 
         /** 최대 마력 처리 */
         float maxMpRate = condition.maxMPRate;

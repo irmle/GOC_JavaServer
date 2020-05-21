@@ -1109,7 +1109,7 @@ public class MonsterSystem2 {
 
         }
 
-        turnedDirection.printVectorInfo();
+        //turnedDirection.printVectorInfo();
 
         return turnedDirection;
     }

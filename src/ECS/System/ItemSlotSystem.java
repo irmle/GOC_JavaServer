@@ -369,7 +369,7 @@ public class ItemSlotSystem {
 
         /** 효과 객체를 생성한다 (틀) */
         // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
-        BuffAction newEffect = new BuffAction(itemType, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
+        BuffAction newEffect = new BuffAction(0, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
         newEffect.itemType = itemType;
 
         /** 효과 내용을 채운다 */

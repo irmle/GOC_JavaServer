@@ -3133,7 +3133,11 @@ public class WorldMap {
             //System.out.println("스킬타입 =" + currentBuff.skillType + ", 템타입 = " + currentBuff.itemType);
 
             if((currentBuff.skillType == 0) && (currentBuff.itemType == 0)){
+                continue;
+            }
 
+            if((currentBuff.skillType != 0) && (currentBuff.boolParam.size() > 0)
+                    && (currentBuff.boolParam.get(0).type == ConditionType.isDisableSkill)){
                 continue;
             }
 
