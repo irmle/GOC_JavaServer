@@ -3079,6 +3079,8 @@ public class WorldMap {
 
             skillSlotData.slotNum = skillSlot.slotNum;
             skillSlotData.skillLevel = skillSlot.skillLevel;
+
+            skillSlotData.skillCoolTime = skillSlot.skillinfo.skillCoolTime;
             skillSlotData.remainCoolTime = skillSlot.remainCoolTime;
 
             skillSlotData.skillInfo = new SkillInfoData();

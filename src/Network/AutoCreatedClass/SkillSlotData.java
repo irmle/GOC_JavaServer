@@ -10,6 +10,7 @@ public class SkillSlotData {
     public SkillInfoData skillInfo;
     public int skillLevel;
     public float remainCoolTime;
+    public float skillCoolTime;
 
     public SkillSlotData() { }
 
@@ -18,6 +19,7 @@ public class SkillSlotData {
         this.skillInfo = new SkillInfoData(data.skillInfo());
         this.skillLevel = data.skillLevel();
         this.remainCoolTime = data.remainCoolTime();
+        this.skillCoolTime = data.skillCoolTime();
     }
 
     public static SkillSlotData createSkillSlotData(byte[] data)

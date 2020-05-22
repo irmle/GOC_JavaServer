@@ -23,13 +23,16 @@ public final class flat_SkillSlotData extends Table {
   public flat_SkillInfoData skillInfo(flat_SkillInfoData obj) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
   public int skillLevel() { int o = __offset(8); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
   public float remainCoolTime() { int o = __offset(10); return o != 0 ? bb.getFloat(o + bb_pos) : 0.0f; }
+  public float skillCoolTime() { int o = __offset(12); return o != 0 ? bb.getFloat(o + bb_pos) : 0.0f; }
 
   public static int createflat_SkillSlotData(FlatBufferBuilder builder,
       int slotNum,
       int skillInfoOffset,
       int skillLevel,
-      float remainCoolTime) {
-    builder.startObject(4);
+      float remainCoolTime,
+      float skillCoolTime) {
+    builder.startObject(5);
+    flat_SkillSlotData.addSkillCoolTime(builder, skillCoolTime);
     flat_SkillSlotData.addRemainCoolTime(builder, remainCoolTime);
     flat_SkillSlotData.addSkillLevel(builder, skillLevel);
     flat_SkillSlotData.addSkillInfo(builder, skillInfoOffset);
@@ -37,11 +40,12 @@ public final class flat_SkillSlotData extends Table {
     return flat_SkillSlotData.endflat_SkillSlotData(builder);
   }
 
-  public static void startflat_SkillSlotData(FlatBufferBuilder builder) { builder.startObject(4); }
+  public static void startflat_SkillSlotData(FlatBufferBuilder builder) { builder.startObject(5); }
   public static void addSlotNum(FlatBufferBuilder builder, int slotNum) { builder.addInt(0, slotNum, 0); }
   public static void addSkillInfo(FlatBufferBuilder builder, int skillInfoOffset) { builder.addOffset(1, skillInfoOffset, 0); }
   public static void addSkillLevel(FlatBufferBuilder builder, int skillLevel) { builder.addInt(2, skillLevel, 0); }
   public static void addRemainCoolTime(FlatBufferBuilder builder, float remainCoolTime) { builder.addFloat(3, remainCoolTime, 0.0f); }
+  public static void addSkillCoolTime(FlatBufferBuilder builder, float skillCoolTime) { builder.addFloat(4, skillCoolTime, 0.0f); }
   public static int endflat_SkillSlotData(FlatBufferBuilder builder) {
     int o = builder.endObject();
     return o;
@@ -49,7 +53,7 @@ public final class flat_SkillSlotData extends Table {
     public static int createflat_SkillSlotData(FlatBufferBuilder builder,
  SkillSlotData data) {
         int skillInfoOffset = flat_SkillInfoData.createflat_SkillInfoData(builder, data.skillInfo);
-        return createflat_SkillSlotData(builder , data.slotNum, skillInfoOffset, data.skillLevel, data.remainCoolTime);
+        return createflat_SkillSlotData(builder , data.slotNum, skillInfoOffset, data.skillLevel, data.remainCoolTime, data.skillCoolTime);
     }
 
     public static byte[] createflat_SkillSlotData(SkillSlotData data) {

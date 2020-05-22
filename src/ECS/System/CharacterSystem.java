@@ -41,7 +41,13 @@ public class CharacterSystem {
             for (int i = 0; i < character.skillSlotComponent.skillSlotList.size(); i++) {
                 SkillSlot slot = character.skillSlotComponent.skillSlotList.get(i);
 
-                slot.remainCoolTime -= deltaTime;
+                if(slot.remainCoolTime > 0){
+
+                    slot.remainCoolTime -= deltaTime;
+                }
+                else{
+                    slot.remainCoolTime = 0;
+                }
             }
 
             //아이템 사용 쿨타임 감소처리

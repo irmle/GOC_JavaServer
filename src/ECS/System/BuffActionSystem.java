@@ -2847,6 +2847,12 @@ public class BuffActionSystem {
         ConditionComponent condition = character.conditionComponent;
         HPComponent hpComponent = character.hpComponent;
 
+        System.out.println("최대체력 비율 : " + condition.maxHPRate);
+        System.out.println("최대체력 보너스 : " + condition.maxHPBonus);
+        System.out.println("오리지널 최대체력 : " + hpComponent.originalMaxHp);
+        System.out.println("현재 최대체력 : " + hpComponent.maxHP);
+        System.out.println("현재 체력 : " + hpComponent.currentHP);
+
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
         hpComponent.maxHP = hpComponent.originalMaxHp + condition.maxHPBonus;
@@ -2855,6 +2861,13 @@ public class BuffActionSystem {
         if(hpComponent.currentHP > hpComponent.maxHP){
             hpComponent.currentHP = hpComponent.maxHP;
         }
+
+        System.out.println("증가량 : " + (hpComponent.maxHP - hpComponent.originalMaxHp));
+        System.out.println("현재 최대체력 : " + hpComponent.maxHP);
+        System.out.println("현재 체력 : " + hpComponent.currentHP);
+
+        System.out.println("===============================");
+
     }
 
     public void applyNewCharCondValue_MP(CharacterEntity character){
