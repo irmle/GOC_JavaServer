@@ -139,7 +139,8 @@ public class MapFactory implements Cloneable {
         int y = (int) Math.floor(Math.abs((posX / tileSize)));
         int x = (int) Math.floor(Math.abs((posY / tileSize)));
         //몰라 시바 밥먹고 클라가 보낸 캐릭터xy 좌표 맵에서 이동가능 불가능 첵
-        if (x < 100 || y < 100)
+        //if (x < 100 && y < 100)
+        if ((x > 0) && (x < 100) && (y < 100) && (y > 0))
             canmove = maps[x].mapInfos.get(y).canMove;
         //System.out.println("what" + y + "/" + x);
         //System.out.println("what" + maps[x].mapInfos.get(y).what);
@@ -191,17 +192,23 @@ public class MapFactory implements Cloneable {
         int tileX = (int) Math.floor(Math.abs((posY / tileSize)));
 
 
-/*
-        System.out.println("최종목적 좌표 : " + posX + ", "
-                + posY );
+        boolean mapOver_X = ((tileX < 0) || (tileX > 99)) ? true : false;
+        boolean mapOver_Y = ((tileY < 0) || (tileY > 99)) ? true : false;
 
-        System.out.println("최종목적 타일 : " + tileX + ", "
-                + tileY );
-*/
+        if(mapOver_X || mapOver_Y){
 
+            System.out.println("최종목적 좌표 : " + posX + ", "
+                    + posY );
 
+            System.out.println("최종목적 타일 : " + tileX + ", "
+                    + tileY );
 
-        return maps[tileX].mapInfos.get(tileY);
+            return null;
+        } else{
+            return maps[tileX].mapInfos.get(tileY);
+
+        }
+
 
     }
 

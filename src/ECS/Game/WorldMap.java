@@ -1367,6 +1367,8 @@ public class WorldMap {
 
     //캐릭터가 사망했을 경우, 월드맵에 중계한다
     public void userDefeated(CharacterEntity defeatCharacter, int remainRespawnTimeMilliSeconds) {
+
+        System.out.println("사망 부활 시간 : " + remainRespawnTimeMilliSeconds);
         RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
         server_to_client.userCharacterDefeat(TARGET, RMI_Context.Reliable_Public_AES128,
                 defeatCharacter.entityID, remainRespawnTimeMilliSeconds);
@@ -2988,7 +2990,8 @@ public class WorldMap {
         characterData.gold = entity.characterComponent.gold;
 
         characterData.currentHP = entity.hpComponent.currentHP;
-        characterData.maxHP = entity.hpComponent.maxHP;
+        //characterData.maxHP = entity.hpComponent.maxHP;
+        characterData.maxHP = entity.hpComponent.originalMaxHp;
         characterData.recoveryRateHP = entity.hpComponent.recoveryRateHP;
 
         characterData.currentMP = entity.mpComponent.currentMP;

@@ -6246,7 +6246,7 @@ public class SkillFactory {
 
         // 테스트 후 필요없는거 지울 것
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableSkill, true));   // 스킬사용 못하게 막음
-        afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
+        //afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));    // 못움직에게 막음
         afterUsing.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));  // 공격 못하게 막음
 
         //skillUser.buffActionHistoryComponent.conditionHistory.add(afterUsing);
@@ -8072,9 +8072,10 @@ public class SkillFactory {
                 }
 
                 /** 보호막 */
-                if((skillType == SkillType.MAGICIAN_SHIELD) && effectName.contains("방어력증가")) {
+                if((skillType == SkillType.MAGICIAN_SHIELD) && effectType == ConditionType.defenseBonus) {
 
                     effectValue *= 0.1f;
+                    //System.out.println("방어 적용 값 : " + effectValue);
                 }
 
                 break;

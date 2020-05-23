@@ -57,6 +57,11 @@ public class CharacterSystem {
                 slot.remainCoolTime -= deltaTime;
             }
 
+            /** 죽은 애 패스 처리 */
+            if(character.hpComponent.currentHP <= 0 ){
+                continue;
+            }
+
 
             /** 2020 02 19 변경, 이동될 위치를 구하는 부분은 기존과 똑같음. */
             boolean isMovable = character.conditionComponent.isDisableMove ? false : true;

@@ -778,12 +778,19 @@ public class FlyingObjectSystem {
                         }
                         else{   /** 2020 02 19 수 권령희 추가 */
 
-                            /* 투사체의 위치를, 월드 내 캐릭터 다음 위치 목록에 업데이트한다 */
-                            CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
+                            boolean isMovableTile = MapFactory.moveCheck(worldMap.gameMap, flyingObjectPos.x(), flyingObjectPos.z());
+                            if(isMovableTile){
 
-                            Vector3 changedPos = (Vector3) flyingObjectPos.clone();
-                            worldMap.charNextPosList.put(character.entityID, changedPos);
+                                /* 투사체의 위치를, 월드 내 캐릭터 다음 위치 목록에 업데이트한다 */
+                                CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
+                                Vector3 changedPos = (Vector3) flyingObjectPos.clone();
+                                worldMap.charNextPosList.put(character.entityID, changedPos);
 
+                            }else {
+
+                                flyingObjectComponent.flyingObjectRemainDistance = 0;
+
+                            }
                         }
 
                     }

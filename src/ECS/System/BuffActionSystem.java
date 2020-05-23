@@ -160,6 +160,8 @@ public class BuffActionSystem {
 
                             HPComponent hpComponent = character.hpComponent;
                             hpComponent.maxHP = hpComponent.originalMaxHp;
+
+                            //System.out.println("체력버프 효과가 종료되었습니다. 현재 최대 체력 : " + hpComponent.maxHP);
                             break;
 
                         case SkillType.JUNGLE_BUFF_FAIRY :
@@ -623,8 +625,11 @@ public class BuffActionSystem {
             character.conditionComponent = newCondition;  // 얉은복사(?)로 문제없으려나.. => 나중에 문제생기면, clone() 쓰지머.
 
             HPComponent hpComponent = character.hpComponent;
-            if(hpComponent.originalMaxHp == hpComponent.maxHP){
+            if(hpComponent.originalMaxHp >= hpComponent.maxHP){
                 applyNewCharCondValue_HP(character);
+            }
+            else{
+                //System.out.println("현재, 최대체력 관련 버프를 받고 있는 중이므로 패스 ");
             }
 
             MPComponent mpComponent = character.mpComponent;
@@ -2847,11 +2852,13 @@ public class BuffActionSystem {
         ConditionComponent condition = character.conditionComponent;
         HPComponent hpComponent = character.hpComponent;
 
+/*
         System.out.println("최대체력 비율 : " + condition.maxHPRate);
         System.out.println("최대체력 보너스 : " + condition.maxHPBonus);
         System.out.println("오리지널 최대체력 : " + hpComponent.originalMaxHp);
         System.out.println("현재 최대체력 : " + hpComponent.maxHP);
         System.out.println("현재 체력 : " + hpComponent.currentHP);
+*/
 
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
@@ -2862,11 +2869,13 @@ public class BuffActionSystem {
             hpComponent.currentHP = hpComponent.maxHP;
         }
 
+/*
         System.out.println("증가량 : " + (hpComponent.maxHP - hpComponent.originalMaxHp));
         System.out.println("현재 최대체력 : " + hpComponent.maxHP);
         System.out.println("현재 체력 : " + hpComponent.currentHP);
 
         System.out.println("===============================");
+*/
 
     }
 

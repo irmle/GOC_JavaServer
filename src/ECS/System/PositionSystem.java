@@ -40,6 +40,11 @@ public class PositionSystem {
 
             CharacterEntity character = characterEntity.getValue();
 
+            /** 죽은 애 패스 처리 */
+            if(character.hpComponent.currentHP <= 0 ){
+                continue;
+            }
+
             /* 이동 가능한 상태의 캐릭터만 처리한다 */
             /** 2020 02 19 수 수정, 권령희 */
             /**
@@ -126,14 +131,24 @@ public class PositionSystem {
                         Vector3 newPosZChanged = (Vector3) character.positionComponent.position.clone();
                         newPosZChanged.z(movedPos.z());
 
-                        if(MapFactory.findTileByPosition(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()).canMove == true){
+                        /*if(MapFactory.findTileByPosition(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()).canMove == true){
 
                             character.positionComponent.position.set(newPosXChanged);
                         }
                         else if(MapFactory.findTileByPosition(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z()).canMove == true){
 
                             character.positionComponent.position.set(newPosZChanged);
+                        }*/
+
+                        if(MapFactory.moveCheck(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()) == true){
+
+                            character.positionComponent.position.set(newPosXChanged);
                         }
+                        else if(MapFactory.moveCheck(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z()) == true){
+
+                            character.positionComponent.position.set(newPosZChanged);
+                        }
+
 
                         worldMap.charNextPosList.remove(character.entityID);
 
