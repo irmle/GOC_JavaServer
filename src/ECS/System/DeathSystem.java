@@ -127,6 +127,8 @@ public class DeathSystem {
         //부활시간 계산.
         //5초 + (진행시간 1분당 +3초).  => 12분짜리 게임일 경우, 부활시간은 12*3 + 5 = 41초.
         float remainRespawnTimeMilliSeconds = ((float)worldMap.totalPlayTime / 60000f) * 3000f + 5000f;
+        //float remainRespawnTimeMilliSeconds = (int)((float)worldMap.totalPlayTime / 60000f) * 1000f;
+
 
         //월드맵의 사망리스트에 추가해준다.
         worldMap.defeatCharacterList.add( new DefeatCharacterData(character, remainRespawnTimeMilliSeconds) );

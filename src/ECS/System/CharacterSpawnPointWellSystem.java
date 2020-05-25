@@ -7,6 +7,7 @@ import ECS.Classes.Type.SkillType;
 import ECS.Classes.Type.SystemEffectType;
 import ECS.Classes.Vector3;
 import ECS.Components.CharacterComponent;
+import ECS.Components.HPComponent;
 import ECS.Entity.CharacterEntity;
 import ECS.Factory.SkillFactory;
 import ECS.Game.WorldMap;
@@ -61,6 +62,12 @@ public class CharacterSpawnPointWellSystem {
             for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
                 CharacterEntity character = characterEntity.getValue();
+
+                /* 죽은 애는 패스 */
+                HPComponent hpComponent = character.hpComponent;
+                if(hpComponent.currentHP <= 0){
+                    continue;
+                }
 
                 /* 캐릭터가 우물 범위 내에 있는지 검사한다 */
 

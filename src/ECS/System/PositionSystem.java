@@ -70,17 +70,11 @@ public class PositionSystem {
                 MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
 
 
-
                 /* 이동 단위 벡터를 구한다 */
                 //Vector3 unitVec3 = (Vector3) movedPos.clone();
                 Vector3 unitVec3 = Vector3.getTargetDirection(character.positionComponent.position, movedPos);
                 unitVec3 = unitVec3.normalize();
-                unitVec3.setSpeed(deltaTime);   // 흠..
-
-/*
-                System.out.println("단위벡터  : " + unitVec3.x() + ", "
-                        + unitVec3.z() );
-*/
+                unitVec3.setSpeed(deltaTime);
 
                 /* 이동 가능한 지점 혹은 목표지점에 도달할 때 까지 반복 */
                 while (true){
@@ -91,12 +85,11 @@ public class PositionSystem {
 
                     /* 위 좌표의 타일을 검사한다 */
                     MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
-/*
-                    System.out.println("현재이동된 좌표 : " + currentPos.x() + ", "
+
+                    /*System.out.println("현재이동된 좌표 : " + currentPos.x() + ", "
                             + currentPos.z() );
                     System.out.println("타일 좌표 : " + currentTile.arrayX + ", "
-                            + currentTile.arrayY );
-*/
+                            + currentTile.arrayY );*/
 
                     /** 벽 등 이동 불가능한 타일인 경우  */
                     if(currentTile.canMove == false){
@@ -131,14 +124,6 @@ public class PositionSystem {
                         Vector3 newPosZChanged = (Vector3) character.positionComponent.position.clone();
                         newPosZChanged.z(movedPos.z());
 
-                        /*if(MapFactory.findTileByPosition(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()).canMove == true){
-
-                            character.positionComponent.position.set(newPosXChanged);
-                        }
-                        else if(MapFactory.findTileByPosition(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z()).canMove == true){
-
-                            character.positionComponent.position.set(newPosZChanged);
-                        }*/
 
                         if(MapFactory.moveCheck(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()) == true){
 
@@ -160,10 +145,6 @@ public class PositionSystem {
                     /** 경계타일인 경우 */
                     /* 현재 타일이 경계인지 아닌지 확인한다 */
                     int mapSize = worldMap.gameMap.length;
-                    /*boolean isBorderTile =
-                            ((currentTile.arrayX == (mapSize-1))
-                                    || (currentTile.arrayY == (mapSize-1)))
-                            ? true : false;*/
                     boolean isBorderTile =
                             ((currentTile.arrayX >= (mapSize-1)) || (currentTile.arrayX <= 0)
                                     || (currentTile.arrayY >= (mapSize-1)) || (currentTile.arrayY <= 0))
@@ -174,13 +155,11 @@ public class PositionSystem {
                         // 아님 얘도 걍 여기서 멈출수도 잇고..
                         // 아래 처럼, 현재 위치와 중점좌표와의 거리가 얼마 이하일 때에 그렇게 해주도록 처리할 수도 있고..
 
-                        character.positionComponent.position.set(currentTile.getPixelPosition());
+                        //character.positionComponent.position.set(currentTile.getPixelPosition());
 
-/*
-                        System.out.println("경계 타일에 다다라서 멈춤");
+                        /*System.out.println("경계 타일에 다다라서 멈춤");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
-                                + character.positionComponent.position.z() );
-*/
+                                + character.positionComponent.position.z() );*/
 
                         break;
                     }
@@ -196,90 +175,36 @@ public class PositionSystem {
 
                         character.positionComponent.position.set(movedPos);
 
-/*
-                        System.out.println("목적지 타일에 다다라서 멈춤");
+
+                        /*System.out.println("목적지 타일에 다다라서 멈춤");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
-                                + character.positionComponent.position.z() );
-*/
+                                + character.positionComponent.position.z() );*/
 
                         break;
                     }
                     else{
                         /* 아직 도달하지 않았다면, 위에서 계산한 현재 좌표를 캐릭터의 좌표로 업데이트 한다 */
+                        // 벽을 만나거나, 경계에 도달하거나 목적지에 도달할 때 까지 반복한다
 
                         character.positionComponent.position.set(currentPos);
 
-/*
-                        System.out.println("목적지 타일에 다다르지 않아 계속함");
+                        /*System.out.println("목적지 타일에 다다르지 않아 계속함");
                         System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
-                                + character.positionComponent.position.z() );
-                        // 벽을 만나거나, 경계에 도달하거나 목적지에 도달할 때 까지 반복한다
-*/
-
+                                + character.positionComponent.position.z() );*/
                     }
                 }
 
                 worldMap.charNextPosList.remove(character.entityID);
 
-
             }
+
+
         }
 
 
 
         /** 2020 05 14 */
         /** 끼인거 처리; 일단은 캐릭터만. */
-        /*for(HashMap.Entry<Integer, Vector3> stuckEntity : worldMap.charNextPosList_gotStuck.entrySet()){
-
-            CharacterEntity characterEntity = worldMap.characterEntity.get(stuckEntity.getKey());
-
-            Vector3 charPos = characterEntity.positionComponent.position;
-            VelocityComponent charVelocity = characterEntity.velocityComponent;
-
-
-
-
-
-            *//* 이동할 위치를 가져온다 *//*
-            Vector3 movedPos = (Vector3) stuckEntity.getValue().clone();
-            //MapInfo movedTile = MapFactory.findTileByPosition(worldMap.gameMap, movedPos.x(), movedPos.z());
-
-            *//* 이동 단위 벡터를 구한다 *//*
-            Vector3 unitVec3 = Vector3.getTargetDirection(charPos, movedPos);
-            unitVec3 = unitVec3.normalize();
-            unitVec3.setSpeed(deltaTime);   // 흠..
-
-
-            System.out.println("이동량 : " + unitVec3.x() + ", "
-                    + unitVec3.y() + ", " + unitVec3.z());
-
-
-            *//* 이동 가능한 지점 혹은 목표지점에 도달할 때 까지 반복 *//*
-            while (true){
-
-                *//* 캐릭터의 기존 위치에, 단위벡터를 더한다(단위백터만큼 이동시킨다) *//*
-                Vector3 currentPos = (Vector3)charPos.clone();
-                currentPos.movePosition(currentPos, unitVec3);
-
-                charPos.set(currentPos);
-
-                *//* 위 좌표의 타일을 검사한다 *//*
-                MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
-
-                *//** 이동 가능한 타일인 경우  *//*
-                if(currentTile.canMove == true){
-                    break;
-                }
-
-            }
-
-            //worldMap.charNextPosList_gotStuck.remove(characterEntity.entityID);
-
-        }
-
-        worldMap.charNextPosList_gotStuck.clear();
-*/
-
         for(HashMap.Entry<Integer, Vector3> stuckEntity : worldMap.charNextPosList_gotStuck.entrySet()){
 
             int type = worldMap.entityMappingList.get(stuckEntity.getKey());
@@ -318,8 +243,7 @@ public class PositionSystem {
             /* 이동 단위 벡터를 구한다 */
             Vector3 unitVec3 = Vector3.getTargetDirection(entityPos, movedPos);
             unitVec3 = unitVec3.normalize();
-            unitVec3.setSpeed(deltaTime);   // 흠..
-
+            unitVec3.setSpeed(deltaTime);
 
             /*System.out.println("이동량 : " + unitVec3.x() + ", "
                     + unitVec3.y() + ", " + unitVec3.z());*/
@@ -347,6 +271,7 @@ public class PositionSystem {
         }
 
         worldMap.charNextPosList_gotStuck.clear();
+
 
     }
 

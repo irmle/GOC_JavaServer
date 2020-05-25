@@ -233,6 +233,7 @@ public class Vector3 implements Cloneable {
         return  normalizeVec;
     }
 
+
     //y축에 대해서, axis 에는 Vector3(0, 0, 1);
     public static Vector3 rotateVector3ByAngleAxis(Vector3 source, Vector3 axis, double degreeAngle){
         double x, y, z; double u, v, w;
@@ -251,21 +252,19 @@ public class Vector3 implements Cloneable {
         return new Vector3( (float)xPrime, (float)yPrime, (float)zPrime );
     }
 
-
     public Vector3 normalize()
     {
         float length = length();
 
-        this.x = this.x/length; // dx /= length;
-        this.y = this.y/length; // dy /= length;
-        this.z = this.z/length; // dz /= length;
+        float x = this.x/length; // dx /= length;
+        float y = this.y/length; // dy /= length;
+        float z = this.z/length; // dz /= length;
 
         //source 방향을 가리키는, 크기가 1인 벡터를 반환.
-        Vector3 normalizeVec = new Vector3(this.x, this.y, this.z);
+        Vector3 normalizeVec = new Vector3(x, y, z);
 
         return  normalizeVec;
     }
-
 
     public static Vector3 getTargetDirection (Vector3 source, Vector3 target)
     {

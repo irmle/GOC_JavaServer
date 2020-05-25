@@ -6696,6 +6696,8 @@ public class SkillFactory {
         // 투사체가 날아갈 방향 ; 논타겟임
         Vector3 direction = event.skillDirection;
 
+        //System.out.println("폭시 투사체 날아갈 방향 : " + direction.x() + ", " + direction.y() + ", " + direction.z());
+
 
 
         /* 데미지 버프 */
@@ -7277,6 +7279,8 @@ public class SkillFactory {
 
                     TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
                     server_to_client.motionCharacterCancelSkill(TARGET, RMI_Context.Reliable, skillUser.entityID, RECALL);
+
+                    System.out.println("귀환 취소 처리");
 
                     skillUser.conditionComponent.isReturning = false;
                 }

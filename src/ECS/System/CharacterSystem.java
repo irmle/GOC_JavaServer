@@ -73,10 +73,8 @@ public class CharacterSystem {
 
                 }
 
-                /*
-                System.out.println("이동 가능함");
-                System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
-*/
+                /*System.out.println("이동 가능함");
+                System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());*/
 
                 float MoveSpeed = character.velocityComponent.moveSpeed;
                 float moveSpeedBonus = character.conditionComponent.moveSpeedBonus;
@@ -86,7 +84,8 @@ public class CharacterSystem {
                 Vector3 temp = (Vector3) character.positionComponent.position.clone();
 
                 //이동할 방향 (normalize된 크기1의 벡터)
-                Vector3 direction = character.velocityComponent.velocity;
+                Vector3 direction = (Vector3) character.velocityComponent.velocity.clone();
+                direction = direction.normalize();
 
                 //이동속도 버프등을 적용한 최종 이동수치.
                 float movementSpeed = deltaTime * ( MoveSpeed + moveSpeedBonus ) * moveSpeedRate;
@@ -99,10 +98,6 @@ public class CharacterSystem {
                 //이동될 위치.
                 Vector3 changedPosition = temp;
 
-                /** 2020 02 19 권령희 주석처리 함 */
-                /*if (MapFactory.moveCheck(worldMap.gameMap,changedPosition.x(),changedPosition.z())) {
-                    character.positionComponent.position.set(changedPosition.x(), changedPosition.y(), changedPosition.z());
-                }*/
 
                 // 아래 값을 가지고, positionSystem에서 이동 가능 여부 등을 판단할 것이다.
                 worldMap.charNextPosList.put(character.entityID, changedPosition);
@@ -113,10 +108,8 @@ public class CharacterSystem {
 
                 character.velocityComponent.velocity.set(0,0,0);
                 /*System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
-                System.out.println("이동불가능");
-*/
+                System.out.println("이동불가능");*/
             }
-
 
         }
     }

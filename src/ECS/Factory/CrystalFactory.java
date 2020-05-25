@@ -35,6 +35,7 @@ public class CrystalFactory {
         PositionComponent positionComponent = new PositionComponent(15, 0, -15);
         CrystalComponent crystalComponent = new CrystalComponent();
         HPComponent hpComponent = new HPComponent(1000f, 10f);
+        //HPComponent hpComponent = new HPComponent(10000f, 100f);
         DefenseComponent defenseComponent = new DefenseComponent(0);
 
         newCrystal = new CrystalEntity(positionComponent, crystalComponent, hpComponent, defenseComponent);

@@ -144,7 +144,14 @@ public class DamageHistorySystem {
                 ConditionComponent attackerCondition = null;
 
 
+                /**
+                 * 수정날짜 : 2020 05 25 월요일
+                 * 순간 죽은 몹의 데미지가, 보정처리 거치지 않고 즉시 적용되는 문제점이 있었음.
+                 */
                 if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
+
+                    damageHistory.remove(i);
+                    i--;
 
                     continue;
                 }

@@ -110,7 +110,7 @@ public class HpHistorySystem {
 
                     sum -= damageHistory.amount;
                     lastDamagedEntity = damageHistory.unitID;
-                    //System.out.println("데미지를 받습니다 : " + damageHistory.amount);
+                    System.out.println("데미지를 받습니다 : " + damageHistory.amount);
 
                     /** 2020 02 12 수 추가 */
                     worldMap.playerGameScoreList.get(character.entityID).getDamagedAmount += damageHistory.amount;
