@@ -820,8 +820,6 @@ public class WorldMap {
             //EntityID와 RMI_ID를 다시 세팅한다.
             worldMapRMI_IDList.put(entityID, rmi_id);
 
-
-
             //게임이 시작한 이후에만 중계하도록 한다 (로딩중에 튕긴것은 중계할 필요가 없다)
             if (isGameMapStarted) {
 

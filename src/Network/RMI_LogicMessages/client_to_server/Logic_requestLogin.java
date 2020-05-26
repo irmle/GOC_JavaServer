@@ -52,14 +52,17 @@ public class Logic_requestLogin {
         /***************************************************************************************************************/
 
 
-        //로그인 처리가 끝났다면 클라이언트에게 통지한다. 클라이언트에서 loginOK메소드가 호출되면 로비Scene를 로드한다.
-        //클라이언트에서 로그인 후 일정시간 이상 loginOK가 호출되지 않으면 에러가 발생한 것으로 간주하고 로비Scene을 로드하지 않고 에러표시를 한다.
-        server_to_client.loginOK(rmi_id, rmi_ctx);
-
         //기존에 참가중이던 월드맵이 존재하는지 판단한다.
         //기존에 플레이중이던 월드맵이 존재한다면, 로비화면위에 재접속 안내창을 추가적으로 띄워서 해당 맵으로 접속하게끔 한다.
         WorldMap result = MatchingManager.isUserPlayingGame(googleIDToken);
-        if (result != null) {
+        if(result == null) {
+
+            //로그인 처리가 끝났다면 클라이언트에게 통지한다. 클라이언트에서 loginOK메소드가 호출되면 로비Scene를 로드한다.
+            //클라이언트에서 로그인 후 일정시간 이상 loginOK가 호출되지 않으면 에러가 발생한 것으로 간주하고 로비Scene을 로드하지 않고 에러표시를 한다.
+            server_to_client.loginOK(rmi_id, rmi_ctx);
+
+        }
+        else {
             int getWorldMapID = result.getWorldMapID();
 
             /**
@@ -70,24 +73,13 @@ public class Logic_requestLogin {
              *
              */
 
-
-
-
-
-
             /**************************************************************************************/
 
-            //300ms 후에 재접속 시퀀스를 송신한다.
-            rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
-                @Override
-                public void run() {
-                    server_to_client.reconnectingWorldMap(rmi_id, RMI_Context.Reliable_AES256, getWorldMapID,
-                            new LinkedList<>(result.loadingProgressList.values()),"127.0.0.1_test", 65005);
+            server_to_client.reconnectingWorldMap(rmi_id, RMI_Context.Reliable_AES256, getWorldMapID,
+                    new LinkedList<>(result.loadingProgressList.values()),"127.0.0.1_test", 65005);
 
-                }
-            }, 100, TimeUnit.MILLISECONDS);
 
-            //1000ms 후에 로딩되는 정도를 중계한다.
+            //500ms 후에 로딩되는 정도를 중계한다.
             rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
                 @Override
                 public void run() {
