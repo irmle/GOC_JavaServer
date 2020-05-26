@@ -129,10 +129,12 @@ public class PositionSystem {
                         if(MapFactory.moveCheck(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()) == true){
 
                             character.positionComponent.position.set(newPosXChanged);
+                            MapFactory.findTileByPosition(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z());
                         }
                         else if(MapFactory.moveCheck(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z()) == true){
 
                             character.positionComponent.position.set(newPosZChanged);
+                            MapFactory.findTileByPosition(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z());
                         }
 
 

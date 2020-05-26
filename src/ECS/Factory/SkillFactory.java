@@ -3168,7 +3168,7 @@ public class SkillFactory {
             //flyingSpeed = userSpeed * 5f;
 
             /** 2020 05 26 */
-            flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed * 10f;
+            flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed;
 
             /******************************************************************/
 
@@ -3185,7 +3185,7 @@ public class SkillFactory {
             /** 투사체 시작지점 당기기 */
 
             Vector3 startPosControlDir = Vector3.rotateVector3ByAngleAxis(direction, new Vector3(0,1,0), 180);
-            startPosControlDir.setSpeed(flyingSpeed * worldMap.tickRate * 0.001f);
+            startPosControlDir.setSpeed(flyingSpeed *  worldMap.tickRate * 0.001f);
             Vector3.movePosition(startPosition, startPosControlDir);
 
             positionComponent.position.set(startPosition);

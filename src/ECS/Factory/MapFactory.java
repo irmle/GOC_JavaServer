@@ -140,9 +140,9 @@ public class MapFactory implements Cloneable {
         int x = (int) Math.floor(Math.abs((posY / tileSize)));
         //몰라 시바 밥먹고 클라가 보낸 캐릭터xy 좌표 맵에서 이동가능 불가능 첵
         //if (x < 100 && y < 100)
-        if ((x > 0) && (x < 100) && (y < 100) && (y > 0))
+        if ((x > 0) && (x < 100) && (y < 100) && (y > 0) && (posY<0) && (posX>0))
             canmove = maps[x].mapInfos.get(y).canMove;
-        System.out.println("what " + y + "/" + x);
+        //System.out.println("what " + y + "/" + x);
         //System.out.println("what" + maps[x].mapInfos.get(y).what);
         return canmove;
     }
@@ -205,9 +205,16 @@ public class MapFactory implements Cloneable {
 
             return null;
         } else{
+            System.out.println("최종목적 좌표 : " + posX + ", "
+                    + posY );
+
+            System.out.println("최종목적 타일 : " + tileX + ", "
+                    + tileY );
+
             return maps[tileX].mapInfos.get(tileY);
 
         }
+
 
 
     }
