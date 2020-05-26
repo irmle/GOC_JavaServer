@@ -825,35 +825,21 @@ public class WorldMap {
             //게임이 시작한 이후에만 중계하도록 한다 (로딩중에 튕긴것은 중계할 필요가 없다)
             if (isGameMapStarted) {
 
-                //500ms 후에 재접속 시퀀스를 송신한다.
-                rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        //할당된 자신의 캐릭터의 EntityID를 재접속한 클라이언트에 보내서 자기자신의 EntityID를 세팅하도록 한다.
-                        server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable, entityID);
-                    }
-                }, 500, TimeUnit.MILLISECONDS);
+                //할당된 자신의 캐릭터의 EntityID를 재접속한 클라이언트에 보내서 자기자신의 EntityID를 세팅하도록 한다.
+                server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable, entityID);
 
-                //위의 500ms가 경과한 후부터 200ms후에 아래의 작업이 실행된다.
+                //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 초기화 하도록 전송한다.
+                WorldMapDataListSet worldData = initData();
 
-                //7000ms 후에 재접속 시퀀스를 송신한다.
-                rmi_id.getTCP_Object().eventLoop().schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 초기화 하도록 전송한다.
-                        WorldMapDataListSet worldData = initData();
+                server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable,
+                        worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
+                        worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
 
-                        /** 2020 03 06 */
-                        server_to_client.broadcastingStoreUpgradeBuffList(TARGET, RMI_Context.Reliable, worldData.storeUpgradeBuffSlotData);
+                server_to_client.broadcastingStoreUpgradeBuffList(rmi_id, RMI_Context.Reliable, worldData.storeUpgradeBuffSlotData);
 
-                        //유저가 다시 접속하였으므로, 재연결 되었다는 메시지를 모든 클라이언트에게 중계한다
-                        server_to_client.userReconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
 
-                        server_to_client.initializeWorldMap(rmi_id, RMI_Context.Reliable,
-                                worldData.characterData, worldData.monsterData, worldData.buffTurretData, worldData.attackTurretData,
-                                worldData.barricadeData, worldData.crystalData, worldData.skillObjectData, worldData.flyingObjectData, worldData.buildSlotData);
-                    }
-                }, 600, TimeUnit.MILLISECONDS);
+                //유저가 다시 접속하였으므로, 재연결 되었다는 메시지를 모든 클라이언트에게 중계한다
+                server_to_client.userReconnected(TARGET, RMI_Context.Reliable_Public_AES256, entityID);
 
             }
 
@@ -1044,7 +1030,6 @@ public class WorldMap {
         }
 
 
-
         /*//60초(6만ms) 가 경과하였는지 체크. 이 시간동안 로딩이 끝나지 않았다면, 일단 완료된 유저들부터 게임을 시작함.
         if(loadingTime > 60000)
             isReadyStartGame = true;*/
@@ -1060,20 +1045,15 @@ public class WorldMap {
         if (isReadyStartGame) {
 
             synchronized (locking) {
+
+                //게임시작 직후, 첫 웨이브 시작시 3초 대기.
+                waveWaitTimeCount = 3000;
+
                 RMI_ID[] TARGET = RMI_ID.getArray(worldMapRMI_IDList.values());
 
                 //모든 유저의 로딩이 완료된 것을 감지하면 호출되는 함수.
                 //게임준비가 완료되었고, 게임이 시작되었다는 것을 모든 클라에게 전송한다.
                 server_to_client.StartGame(TARGET, RMI_Context.Reliable_Public_AES256);
-
-                try {
-                    Thread.currentThread().sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                //게임시작 직후, 첫 웨이브 시작시 3초 대기.
-                waveWaitTimeCount = 3000;
 
                 //먼저 자신의 캐릭터 EntityID를 각각의 클라이언트에 중계한다.
                 //이 값을 통해 클라이언트는 로컬객체와 원격객체를 구분하게끔 한다.
@@ -1084,7 +1064,6 @@ public class WorldMap {
                     //할당된 자신의 캐릭터의 EntityID를 각각의 클라이언트들에게 1개씩 보내서 자기자신의 EntityID를 세팅하도록 한다.
                     server_to_client.initializeMyselfCharacterInfo(rmi_id, RMI_Context.Reliable_AES256, ownCharacterEntityID);
                 }
-
 
                 //그 다음, 월드맵의 모든 Entity들의 정보를 보내서 각 클라에서 초기화 하도록 모든 클라에게 중계한다.
                 WorldMapDataListSet worldData = initData();
@@ -1097,11 +1076,12 @@ public class WorldMap {
 
                 //게임이 시작됨을 알리는 플래그변수.
                 isGameMapStarted = true;
+
+                //초기화가 끝났다면 초기 웨이브를 설정한다.
                 waveInfoCount = 1;
+
                 //모든 과정이 끝났다면 게임을 시작하고 매 TickRate마다 월드맵의 모든 Entity 들의 Snapshot을 각 클라이언트에 중계한다.
-
                 gameStartTime = System.currentTimeMillis();
-
             }
         }
     }
@@ -2923,10 +2903,7 @@ public class WorldMap {
                 worldEntityData.storeUpgradeBuffSlotData.add(getStoreUpgradeSlotData(slot));
             }
             server_to_client.broadcastingBuildSlotSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldEntityData.buildSlotData);
-
         }
-
-
     }
 
 
