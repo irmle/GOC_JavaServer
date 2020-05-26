@@ -1882,7 +1882,7 @@ public class WorldMap {
 
                         //몬스터AI, 상태, 행동 관련 처리
                         elapsedTime = System.nanoTime();
-                        //monsterSystem2.onUpdate(tickRate * 0.001f);
+                        monsterSystem2.onUpdate(tickRate * 0.001f);
 
                         System.out.println( "몬스터 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "몬스터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
@@ -4110,11 +4110,11 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 5;
+        entity.characterComponent.level = 1;
         entity.characterComponent.exp = 0;
         entity.characterComponent.gold = 1000;
 
-        entity.characterComponent.skillPoint = 5;
+        entity.characterComponent.skillPoint = 1;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
