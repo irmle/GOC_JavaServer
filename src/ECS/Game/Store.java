@@ -555,6 +555,7 @@ public class Store {
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.userSucceedStoreUpgradeBuff(TARGET, RMI_Context.Reliable_Public_AES256, slotData);
 
+
     }
 
     /**
