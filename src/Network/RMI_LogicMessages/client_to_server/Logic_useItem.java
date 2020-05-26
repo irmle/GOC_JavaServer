@@ -2,6 +2,7 @@ package Network.RMI_LogicMessages.client_to_server;
 
 import ECS.ActionQueue.ClientAction;
 import ECS.ActionQueue.Item.ActionUseItem;
+import ECS.Entity.CharacterEntity;
 import ECS.Game.MatchingManager;
 import ECS.Game.WorldMap;
 import Network.RMI_Classes.*;
@@ -27,6 +28,11 @@ public class Logic_useItem {
 
         /* 유저가 속한 월드를 찾는다 */
         WorldMap worldMap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
+        CharacterEntity character = worldMap.characterEntity.get(usuerEntityID);
+        if( worldMap.checkUserIsDead(character)){
+
+            return;
+        }
 
         /* 아이테 구매 Action 객체를 생성한다 */
         ActionUseItem action = new ActionUseItem(usuerEntityID, itemSlotNum);

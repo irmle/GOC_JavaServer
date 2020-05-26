@@ -97,6 +97,14 @@ public class BuffActionSystem {
             List<DamageHistory> hpDamageHistory = character.hpHistoryComponent.hpHistory;
             List<DamageHistory> mpDamageHistory = character.mpHistoryComponent.mpHistory;
 
+
+            if( worldMap.checkUserIsDead(character)){
+
+                character.buffActionHistoryComponent.conditionHistory.clear();
+                continue;
+            }
+
+
             /** 각 캐릭터 Entity에 최종적으로 반영될 Condition */
             ConditionComponent newCondition = new ConditionComponent();
 

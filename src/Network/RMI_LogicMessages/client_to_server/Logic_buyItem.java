@@ -6,6 +6,7 @@ import ECS.ActionQueue.Item.ActionBuyItem;
 import ECS.ActionQueue.Upgrade.ActionStoreUpgrade;
 import ECS.Classes.Type.TurretType;
 import ECS.Classes.Type.Upgrade.StoreUpgradeType;
+import ECS.Entity.CharacterEntity;
 import ECS.Game.MatchingManager;
 import ECS.Game.WorldMap;
 import Network.RMI_Classes.*;
@@ -35,6 +36,12 @@ public class Logic_buyItem {
         /*유저가 속한 월드를 찾는다 */
         WorldMap worldmap1 = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
 
+        CharacterEntity character = worldmap1.characterEntity.get(userEntityID);
+        if( worldmap1.checkUserIsDead(character)){
+
+            return;
+        }
+
         /* 아이템 구매 Action 객체를 생성한다*/
         ActionBuyItem action1 = new ActionBuyItem(userEntityID, itemSlotNum, itemType, itemCount);
         action1.actionType = ClientAction.ActionType.ACTION_BUY_ITEM;
@@ -42,69 +49,5 @@ public class Logic_buyItem {
         /* 생성한 Action 객체를 월드의 액션 큐에 집어넣는다*/
         worldmap1.enqueueClientAction(action1);
 
-
-        /**
-         * 상점 업그레이드 테스트용 >> 상점 업그레이드 RMI 추가 후 아래 코드 복붙, 받아온 값을 활용하게끔 수정해야 함.
-         * 필요한 것 : userEntityID, int upgradeType (업그레이드 타입 - StoreUpgradeType)
-         * 타입 종류 :
-         *      StoreUpgradeType.CRYSTAL_UPGRADE = 1
-         *      StoreUpgradeType.EXP_UPGRADE = 2
-         *      StoreUpgradeType.GOLD_UPGRADE = 3
-         */
-
-        if(false){
-            /* 유저가 속한 월드를 찾는다 */
-            WorldMap worldmap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
-
-            /* 업그레이드 Action 객체를 생성한다 */
-            ActionStoreUpgrade action = new ActionStoreUpgrade(userEntityID, StoreUpgradeType.GOLD_UPGRADE, 0);
-            action.actionType = ClientAction.ActionType.ACTION_STORE_UPGRADE;
-
-            /* 생성한 Action 객체를 월드의 액션 큐에 집어넣는다 */
-            worldmap.enqueueClientAction(action);
-        }
-
-        /**
-         * 건물 업그레이드 테스트용
-         * >> 클라이언트에 건물업글 UI가 없어서, 템 구매 RMI 호출 시 임의 터렛으로 업그레이드하도록 함
-         * >> 아 이미 upgradeTurret 매서드는 있네 .. 아래는 그냥 지우거나 if(false)로 줘도 될듯
-         * 필요한 것 : userEntityID, turretEntityID, turretType(기존 터렛타입. 어택 1~ 10, 버프 11~20)
-         * 74 ~92 라인은 테스트를 위해 넣은 것이므로 지워야.
-         */
-        if(false){
-            System.out.println("터렛 업그레이드 요청을 받았습니다. ");
-
-            /* 유저가 속한 월드를 찾는다 */
-            WorldMap worldmap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
-
-            /* ======= 야매 디버깅을 위해 추가한 코드 2020 01 08 ================================ */
-            int turretEntityID = worldmap.buildSystem.findBuildSlotBySlotNum(1).getBuildingEntityID();
-            int turretType = TurretType.ATTACK_TURRET_TYPE1_UPGRADE1;
-
-            if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_DEFAULT){
-                turretType = TurretType.ATTACK_TURRET_TYPE2_UPGRADE1;
-            } else if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_TYPE1_UPGRADE1){
-                turretType = TurretType.ATTACK_TURRET_TYPE1_UPGRADE2;
-            } else if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_TYPE1_UPGRADE2){
-                turretType = TurretType.ATTACK_TURRET_TYPE1_UPGRADE3;
-            } else if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_TYPE2_UPGRADE1){
-                turretType = TurretType.ATTACK_TURRET_TYPE2_UPGRADE2;
-            } else if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_TYPE2_UPGRADE2){
-                turretType = TurretType.ATTACK_TURRET_TYPE2_UPGRADE3;
-            } else if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_TYPE3_UPGRADE1){
-                turretType = TurretType.ATTACK_TURRET_TYPE3_UPGRADE2;
-            } else if(worldmap.attackTurretEntity.get(turretEntityID).turretComponent.turretType == TurretType.ATTACK_TURRET_TYPE3_UPGRADE2){
-                turretType = TurretType.ATTACK_TURRET_TYPE3_UPGRADE3;
-            }
-            /* ========================================================================================= */
-
-
-            /* 건설 Action 객체를 생성한다 */
-            ActionUpgradeBuilding action = new ActionUpgradeBuilding(userEntityID, turretEntityID, turretType);
-            action.actionType = ClientAction.ActionType.ACTION_UPGRADE_BUILDING;
-
-            /* 생성한 Action 객체를 월드의 액션 큐에 집어넣는다 */
-            worldmap.enqueueClientAction(action);
-        }
     }
 }

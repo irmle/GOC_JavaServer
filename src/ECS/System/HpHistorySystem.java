@@ -70,7 +70,9 @@ public class HpHistorySystem {
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
             CharacterEntity character = characterEntity.getValue();
-            if( (character.hpComponent.currentHP <= 0)){
+            if( worldMap.checkUserIsDead(character)){
+
+                character.hpHistoryComponent.hpHistory.clear();
                 continue;
             }
 

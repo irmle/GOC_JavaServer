@@ -1370,6 +1370,23 @@ public class WorldMap {
         }
     }
 
+    public boolean checkUserIsDead(CharacterEntity character){
+
+        boolean isDead = false;
+        for(int i=0; i<defeatCharacterList.size(); i++){
+
+            DefeatCharacterData currentChar = defeatCharacterList.get(i);
+            if(currentChar.defeatCharacter == character){
+                isDead = true;
+                break;
+            }
+
+        }
+
+        return isDead;
+
+    }
+
     //캐릭터가 사망했을 경우, 월드맵에 중계한다
     public void userDefeated(CharacterEntity defeatCharacter, int remainRespawnTimeMilliSeconds) {
 
@@ -2096,6 +2113,7 @@ public class WorldMap {
 
             ClientAction action = requestActionQueue.poll();
 
+
             /** 2019 12 27 금요일 새벽 권령희 */
             boolean newMode = true;
 
@@ -2199,8 +2217,11 @@ public class WorldMap {
                     ActionUseSkill event = (ActionUseSkill) action;
 
                     //입력된 정보로부터 스킬 생성.
-                    SkillFactory.useSkill2(this, event);
+                    CharacterEntity character = characterEntity.get(event.userEntityID);
+                    if( !checkUserIsDead(character)){
 
+                        SkillFactory.useSkill2(this, event);
+                    }
                     break;
 
                 }
@@ -4098,6 +4119,7 @@ public class WorldMap {
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
 
+        //characterData.hp *= 100f;
         entity.hpComponent = new HPComponent();
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;

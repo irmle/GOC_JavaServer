@@ -2,6 +2,7 @@ package Network.RMI_LogicMessages.client_to_server;
 
 import ECS.ActionQueue.Skill.ActionUpgradeSkill;
 import ECS.ActionQueue.ClientAction;
+import ECS.Entity.CharacterEntity;
 import ECS.Game.*;
 import Network.RMI_Classes.*;
 
@@ -14,6 +15,11 @@ public class Logic_upgradeSkill {
 
         /* 월드를 검색한다 */
         WorldMap worldmap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
+        CharacterEntity character = worldmap.characterEntity.get(userEntityID);
+        if( worldmap.checkUserIsDead(character)){
+
+            return;
+        }
 
         /* 스킬 업그레이드를 위한 요청액션 생성 */
         ActionUpgradeSkill actionUpgradeSkill = new ActionUpgradeSkill(userEntityID, skillSlotNum);

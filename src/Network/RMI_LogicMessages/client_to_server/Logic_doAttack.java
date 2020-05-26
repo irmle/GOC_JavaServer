@@ -2,6 +2,7 @@ package Network.RMI_LogicMessages.client_to_server;
 
 import ECS.ActionQueue.Skill.ActionUseAttack;
 import ECS.ActionQueue.ClientAction;
+import ECS.Entity.CharacterEntity;
 import ECS.Game.*;
 import Network.RMI_Classes.*;
 
@@ -14,6 +15,13 @@ public class Logic_doAttack {
 
         //유저가 접속중인 월드맵을 찾아서 ClientActionQueue에 넣는다.
         if (result != null) {
+
+            CharacterEntity character = result.characterEntity.get(attackerEntityID);
+            if( result.checkUserIsDead(character)){
+
+                return;
+            }
+
             ActionUseAttack actionUseAttack = new ActionUseAttack();
             actionUseAttack.attackerEntityID = attackerEntityID;
             actionUseAttack.targetEntityID = targetEntityID;

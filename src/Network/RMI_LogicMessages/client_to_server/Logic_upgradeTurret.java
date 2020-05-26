@@ -2,6 +2,7 @@ package Network.RMI_LogicMessages.client_to_server;
 
 import ECS.ActionQueue.Build.ActionUpgradeBuilding;
 import ECS.ActionQueue.ClientAction;
+import ECS.Entity.CharacterEntity;
 import ECS.Game.MatchingManager;
 import ECS.Game.WorldMap;
 import Network.RMI_Classes.*;
@@ -15,6 +16,11 @@ public class Logic_upgradeTurret {
 
         /* 유저가 속한 월드를 찾는다 */
         WorldMap worldmap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
+        CharacterEntity character = worldmap.characterEntity.get(userEntityID);
+        if( worldmap.checkUserIsDead(character)){
+
+            return;
+        }
 
         /* 건설 Action 객체를 생성한다 */
         ActionUpgradeBuilding action = new ActionUpgradeBuilding(userEntityID, turretEntityID, turretType);

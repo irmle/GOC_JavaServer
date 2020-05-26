@@ -68,6 +68,7 @@ public class ItemSlotSystem {
             CharacterEntity character = characterEntity.getValue();
             List<ItemSlot> itemSlotList = character.itemSlotComponent.itemSlotList;
 
+
             ItemSlot currentSlot = null;
             for(int i=0; i<itemSlotList.size(); i++){
 

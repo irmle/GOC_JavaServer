@@ -3165,14 +3165,34 @@ public class SkillFactory {
             flyingObjectRadius = currentLevelSkillInfo.attackRange;
 
             float userSpeed = skillUser.velocityComponent.moveSpeed;    // N단위값 들어있음.
-            flyingSpeed = userSpeed * 5f;
-            //flyingSpeed = userSpeed * currentLevelSkillInfo.flyingObjectSpeed;
+            //flyingSpeed = userSpeed * 5f;
+
+            /** 2020 05 26 */
+            flyingSpeed = currentLevelSkillInfo.flyingObjectSpeed * 10f;
+
+            /******************************************************************/
+
+
 
             startPosition = (Vector3) positionComponent.position.clone();
-            direction = skillDirection;
+            direction = skillDirection.normalize();
 
             //flyingObjectRemainDistance = skillInfo.skillRange * skillDistanceRate;
             flyingObjectRemainDistance = currentLevelSkillInfo.range;
+
+
+            /** 2020 05 26 */
+            /** 투사체 시작지점 당기기 */
+
+            Vector3 startPosControlDir = Vector3.rotateVector3ByAngleAxis(direction, new Vector3(0,1,0), 180);
+            startPosControlDir.setSpeed(flyingSpeed * worldMap.tickRate * 0.001f);
+            Vector3.movePosition(startPosition, startPosControlDir);
+
+            positionComponent.position.set(startPosition);
+            /******************************************************************/
+
+
+
 
             int newEntityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
 
@@ -3249,7 +3269,7 @@ public class SkillFactory {
             BuffAction userBuffAfterSkillUse = new BuffAction();
             userBuffAfterSkillUse.unitID = skillUser.entityID;
             userBuffAfterSkillUse.skillUserID = skillUser.entityID;
-            userBuffAfterSkillUse.remainTime = (worldMap.tickRate * 0.02f);
+            userBuffAfterSkillUse.remainTime = (worldMap.tickRate * 0.01f);
             userBuffAfterSkillUse.remainCoolTime = -1;
             userBuffAfterSkillUse.coolTime = -1;
             userBuffAfterSkillUse.boolParam = new ArrayList<>();
@@ -7951,14 +7971,33 @@ public class SkillFactory {
 
         /**
          * 작성날짜 : 2020 05 21
+         * 업뎃날짜 : 2020 05 26
          * 작성내용 : 계수 적용 처리
+         * 업뎃내용 : 가렌Q 이속 효과의 경우 계수 적용을 받지 않도록 함
          */
 
-        SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillLevel);
-        effectValue = applyCoefficientValue(effectValue, skillUser, skillInfo);
+        switch (effectType){
+
+            case ConditionType.moveSpeedRate :
+
+                if(skillType == SkillType.KNIGHT_GARREN_Q){
+
+                    break;
+                }
+
+            default:
+
+                SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillLevel);
+                effectValue = applyCoefficientValue(effectValue, skillUser, skillInfo);
+
+                break;
+
+        }
 
 
-        /* 예외처리
+
+
+        /** 예외처리
             ; 일반 '데미지' 타입인 경우, 해당 공격이 평탄지, 크리티컬인지 판정도 거처야 한다. */
 
         switch (effectType){    // 효과타입Name == "데미지"로 하는게 의미상 더 정확하긴 할텐데..

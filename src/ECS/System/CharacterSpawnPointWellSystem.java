@@ -64,8 +64,8 @@ public class CharacterSpawnPointWellSystem {
                 CharacterEntity character = characterEntity.getValue();
 
                 /* 죽은 애는 패스 */
-                HPComponent hpComponent = character.hpComponent;
-                if(hpComponent.currentHP <= 0){
+                if( worldMap.checkUserIsDead(character)){
+
                     continue;
                 }
 

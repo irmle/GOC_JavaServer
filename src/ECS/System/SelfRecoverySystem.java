@@ -54,8 +54,8 @@ public class SelfRecoverySystem {
                 int characterID = character.entityID;
 
                 /** 죽은 사람은 제외한다 */
-                float currentHP = character.hpComponent.currentHP;
-                if(currentHP <= 0){
+                if( worldMap.checkUserIsDead(character)){
+
                     continue;
                 }
 

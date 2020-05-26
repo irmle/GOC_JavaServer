@@ -2,6 +2,7 @@ package Network.RMI_LogicMessages.client_to_server;
 
 import ECS.ActionQueue.Skill.ActionGetSkill;
 import ECS.ActionQueue.ClientAction;
+import ECS.Entity.CharacterEntity;
 import ECS.Game.*;
 import Network.RMI_Classes.*;
 
@@ -14,6 +15,11 @@ public class Logic_getSkill {
         //do something.
         /* 유저가 속한 월드를 찾는다 */
         WorldMap worldmap = MatchingManager.findWorldMapFromWorldMapID(worldMapID);
+        CharacterEntity character = worldmap.characterEntity.get(userEntityID);
+        if( worldmap.checkUserIsDead(character)){
+
+            return;
+        }
 
         /* 스킬 습득을 위한 액션 요청을 생성*/
         ActionGetSkill actionGetSkill = new ActionGetSkill(userEntityID, skillSlotNum, skillID);

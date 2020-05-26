@@ -165,6 +165,12 @@ public class BuffTurretSystem {
                     /* 대상의 버프 목록에 추가해준다. */
                     //BuffAction newBuff = (BuffAction) buffInfo.clone();
 
+                    // 죽은 애 넘어가기
+                    if( worldMap.checkUserIsDead(target)){
+
+                        continue;
+                    }
+
                     BuffAction newBuff;
                     newBuff = BuffTurretFactory.createBuffTurretEffect(
                             buffTurret.turretComponent.turretType, effectName, buffTurret, buffTurret.entityID);

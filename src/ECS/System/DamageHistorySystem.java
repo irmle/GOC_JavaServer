@@ -115,8 +115,14 @@ public class DamageHistorySystem {
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
             CharacterEntity character = characterEntity.getValue();
-            ConditionComponent characterCondition = character.conditionComponent;
 
+            if( worldMap.checkUserIsDead(character)){
+
+                character.hpHistoryComponent.hpHistory.clear();
+                continue;
+            }
+
+            ConditionComponent characterCondition = character.conditionComponent;
             List<DamageHistory> damageHistory = character.hpHistoryComponent.hpHistory;
 
             DamageHistory currentDamage;

@@ -142,7 +142,7 @@ public class MapFactory implements Cloneable {
         //if (x < 100 && y < 100)
         if ((x > 0) && (x < 100) && (y < 100) && (y > 0))
             canmove = maps[x].mapInfos.get(y).canMove;
-        //System.out.println("what" + y + "/" + x);
+        System.out.println("what " + y + "/" + x);
         //System.out.println("what" + maps[x].mapInfos.get(y).what);
         return canmove;
     }

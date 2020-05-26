@@ -41,7 +41,8 @@ public class PositionSystem {
             CharacterEntity character = characterEntity.getValue();
 
             /** 죽은 애 패스 처리 */
-            if(character.hpComponent.currentHP <= 0 ){
+            if( worldMap.checkUserIsDead(character)){
+
                 continue;
             }
 

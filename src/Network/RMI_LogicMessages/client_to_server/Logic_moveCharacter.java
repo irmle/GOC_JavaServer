@@ -22,6 +22,10 @@ public class Logic_moveCharacter {
             System.out.println("worldmap == null");
 
         CharacterEntity character = worldmap.characterEntity.get(characterMoveData.entityID);
+        if( worldmap.checkUserIsDead(character)){
+
+            return;
+        }
 
         if(character == null)
             System.out.println("character == null");
