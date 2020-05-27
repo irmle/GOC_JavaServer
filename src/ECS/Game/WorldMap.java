@@ -1304,6 +1304,8 @@ public class WorldMap {
 
     //캐릭터 부활 관리.
     void checkCharacterRespawn() {
+
+
         //아직 게임시작이 되지 않았다면 실행하지 않는다.
         if (isGameMapStarted == false)
             return;
@@ -1320,7 +1322,7 @@ public class WorldMap {
             System.out.println("남은 부활 대기 시간 : " + data.remainRespawnTimeMilliSeconds);
 
             //부활시간이 경과했다면.
-            if ((data.remainRespawnTimeMilliSeconds <= 0f) && (entity.hpComponent.currentHP <= 0)) {
+            if ((data.remainRespawnTimeMilliSeconds <= 0f)/* && (entity.hpComponent.currentHP <= 0)*/) {
 
                 System.out.println("캐릭터가 부활합니다.");
 
@@ -1328,8 +1330,8 @@ public class WorldMap {
                 iterator.remove();
 
                 //부활하였으므로 HP/MP를 다 채우고, 걸렸던 상태이상을 원래대로 돌려놓는다.
-                entity.hpComponent.currentHP = entity.hpComponent.maxHP;
-                entity.mpComponent.currentMP = entity.mpComponent.maxMP;
+                entity.hpComponent.currentHP = (entity.hpComponent.maxHP + entity.conditionComponent.maxHPBonus) * entity.conditionComponent.maxHPRate;
+                entity.mpComponent.currentMP = (entity.mpComponent.maxMP + entity.conditionComponent.maxMPBonus) * entity.conditionComponent.maxMPRate;
 
                 entity.conditionComponent.isDisableMove = false;
                 entity.conditionComponent.isDisableAttack = false;
@@ -1404,15 +1406,16 @@ public class WorldMap {
                     //게임을 시작한다. 그 후로 이 메소드는 더이상 호출되지 않는다.
                     checkUserLoadingProgress();
 
-                    //캐릭터의 부활 타이머를 체크하는 부분이다. 캐릭터의 부활시간이 다 지나면 부활처리를 하게 된다.
-                    checkCharacterRespawn();
-
-
                     if (isGameMapStarted){
 
                         //토탈 게임시간 카운팅. isGameMapStarted 가 true가 되면 플레이 타임 카운트를 시작한다.
                         totalPlayTime += tickRate;
                         gameElapsedTime = totalPlayTime;
+
+
+                        //캐릭터의 부활 타이머를 체크하는 부분이다. 캐릭터의 부활시간이 다 지나면 부활처리를 하게 된다.
+                        checkCharacterRespawn();
+
 
                         if(totalPlayTime % 500 == 0)
                         {
