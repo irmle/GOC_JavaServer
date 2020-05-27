@@ -948,8 +948,9 @@ public class WorldMap {
             for (int i = 0; i < List.length; i++) {
                 RMI_ID rmi_id = List[i];
 
+                //보이스채팅에서 방장역할이 아닌 유저에게, 방장이 만든 음성채팅서버로 접속하게끔 메시지 전송.
                 if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
-                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, this.isVoipHostReady, getWorldMapID());
+                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES128, this.isVoipHostReady, getWorldMapID());
             }
             //voipHost = null;
         }
@@ -977,14 +978,14 @@ public class WorldMap {
                 if(rmi_id.rmi_host_id == voipHost.rmi_host_id)
                 {
                     //새로이 Host로 선정됨을 알림.
-                    server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES256, true, getWorldMapID());
+                    server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES128, true, getWorldMapID());
                 }
                 //나머지 유저는 음성채팅 서버가 열리기를 기다린다.
                 else
                 {
                     //호스트가 아닌 클라이언트로 선정됨을 중계.
                     RMI_ID newVoipUser = List[i];
-                    server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES256, false, getWorldMapID());
+                    server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES128, false, getWorldMapID());
                 }
             }
 
