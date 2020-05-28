@@ -238,7 +238,7 @@ public class TCP_InBoundHandler extends ByteToMessageDecoder {
 
         //클라가 강제로 종료하여 뜨는 에러라면 skip 한다.
         if(causeToString.contains("현재 연결은 원격 호스트에 의해 강제로 끊겼습니다")
-                || causeToString.contains("Connection reset by peer")) {
+        || causeToString.contains("Connection reset by peer")) {
             return;
         }
 
