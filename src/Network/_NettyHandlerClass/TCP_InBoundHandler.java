@@ -233,7 +233,17 @@ public class TCP_InBoundHandler extends ByteToMessageDecoder {
     //에러 발생시 처리!
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("[TCP_InBoundHandler] exceptionCaught 발생! "+cause.toString());
+
+        String causeToString = cause.toString();
+
+        //클라가 강제로 종료하여 뜨는 에러라면 skip 한다.
+        if(causeToString.contains("현재 연결은 원격 호스트에 의해 강제로 끊겼습니다")
+                || causeToString.contains("Connection reset by peer")) {
+            return;
+        }
+
+        System.out.println("[TCP_InBoundHandler] exceptionCaught 발생! "+causeToString);
+
         cause.printStackTrace();
         ctx.close();
     }

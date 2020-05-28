@@ -948,8 +948,9 @@ public class WorldMap {
             for (int i = 0; i < List.length; i++) {
                 RMI_ID rmi_id = List[i];
 
+                //보이스채팅에서 방장역할이 아닌 유저에게, 방장이 만든 음성채팅서버로 접속하게끔 메시지 전송.
                 if(rmi_id.rmi_host_id != voipHost.rmi_host_id)
-                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES256, this.isVoipHostReady, getWorldMapID());
+                    server_to_client.pickLogicConnectToVoipHost(rmi_id, RMI_Context.Reliable_AES128, this.isVoipHostReady, getWorldMapID());
             }
             //voipHost = null;
         }
@@ -977,14 +978,14 @@ public class WorldMap {
                 if(rmi_id.rmi_host_id == voipHost.rmi_host_id)
                 {
                     //새로이 Host로 선정됨을 알림.
-                    server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES256, true, getWorldMapID());
+                    server_to_client.pickLogicIsVoipHost(voipHost, RMI_Context.Reliable_AES128, true, getWorldMapID());
                 }
                 //나머지 유저는 음성채팅 서버가 열리기를 기다린다.
                 else
                 {
                     //호스트가 아닌 클라이언트로 선정됨을 중계.
                     RMI_ID newVoipUser = List[i];
-                    server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES256, false, getWorldMapID());
+                    server_to_client.pickLogicIsVoipHost(newVoipUser, RMI_Context.Reliable_AES128, false, getWorldMapID());
                 }
             }
 
@@ -1320,7 +1321,7 @@ public class WorldMap {
             System.out.println("남은 부활 대기 시간 : " + data.remainRespawnTimeMilliSeconds);
 
             //부활시간이 경과했다면.
-            if ((data.remainRespawnTimeMilliSeconds <= 0f) && (entity.hpComponent.currentHP <= 0)) {
+            if ((data.remainRespawnTimeMilliSeconds <= 0f)) {
 
                 System.out.println("캐릭터가 부활합니다.");
 
@@ -1328,8 +1329,8 @@ public class WorldMap {
                 iterator.remove();
 
                 //부활하였으므로 HP/MP를 다 채우고, 걸렸던 상태이상을 원래대로 돌려놓는다.
-                entity.hpComponent.currentHP = entity.hpComponent.maxHP;
-                entity.mpComponent.currentMP = entity.mpComponent.maxMP;
+                entity.hpComponent.currentHP = (entity.hpComponent.maxHP + entity.conditionComponent.maxHPBonus) * entity.conditionComponent.maxHPRate;
+                entity.mpComponent.currentMP = (entity.mpComponent.maxMP + entity.conditionComponent.maxMPBonus) * entity.conditionComponent.maxMPRate;
 
                 entity.conditionComponent.isDisableMove = false;
                 entity.conditionComponent.isDisableAttack = false;
@@ -1404,15 +1405,14 @@ public class WorldMap {
                     //게임을 시작한다. 그 후로 이 메소드는 더이상 호출되지 않는다.
                     checkUserLoadingProgress();
 
-                    //캐릭터의 부활 타이머를 체크하는 부분이다. 캐릭터의 부활시간이 다 지나면 부활처리를 하게 된다.
-                    checkCharacterRespawn();
-
-
                     if (isGameMapStarted){
 
                         //토탈 게임시간 카운팅. isGameMapStarted 가 true가 되면 플레이 타임 카운트를 시작한다.
                         totalPlayTime += tickRate;
                         gameElapsedTime = totalPlayTime;
+
+                        //캐릭터의 부활 타이머를 체크하는 부분이다. 캐릭터의 부활시간이 다 지나면 부활처리를 하게 된다.
+                        checkCharacterRespawn();
 
                         if(totalPlayTime % 500 == 0)
                         {
@@ -1429,8 +1429,9 @@ public class WorldMap {
                              */
 
                             /** 몬스터 마릿수를 전체 웨이브 마릿수로 초기화한다 */
-                            currentWaveAliveMobCount = currentWaveEntireMobCount;
+                            //currentWaveAliveMobCount = currentWaveEntireMobCount;
 
+                            int currentMonsterCount = 0;
                             /** 죽은 몹의 카운트를 센다 */
                             for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : monsterEntity.entrySet()){
                                 MonsterEntity monster = monsterEntity.getValue();
@@ -1440,17 +1441,16 @@ public class WorldMap {
                                     continue;
                                 }
 
-                                /** 죽은 몹을 발견할 때 마다 마릿수를 1씩 차감한다 */
-                                if(monster.hpComponent.currentHP <= 0){
-                                    currentWaveEntireMobCount--;
+                                //현재 살아있는 몬스터 수를 체크한다.
+                                if(monster.hpComponent.currentHP > 0){
+                                    currentMonsterCount++;
                                 }
                             }
 
                             /** 월드 상태 정보에 몬스터 수를 반영한다 */
 
                             data.entireWaveMobCount = currentWaveEntireMobCount;
-                            data.currentAliveMobCount = currentWaveAliveMobCount;
-
+                            data.currentAliveMobCount = currentMonsterCount;
 
 
                             /***************************************************************************/
@@ -1594,7 +1594,7 @@ public class WorldMap {
                                          */
                                         /* 해당 종류의 마릿수만큼 반복한다 */
                                         int charCount = characterEntity.size();
-                                        for (int i = 0; i < (mobCount*charCount * 10); i++) {
+                                        for (int i = 0; i < (mobCount*charCount); i++) {
 
                                             monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
                                         }
