@@ -2868,10 +2868,12 @@ public class BuffActionSystem {
 
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
+
         float formerMaxHP = hpComponent.maxHP;
         hpComponent.maxHP = hpComponent.originalMaxHp + condition.maxHPBonus;
         hpComponent.maxHP *= maxHpRate;
         hpComponent.currentHP += (hpComponent.maxHP - formerMaxHP);
+
         if(hpComponent.currentHP > hpComponent.maxHP){
             hpComponent.currentHP = hpComponent.maxHP;
         }
@@ -2893,10 +2895,12 @@ public class BuffActionSystem {
 
         /** 최대 마력 처리 */
         float maxMpRate = condition.maxMPRate;
+
         float formerMaxMP = mpComponent.maxMP;
         mpComponent.maxMP = mpComponent.originalMaxMP + condition.maxMPBonus;
         mpComponent.maxMP *= maxMpRate;
         mpComponent.currentMP += (mpComponent.maxMP - formerMaxMP);
+
         if(mpComponent.currentMP > mpComponent.maxMP){
             mpComponent.currentMP = mpComponent.maxMP;
         }

@@ -81,7 +81,9 @@ public class LevelUpSystem {
                     CharacterLevelUpInfo levelUpInfo = GameDataManager.getLevelUpInfo(characterComponent.characterType);
 
                     character.hpComponent.originalMaxHp += levelUpInfo.maxHP;
+
                     character.hpComponent.maxHP += levelUpInfo.maxHP;
+
                     //character.hpComponent.currentHP = character.hpComponent.maxHP;
                     character.hpComponent.recoveryRateHP += levelUpInfo.recoveryRateHP;
 
@@ -91,7 +93,9 @@ public class LevelUpSystem {
                     }
 
                     character.mpComponent.originalMaxMP += levelUpInfo.maxMP;
+
                     character.mpComponent.maxMP += levelUpInfo.maxMP;
+
                     //character.mpComponent.currentMP = character.mpComponent.maxMP;
                     character.mpComponent.recoveryRateMP += levelUpInfo.recoveryRateMP;
 
