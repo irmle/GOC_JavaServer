@@ -197,20 +197,20 @@ public class MapFactory implements Cloneable {
 
         if(mapOver_X || mapOver_Y){
 
-            System.out.println("최종목적 좌표 : " + posX + ", "
+            /*System.out.println("최종목적 좌표 : " + posX + ", "
                     + posY );
 
             System.out.println("최종목적 타일 : " + tileX + ", "
                     + tileY );
-
+*/
             return null;
         } else{
-            System.out.println("최종목적 좌표 : " + posX + ", "
+            /*System.out.println("최종목적 좌표 : " + posX + ", "
                     + posY );
 
             System.out.println("최종목적 타일 : " + tileX + ", "
                     + tileY );
-
+*/
             return maps[tileX].mapInfos.get(tileY);
 
         }
@@ -762,8 +762,8 @@ public class MapFactory implements Cloneable {
     public static ArrayList<MapInfo> pathFind(WorldMap worldMap, MapInfo startPoint, MapInfo endPoint){
 
         //System.out.println("패스 파인딩 호출");
-        // System.out.println("출발 지점 : " + startPoint.arrayX + ", " + startPoint.arrayY);
-        // System.out.println("도착 지점 : " + endPoint.arrayX + ", " + endPoint.arrayY);
+        System.out.println("출발 지점 : " + startPoint.arrayX + ", " + startPoint.arrayY);
+        System.out.println("도착 지점 : " + endPoint.arrayX + ", " + endPoint.arrayY);
 
 
         ArrayList<MapInfo> finalPath = new ArrayList();

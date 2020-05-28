@@ -871,6 +871,11 @@ public class SkillFactory {
                 skillUser.buffActionHistoryComponent.conditionHistory.add(
                         createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+
                 break;
 
             case SkillType.KNIGHT_GARREN_Q :

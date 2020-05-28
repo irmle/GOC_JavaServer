@@ -1,6 +1,9 @@
 package ECS.Components;
 
 import ECS.Classes.Type.PathType;
+import com.sun.org.apache.xerces.internal.dom.DeferredAttrImpl;
+
+import java.util.HashMap;
 
 /**
  * 업뎃날짜 : 오후 11:31 2020-04-03
@@ -28,6 +31,8 @@ public class MonsterComponent implements Cloneable {
 
     public int monsterLevel;
 
+    public int monsterCollisionCount;
+    public boolean move;
 
     public MonsterComponent(int monsterType, String monsterName) {
         this.monsterType = monsterType;
@@ -39,6 +44,8 @@ public class MonsterComponent implements Cloneable {
         movePointIndex = 0;
 
         monsterLevel = 1;
+        monsterCollisionCount = 0;
+        move = false;
     }
 
     public MonsterComponent(int monsterType, String monsterName, int monsterLevel) {

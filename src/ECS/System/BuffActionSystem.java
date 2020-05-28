@@ -630,18 +630,16 @@ public class BuffActionSystem {
             } // 버프액션 한 개에 대한 처리 끝
 
             /* 지금까지 누적된 컴포넌트 정보로 캐릭터의 상태를 업데이트해준다. */
-            character.conditionComponent = newCondition;  // 얉은복사(?)로 문제없으려나.. => 나중에 문제생기면, clone() 쓰지머.
 
-            HPComponent hpComponent = character.hpComponent;
-            if(hpComponent.originalMaxHp >= hpComponent.maxHP){
+            ConditionComponent formerCondition = (ConditionComponent) character.conditionComponent.clone();
+            character.conditionComponent = newCondition;
+
+            if(formerCondition.maxHPRate != newCondition.maxHPRate){
+
                 applyNewCharCondValue_HP(character);
             }
-            else{
-                //System.out.println("현재, 최대체력 관련 버프를 받고 있는 중이므로 패스 ");
-            }
 
-            MPComponent mpComponent = character.mpComponent;
-            if(mpComponent.originalMaxMP == mpComponent.maxMP){
+            if(formerCondition.maxMPRate != newCondition.maxMPRate){
                 applyNewCharCondValue_MP(character);
             }
 
@@ -2870,9 +2868,10 @@ public class BuffActionSystem {
 
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
+        float formerMaxHP = hpComponent.maxHP;
         hpComponent.maxHP = hpComponent.originalMaxHp + condition.maxHPBonus;
         hpComponent.maxHP *= maxHpRate;
-        hpComponent.currentHP += (hpComponent.maxHP - hpComponent.originalMaxHp);
+        hpComponent.currentHP += (hpComponent.maxHP - formerMaxHP);
         if(hpComponent.currentHP > hpComponent.maxHP){
             hpComponent.currentHP = hpComponent.maxHP;
         }
@@ -2894,9 +2893,10 @@ public class BuffActionSystem {
 
         /** 최대 마력 처리 */
         float maxMpRate = condition.maxMPRate;
+        float formerMaxMP = mpComponent.maxMP;
         mpComponent.maxMP = mpComponent.originalMaxMP + condition.maxMPBonus;
         mpComponent.maxMP *= maxMpRate;
-        mpComponent.currentMP += (mpComponent.maxMP - mpComponent.originalMaxMP);
+        mpComponent.currentMP += (mpComponent.maxMP - formerMaxMP);
         if(mpComponent.currentMP > mpComponent.maxMP){
             mpComponent.currentMP = mpComponent.maxMP;
         }

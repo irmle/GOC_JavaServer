@@ -69,7 +69,7 @@ public class SkillObjectSystem {
             //System.out.println("스킬 오브젝트의 지속 시간 : " + skillObjectComponent.skillObjectDurationTime);
 
             /** 스킬 오브젝트의 지속 여부를 판단한다 */
-            if(skillObjectComponent.skillObjectDurationTime < 0f){  /* 오브젝트의 지속 시간이 끝났다면 */
+            if(skillObjectComponent.skillObjectDurationTime <= 0f){  /* 오브젝트의 지속 시간이 끝났다면 */
 
                 /* 스킬 오브젝트를 삭제한다 */
               //  System.out.println("스킬 오브젝트의 지속 시간이 다 되어, 오브젝트를 삭제합니다. ");
@@ -349,13 +349,16 @@ public class SkillObjectSystem {
                                 BuffAction buff = buffActionList.get(q);
                                 if(buff.unitID == buffActionList.get(q).unitID){
 
-                                    if((buff.floatParam.size() > 0)
-                                            && (buff.floatParam.get(0).type == ConditionType.damageAmount)){
+                                    if(buff.floatParam.size() > 0){
+                                        if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+                                                ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
-                                        haveDamage = true;
-                                        break;
+                                            haveDamage = true;
+                                            break;
 
+                                        }
                                     }
+
                                 }
                             }
 
@@ -387,14 +390,13 @@ public class SkillObjectSystem {
                                     if(buff.unitID == buffActionList.get(q).unitID){
 
                                         if(buff.floatParam.size() > 0){
-
-                                            if(buff.floatParam.get(0).type == ConditionType.damageAmount){
+                                            if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+                                                    ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
                                                 haveDamage = true;
                                                 break;
 
                                             }
-
                                         }
 
                                     }
@@ -434,7 +436,8 @@ public class SkillObjectSystem {
                                     if (buff.unitID == buffActionList.get(q).unitID) {
 
                                         if(buff.floatParam.size() > 0){
-                                            if (buff.floatParam.get(0).type == ConditionType.damageAmount) {
+                                            if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+                                                ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
                                                 haveDamage = true;
                                                 break;
@@ -727,17 +730,19 @@ public class SkillObjectSystem {
                             float skillDuration = SkillFactory.skillInfoPerLevelLIST.get(SkillType.MAGICIAN_METEOR).get(skillLevel).durationTime;
 
 
-                            if((skillObjectComponent.skillObjectDurationTime + 0.1f) >= skillDuration){
+                            if((skillObjectComponent.skillObjectDurationTime + 0.1f) >= (skillDuration)){
 
                                 target.buffActionHistoryComponent.conditionHistory.add(
                                         SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
 
+                                System.out.println("메테오 충돌뎀 : " + skillObjectComponent.skillObjectDurationTime);
                             }
                             else{
 
                                 target.buffActionHistoryComponent.conditionHistory.add(
                                         SkillFactory.createSkillEffect(skillType, "장판 데미지", skillLevel, skillUser, skillObjectEntity.entityID));
 
+                                System.out.println("메테오 장판뎀 : " + skillObjectComponent.skillObjectDurationTime);
                             }
 
                         }

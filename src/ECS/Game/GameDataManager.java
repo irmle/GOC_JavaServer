@@ -2090,6 +2090,9 @@ public class GameDataManager {
         int effectType;
         switch (str){
 
+            case "이동불가":
+                effectType = ConditionType.isDisableMove;
+                break;
             case "데미지":
                 effectType = ConditionType.damageAmount;
                 break;

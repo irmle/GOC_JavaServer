@@ -1594,7 +1594,7 @@ public class WorldMap {
                                          */
                                         /* 해당 종류의 마릿수만큼 반복한다 */
                                         int charCount = characterEntity.size();
-                                        for (int i = 0; i < (mobCount*charCount); i++) {
+                                        for (int i = 0; i < (mobCount*charCount * 10); i++) {
 
                                             monsterSpawnList.add(monsters.getKey());    // 생성 큐에 한마리씩 집어넣는다.
                                         }
@@ -1946,7 +1946,9 @@ public class WorldMap {
                     //ns를 ms로 변환.
                     double msElapsedLogicTime = (double) elapsedLogicTime * 0.000001d; //100만으로 나눔.
 
-                    System.out.println("한 로직 실행하는 데 총 걸린 시간 : " + String.format("%.3f", msElapsedLogicTime));
+                    if(msElapsedLogicTime >= 25f){
+                        System.out.println("한 로직 실행하는 데 총 걸린 시간 : " + String.format("%.3f", msElapsedLogicTime));
+                    }
 
                     long sleepTime = tickRate - Math.round(msElapsedLogicTime); //반올림
                     if (sleepTime > 0) {
@@ -3040,7 +3042,7 @@ public class WorldMap {
         characterData.recoveryRateHP = entity.hpComponent.recoveryRateHP;
 
         characterData.currentMP = entity.mpComponent.currentMP;
-        characterData.maxMP = entity.mpComponent.maxMP;
+        characterData.maxMP = entity.mpComponent.originalMaxMP;
         characterData.recoveryRateMP = entity.mpComponent.recoveryRateMP;
 
         characterData.attackRange = entity.attackComponent.attackRange;
@@ -4085,16 +4087,16 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 1;
+        entity.characterComponent.level = 15;
         entity.characterComponent.exp = 0;
         entity.characterComponent.gold = 1000;
 
-        entity.characterComponent.skillPoint = 1;
+        entity.characterComponent.skillPoint = 15;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
 
-        //characterData.hp *= 100f;
+        //characterData.hp *= 10;
         entity.hpComponent = new HPComponent();
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
@@ -4129,7 +4131,7 @@ public class WorldMap {
         entity.attackComponent.criticalDamage = characterData.criticalBonus;
 
         entity.defenseComponent = new DefenseComponent();
-        entity.defenseComponent.defense = characterData.defense;
+        entity.defenseComponent.defense = characterData.defense + 500f;
 
         entity.positionComponent = new PositionComponent();
         //entity.positionComponent.position = new Vector3(150f, 0, -150f);
@@ -4462,7 +4464,6 @@ public class WorldMap {
             }
         }
 
-
         return jungleType;
     }
 
@@ -4484,6 +4485,7 @@ public class WorldMap {
         /** 전투력이 속한 등급을 찾는다 */
         int grade = GameDifficultyGrade.decideGameGrade(teamStrengthPower);
 
+
         System.out.println("등급 : " + grade);
 
 
@@ -4491,6 +4493,9 @@ public class WorldMap {
         int level = GameDifficultyGrade.decideMonsterExpLevel(grade, teamStrengthPower);
 
         System.out.println("몹 레벨 : " + level);
+
+        grade = 1;
+        level = 1;
 
         /** 월드에 세팅 */
         this.monsterExpLevel = level;
