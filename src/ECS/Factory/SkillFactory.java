@@ -834,6 +834,9 @@ public class SkillFactory {
                 skillUser.buffActionHistoryComponent.conditionHistory.add(
                         createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
                 break;
 
 
@@ -7987,6 +7990,13 @@ public class SkillFactory {
 
                 if(skillType == SkillType.KNIGHT_GARREN_Q){
 
+                    break;
+                }
+
+                /**
+                 * 2020 05 28, 아이스 계열 스킬의 슬로우 효과에 계수가 적용되지 않도록 하기;
+                 */
+                if(effectValue < 0){
                     break;
                 }
 
