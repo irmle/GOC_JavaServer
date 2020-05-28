@@ -1433,8 +1433,9 @@ public class WorldMap {
                              */
 
                             /** 몬스터 마릿수를 전체 웨이브 마릿수로 초기화한다 */
-                            currentWaveAliveMobCount = currentWaveEntireMobCount;
+                            //currentWaveAliveMobCount = currentWaveEntireMobCount;
 
+                            int currentMonsterCount = 0;
                             /** 죽은 몹의 카운트를 센다 */
                             for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : monsterEntity.entrySet()){
                                 MonsterEntity monster = monsterEntity.getValue();
@@ -1444,16 +1445,17 @@ public class WorldMap {
                                     continue;
                                 }
 
-                                /** 죽은 몹을 발견할 때 마다 마릿수를 1씩 차감한다 */
-                                if(monster.hpComponent.currentHP <= 0){
-                                    currentWaveEntireMobCount--;
+                                ///** 죽은 몹을 발견할 때 마다 마릿수를 1씩 차감한다 */
+                                //현재 살아있는 몬스터 수를 체크한다.
+                                if(monster.hpComponent.currentHP > 0){
+                                    currentMonsterCount++;
                                 }
                             }
 
                             /** 월드 상태 정보에 몬스터 수를 반영한다 */
 
                             data.entireWaveMobCount = currentWaveEntireMobCount;
-                            data.currentAliveMobCount = currentWaveAliveMobCount;
+                            data.currentAliveMobCount = currentMonsterCount;
 
 
 
