@@ -1051,6 +1051,9 @@ public class BuffActionSystem {
                                             /* 2. 이동량을 높이에 반영한다 ( + )*/
 
                                             Vector3 monsterPos = monster.positionComponent.position;
+                                            if(monsterPos.y() + 이동량 >= 15f){
+                                                break;
+                                            }
 
                                             System.out.println("이동 전높이 : " + monsterPos.y());
                                             monsterPos.y(monsterPos.y() + 이동량);
@@ -1090,6 +1093,10 @@ public class BuffActionSystem {
                                             /* 2. 이동량을 높이에 반영한다 ( - )*/
 
                                             Vector3 monsterPos = monster.positionComponent.position;
+                                            if(monsterPos.y()-이동량 <= 0f){
+                                                break;
+                                            }
+
                                             System.out.println("이동 전 높이 : " + monsterPos.y());
                                             monsterPos.y(monsterPos.y() - 이동량);
 
