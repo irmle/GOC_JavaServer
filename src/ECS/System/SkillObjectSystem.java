@@ -94,7 +94,7 @@ public class SkillObjectSystem {
 
                                 Vector3 targetPos = monster.positionComponent.position;
 
-                                targetPos.set(targetPos.x(), 0f, targetPos.z());
+                                //targetPos.set(targetPos.x(), 0f, targetPos.z());
 
                             }
 
@@ -477,7 +477,8 @@ public class SkillObjectSystem {
 
                         Vector3 targetPos = target.positionComponent.position;
 
-                        targetPos.set(targetPos.x(), 2f, targetPos.z());
+                        /** 2020 05 29 주석*/
+                        //targetPos.set(targetPos.x(), 2f, targetPos.z());
 
                         if(doOldVersion){
 

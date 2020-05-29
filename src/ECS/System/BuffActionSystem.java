@@ -716,7 +716,7 @@ public class BuffActionSystem {
 
                 //System.out.println("남은  지속시간 : " + buffAction.remainTime);
 
-                if(buffAction.remainTime < 0f){
+                if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
                     /**
@@ -731,6 +731,7 @@ public class BuffActionSystem {
                                 Vector3 monsterPos = monster.positionComponent.position;
                                 monsterPos.set(monsterPos.x(), 0f, monsterPos.z());
 
+                                System.out.println("에어본 원상복귀");
                             }
                             break;
 
@@ -987,12 +988,14 @@ public class BuffActionSystem {
                                         break;
                                     case ConditionType.isAirborne :
                                         newCondition.isAriborne = true;
+                                        newCondition.isDisableMove = true;
+                                        newCondition.isDisableAttack = true;
 
                                         // 2020 04 13 주석처리함.. 머지...
                                         //Vector3 monsterPos = monster.positionComponent.position;
                                         //monsterPos.set(monsterPos.x(), 10f, monsterPos.z());
 
-                                        Vector3 monsterPos = monster.positionComponent.position;
+                                        /*Vector3 monsterPos = monster.positionComponent.position;
                                         if(monsterPos.y() >= 0.4){
 
                                             monsterPos.set(monsterPos.x(), 0.2f, monsterPos.z());
@@ -1000,7 +1003,102 @@ public class BuffActionSystem {
                                         else{
 
                                             monsterPos.set(monsterPos.x(), 0.4f, monsterPos.z());
+                                        }*/
+
+
+                                        /**
+                                         * 2020 05 29 에어본 처리방식 수정
+                                         */
+                                        /*******************************************************************************/
+
+                                        float 중력_가중치 = 25f;
+                                        float 중력_역가중치 = 10f;
+
+                                        float remainTime = buffAction.remainTime;
+                                        float durationTime = buffAction.buffDurationTime;
+
+                                        if(((remainTime ) > (durationTime/2-0.1f)) && ((remainTime) < (durationTime/2))){
+                                            System.out.println("정상");
+                                            System.out.println("남은 시간 :" + String.format("%.3f", remainTime) );
+
                                         }
+                                        else if(remainTime > (durationTime/2) ){
+
+                                            System.out.println("올라감");
+                                            System.out.println("남은 시간 :" + remainTime );
+
+                                            /** 올라가는 처리 수행 */
+
+                                            /* 1. 이동량을 구한다 */
+                                            float 이동량;
+
+                                            이동량 = (float)
+                                                    ( Math.pow( Math.abs( remainTime - (durationTime/2) ), 2 )
+                                                            / Math.pow( ((durationTime/2) + 1 ), 2));
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 *= 중력_가중치;
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 = (1 / 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            //이동량 *= 중력_역가중치;
+
+                                            /* 2. 이동량을 높이에 반영한다 ( + )*/
+
+                                            Vector3 monsterPos = monster.positionComponent.position;
+
+                                            System.out.println("이동 전높이 : " + monsterPos.y());
+                                            monsterPos.y(monsterPos.y() + 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+                                            System.out.println("높이 : " + monsterPos.y());
+
+                                        }
+                                        else{
+
+                                            /** 내려가는 처리 수행 */
+
+                                            System.out.println("내려감");
+                                            System.out.println("남은 시간 :" + remainTime );
+
+                                            /* 1. 이동량을 구한다 */
+                                            float 이동량;
+
+                                            이동량 = (float)
+                                                    ( Math.pow( Math.abs( remainTime - (durationTime/2) ), 2 )
+                                                            / Math.pow( ((durationTime/2) + 1 ), 2));
+
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 *= 중력_가중치;
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 = (1 / 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            //이동량 *= 중력_역가중치;
+
+
+                                            /* 2. 이동량을 높이에 반영한다 ( - )*/
+
+                                            Vector3 monsterPos = monster.positionComponent.position;
+                                            System.out.println("이동 전 높이 : " + monsterPos.y());
+                                            monsterPos.y(monsterPos.y() - 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+                                            System.out.println("높이 : " + monsterPos.y());
+
+                                        }
+
+                                        /*******************************************************************************/
 
                                         break;
 
