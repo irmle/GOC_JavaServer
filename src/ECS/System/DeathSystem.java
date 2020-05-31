@@ -188,11 +188,13 @@ public class DeathSystem {
             return;
         }
 
+        
+        /**
+         * 2020 05 30
+         * 에어본 예외처리 임시로 여기서 함
+         */
+        deadMonster.positionComponent.position.y(0);
 
-        //killerEntityType = EntityType.CharacterEntity;
-        //System.out.println("킬러 앤티티타입 : " + killerEntityType);
-
-          //      System.out.println("죽은 몬스터의 타입 : " + typeOfDeadMonster);
 
         Reward reward;
 
