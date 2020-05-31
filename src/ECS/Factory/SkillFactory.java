@@ -7454,7 +7454,7 @@ public class SkillFactory {
             case ConditionType.isUnTargetable :
 
             case ConditionType.isAirborneImmunity :
-            case ConditionType.isAirborne :
+            //case ConditionType.isAirborne :   // 에어본 bool >> float로 변경.
             case ConditionType.isGarrenQApplied :
             case ConditionType.isTargetingInvincible :
             case ConditionType.isArcherFireActivated :
@@ -7653,6 +7653,15 @@ public class SkillFactory {
 
         switch (effectType){
 
+            /**
+             * 수정날짜 : 2020 05 31
+             * 업뎃내용 : 에어본 bool >> float, 값 읽어오기 처리
+             */
+            case ConditionType.isAirborne :
+
+                effectValue = skillInfo.maxHeight;
+                break;
+
             case ConditionType.moveSpeedRate :
 
                 effectValue = skillInfo.moveSpeedRate;
@@ -7737,7 +7746,7 @@ public class SkillFactory {
                 }
                 break;
 
-            /* 해당 효과를 주는 스킬이 (아직) 존재하지 않음 */
+            /* 해당 효과를 주는 "스킬"이 (아직) 존재하지 않음 */
             case ConditionType.hpRecoveryRate :
             case ConditionType.mpRecoveryRate :
             case ConditionType.goldGainRate :

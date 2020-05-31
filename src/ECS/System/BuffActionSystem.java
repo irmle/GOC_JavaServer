@@ -424,7 +424,6 @@ public class BuffActionSystem {
                                 switch (condition.type){
                                     case ConditionType.isDisableMove:
                                         newCondition.isDisableMove = true;
-                                        System.out.println("못움직임");
                                         break;
                                     case ConditionType.isDisableAttack:
                                         newCondition.isDisableAttack = true;
@@ -941,6 +940,46 @@ public class BuffActionSystem {
 
                                         break;
 
+                                    /**
+                                     * 업뎃날짜 : 2020 05 31 일
+                                     * 업뎃내용 : 에어본 처리 리뉴얼
+                                     */
+                                    case ConditionType.isAirborne :
+
+                                        /* 상태 체크 */
+                                        newCondition.isAriborne = true;
+                                        newCondition.isDisableAttack = true;
+                                        newCondition.isDisableMove = true;
+
+                                        /* 높이 조절 */
+                                        /**
+                                         * x = currentTime
+                                         * y = a(x-b) + c // currentHeight
+                                         * a = ?
+                                         * b = durationTime / 2;
+                                         * c = maxHeight
+                                         */
+
+                                        float a;
+                                        float b = (buffAction.buffDurationTime / 2);
+                                        float c = condition.value;
+                                        float currentTime;
+                                        float currentHeight;
+
+                                        // a 구하기
+                                        a = (float) ((-c) / Math.pow(b, 2));
+
+                                        // 높이 구하기
+                                        currentTime = buffAction.buffDurationTime - buffAction.remainTime;
+                                        currentHeight = (float) (a* Math.pow((currentTime - b), 2) + 15 );
+
+                                        // 높이 반영하기
+                                        Vector3 monsterPos = monster.positionComponent.position;
+                                        monsterPos.y(currentHeight);
+
+
+                                        break;
+
                                     default:
                                         break;
                                 }
@@ -1143,6 +1182,46 @@ public class BuffActionSystem {
                                     /* 데미지량 중계 */
                                     // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
                                     // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
+
+                                    break;
+
+                                /**
+                                 * 업뎃날짜 : 2020 05 31 일
+                                 * 업뎃내용 : 에어본 처리 리뉴얼
+                                 */
+                                case ConditionType.isAirborne :
+
+                                    /* 상태 체크 */
+                                    newCondition.isAriborne = true;
+                                    newCondition.isDisableAttack = true;
+                                    newCondition.isDisableMove = true;
+
+                                    /* 높이 조절 */
+                                    /**
+                                     * x = currentTime
+                                     * y = a(x-b) + c // currentHeight
+                                     * a = ?
+                                     * b = durationTime / 2;
+                                     * c = maxHeight
+                                     */
+
+                                    float a;
+                                    float b = (buffAction.buffDurationTime / 2);
+                                    float c = condition.value;
+                                    float currentTime;
+                                    float currentHeight;
+
+                                    // a 구하기
+                                    a = (float) ((-c) / Math.pow(b, 2));
+
+                                    // 높이 구하기
+                                    currentTime = buffAction.buffDurationTime - buffAction.remainTime;
+                                    currentHeight = (float) (a* Math.pow((currentTime - b), 2) + 15 );
+
+                                    // 높이 반영하기
+                                    Vector3 monsterPos = monster.positionComponent.position;
+                                    monsterPos.y(currentHeight);
+
 
                                     break;
 
