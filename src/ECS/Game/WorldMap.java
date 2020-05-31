@@ -3192,8 +3192,12 @@ public class WorldMap {
                 continue;
             }
 
-            if((currentBuff.skillType != 0) && (currentBuff.boolParam.size() > 0)
-                    && (currentBuff.boolParam.get(0).type == ConditionType.isDisableSkill)){
+            if((currentBuff.skillType != 0)
+                    && (currentBuff.boolParam.size() > 0)
+                    && (
+                            (currentBuff.boolParam.get(0).type == ConditionType.isDisableSkill)
+                                    || (currentBuff.boolParam.get(0).type == ConditionType.isDisableMove))
+            ){
                 continue;
             }
 

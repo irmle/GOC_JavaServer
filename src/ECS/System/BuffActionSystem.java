@@ -1240,11 +1240,7 @@ public class BuffActionSystem {
                                     // 높이 반영하기
                                     Vector3 monsterPos = monster.positionComponent.position;
                                     monsterPos.y(currentHeight);
-/*
-                                    System.out.println("velocityX = " + monster.velocityComponent.velocity.x());
-                                    System.out.println("velocityY = " + monster.velocityComponent.velocity.y());
-                                    System.out.println("velocityZ = " + monster.velocityComponent.velocity.z());
-*/
+
                                     break;
 
                                 default:
