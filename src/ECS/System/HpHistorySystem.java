@@ -64,7 +64,7 @@ public class HpHistorySystem {
          사망 판정을 하고, 그에 따른 처리를 한다.
          */
 
-        boolean testMode = false;
+        boolean testMode = true;
 
         /** 캐릭터 */
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {

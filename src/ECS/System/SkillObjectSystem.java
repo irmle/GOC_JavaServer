@@ -197,7 +197,7 @@ public class SkillObjectSystem {
                     Vector3 skillObjectPos = skillObject.getValue().positionComponent.position;
                     Vector3 mobPos = monster.positionComponent.position;
 
-                    currentDistance = Vector3.distance(skillObjectPos, mobPos);
+                    currentDistance = Vector3.distance(skillObjectPos, new Vector3(mobPos.x(), 0, mobPos.z()));
 
                     switch(skillObjectComponent.skillAreaType){
 
@@ -340,8 +340,8 @@ public class SkillObjectSystem {
                         /**
                          * 2020 04 13
                          */
-                        if((targetsBuffAction.boolParam.size() > 0)
-                                && targetsBuffAction.boolParam.get(0).type == ConditionType.isAirborne){
+                        if((targetsBuffAction.floatParam.size() > 0)
+                                && targetsBuffAction.floatParam.get(0).type == ConditionType.isAirborne){
 
                             boolean haveDamage = false;
                             for(int q=0; q<buffActionList.size(); q++){

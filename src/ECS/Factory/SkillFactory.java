@@ -7364,13 +7364,12 @@ public class SkillFactory {
 
             /* 지속시간 값을 구해야 한다면, 시전자의 스킬 레벨 값에 맞는 적용시간 값을 가져와 적용한다 */
             effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
-            System.out.println("스킬레벨정보에서 지속 시간 가져옴 : " + effectDurationTime);
+
         }
         else{
 
             /* 지속시간 값을 별도로 구해 줄 필요가 없다면, 기존에 들어있는 값을 가져와 그대로 적용하면 된다. */
             effectDurationTime = effectInfo.effectDurationTime;
-            System.out.println("지속시간 : " + effectDurationTime);
         }
 
 
@@ -7577,6 +7576,14 @@ public class SkillFactory {
                 if(effectValue < 0){
                     break;
                 }
+
+            /**
+             *  2020 05 31
+             *  에어본 효과에, 계수가 적용되지 않도록 함
+             */
+            case ConditionType.isAirborne :
+
+                break;
 
             default:
 

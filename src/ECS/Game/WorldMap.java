@@ -4091,11 +4091,11 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 1;
+        entity.characterComponent.level = 15;
         entity.characterComponent.exp = 0;
         entity.characterComponent.gold = 10000;
 
-        entity.characterComponent.skillPoint = 1;
+        entity.characterComponent.skillPoint = 15;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();

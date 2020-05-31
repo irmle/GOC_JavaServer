@@ -112,7 +112,7 @@ public class MonsterSystem2 {
             }
 
 
-            if(true){
+            if(false){
                 System.out.println("몬스터 " + monster.entityID + " 의 로직을 처리합니다.");
             }
 
@@ -307,6 +307,7 @@ public class MonsterSystem2 {
                 else{    // 쿨타임이 안됐거나, 몹 본인이 공격 불가능한 상태
                     toDoAction = MonsterActionType.DO_NOTHING;   // 애매한데.. 일단은 이렇게 해보고, 이상하면 얘 빼고 기존 체제로 고고
                 }
+
             }
             else{
 
@@ -436,7 +437,7 @@ public class MonsterSystem2 {
 
 
             // 테스트
-            if(true){
+            if(false){
                 //System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
                 System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);
                 System.out.println("PathType : " + monster.monsterComponent.movePathType

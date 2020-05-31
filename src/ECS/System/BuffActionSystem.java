@@ -195,7 +195,7 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
+                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
@@ -717,7 +717,7 @@ public class BuffActionSystem {
 
                 //System.out.println("남은  지속시간 : " + buffAction.remainTime);
 
-                if(buffAction.remainTime < 0f){
+                if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
                     /**
@@ -726,7 +726,7 @@ public class BuffActionSystem {
                     switch (buffAction.skillType){
                         case SkillType.KNIGHT_TORNADO :
 
-                            if((buffAction.boolParam.size() > 0) && buffAction.boolParam.get(0).type == ConditionType.isAirborne){
+                            if((buffAction.floatParam.size() > 0) && buffAction.floatParam.get(0).type == ConditionType.isAirborne){
 
                                 // 위치 원상복귀 해준다.
                                 Vector3 monsterPos = monster.positionComponent.position;
@@ -946,6 +946,13 @@ public class BuffActionSystem {
                                      */
                                     case ConditionType.isAirborne :
 
+                                        if(monster.hpComponent.currentHP <= 0){
+                                            monster.positionComponent.position.y(0);
+                                            buffActionList.remove(buffAction);
+                                            j--;
+                                            break;
+                                        }
+
                                         /* 상태 체크 */
                                         newCondition.isAriborne = true;
                                         newCondition.isDisableAttack = true;
@@ -960,6 +967,10 @@ public class BuffActionSystem {
                                          * c = maxHeight
                                          */
 
+                                        System.out.println("rotationY = " + monster.rotationComponent.y);
+                                        System.out.println("rotationZ = " + monster.rotationComponent.z);
+
+
                                         float a;
                                         float b = (buffAction.buffDurationTime / 2);
                                         float c = condition.value;
@@ -971,12 +982,13 @@ public class BuffActionSystem {
 
                                         // 높이 구하기
                                         currentTime = buffAction.buffDurationTime - buffAction.remainTime;
-                                        currentHeight = (float) (a* Math.pow((currentTime - b), 2) + 15 );
-
+                                        currentHeight = (float) (a* Math.pow((currentTime - b), 2) + c );
                                         // 높이 반영하기
                                         Vector3 monsterPos = monster.positionComponent.position;
                                         monsterPos.y(currentHeight);
 
+                                        System.out.println("rotationY = " + monster.rotationComponent.y);
+                                        System.out.println("rotationZ = " + monster.rotationComponent.z);
 
                                         break;
 
@@ -1191,6 +1203,13 @@ public class BuffActionSystem {
                                  */
                                 case ConditionType.isAirborne :
 
+                                    if(monster.hpComponent.currentHP <= 0){
+                                        monster.positionComponent.position.y(0);
+                                        buffActionList.remove(buffAction);
+                                        j--;
+                                        break;
+                                    }
+
                                     /* 상태 체크 */
                                     newCondition.isAriborne = true;
                                     newCondition.isDisableAttack = true;
@@ -1216,13 +1235,16 @@ public class BuffActionSystem {
 
                                     // 높이 구하기
                                     currentTime = buffAction.buffDurationTime - buffAction.remainTime;
-                                    currentHeight = (float) (a* Math.pow((currentTime - b), 2) + 15 );
+                                    currentHeight = (float) (a* Math.pow((currentTime - b), 2) + c );
 
                                     // 높이 반영하기
                                     Vector3 monsterPos = monster.positionComponent.position;
                                     monsterPos.y(currentHeight);
-
-
+/*
+                                    System.out.println("velocityX = " + monster.velocityComponent.velocity.x());
+                                    System.out.println("velocityY = " + monster.velocityComponent.velocity.y());
+                                    System.out.println("velocityZ = " + monster.velocityComponent.velocity.z());
+*/
                                     break;
 
                                 default:

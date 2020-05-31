@@ -5,6 +5,7 @@ import ECS.Classes.Type.Build.BuildSlotState;
 import ECS.Components.ConditionComponent;
 import ECS.Entity.*;
 import ECS.Factory.RewardFactory;
+import ECS.Factory.SkillFactory;
 import ECS.Game.WorldMap;
 import Network.RMI_Common.RMI_ParsingClasses.EntityType;
 
