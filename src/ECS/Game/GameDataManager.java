@@ -1737,6 +1737,13 @@ public class GameDataManager {
         /* 지속 시간 */
         float durationTime = Float.parseFloat(tokenizer.nextToken());
 
+        /**
+         * 작성날짜 : 2020 05 31 일요일
+         * 업뎃내용 : 에어본 효과의 최대 높이를 지정해주기 위한 값 추가
+         */
+        /* 최대 높이 (에어본) */
+        float maxHeight = Float.parseFloat(tokenizer.nextToken());
+
         /* 투사체 속도 */
         float flyingObjSpeed = Float.parseFloat(tokenizer.nextToken());
 
@@ -1802,7 +1809,8 @@ public class GameDataManager {
                 flyingObjSpeed,
                 moveSpeedIncrRate, attackSpeedIncrRate, bloodSuckingRate, maxHPIncrRate, freezingTime,
                 criticalAppearProbRate, criticalDamageRate,criticalBonusDamRate,
-                attackDamageCoefficient, defenseCoefficient, attackSpeedCoefficient, maxHPCoefficient, maxMPCoefficient);
+                attackDamageCoefficient, defenseCoefficient, attackSpeedCoefficient, maxHPCoefficient, maxMPCoefficient,
+                maxHeight);
 
         return newSkillInfo;
     }
