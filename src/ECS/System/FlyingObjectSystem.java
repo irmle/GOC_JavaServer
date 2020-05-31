@@ -369,7 +369,10 @@ public class FlyingObjectSystem {
                                             SkillFactory.createSkillEffect(skillType, "크리뎀", skillLevel, skillUser, flyingObject.entityID));
 
                                     // 시전자의 헤드샷활성화 버프 제거
-                                    SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
+                                    /**
+                                     * 2020 05 31 >> 헤드샷의 평타강화 처리 취소, 즉발 투사체 처리로 수정함으로 인한 주석 처리.
+                                     */
+                                    //SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
 
                                 }
 

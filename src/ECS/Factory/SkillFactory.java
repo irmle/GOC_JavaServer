@@ -92,26 +92,6 @@ public class SkillFactory {
         System.out.println("SkillFactory 초기화 완료");
     }
 
-
-    public static SkillInfo createSkill(int requestedSkillID) {
-
-        SkillInfo newSkill;
-
-        /* 생성하는 처리 */
-        // 스킬 테이블에서 해당하는 스킬을 찾은 후, 개를 클론함
-
-        SkillInfo skillInfo = skillInfoTable.get(requestedSkillID);
-
-        newSkill = skillInfo.clone();
-
-        /* 레벨 테이블을 참고하여 값 넣어줌 ==>> 굳이.. 여기서 해 줄 필요는 없을듯 ? 그냥 하드코딩 생성자에서 똑같이 해주면 될거같다. 원인도 알았으니까. */
-        newSkill.skillCoolTime = skillLevelTable.get(newSkill.skillType).get(1).coolTime;
-        newSkill.reqMP = skillInfoTable.get(newSkill.skillType).reqMP;
-        newSkill.skillRange = skillInfoTable.get(newSkill.skillType).skillRange;
-
-        return newSkill;
-    }
-
     /**
      * 2020 04 01 수요일 작성
      * skillInfoLIST 에서, 넘겨받은 skillType 에 해당하는 스킬정보를 찾아 리턴해준다.
@@ -123,42 +103,6 @@ public class SkillFactory {
         SkillInfo newSkillInfo = skillInfoLIST.get(skillType).clone();
 
         return newSkillInfo;
-    }
-
-    /**
-     * 안쓰는거
-     * 클라이언트에서 ActionUseSkill 관련 패킷이 도달하였을 경우, 스킬이 사용된 월드맵 정보, 해당 슬롯의 스킬정보,
-     * 스킬이 사용된 Action정보(스킬이 사용된 방향, 스킬이 사용된 거리정보)를 받아와서 해당 WorldMap의
-     * Entity추가 요쳥 큐에 삽입하여,  다음 Tickrate때 스킬오브젝트나 투사체가 생성이 되도록 한다.
-     */
-    public static void useSkill(WorldMap targetWorldMap, ActionUseSkill event) {
-        CharacterEntity userEntity = targetWorldMap.characterEntity.get(event.userEntityID);
-        SkillSlot slot = userEntity.skillSlotComponent.skillSlotList.get(event.skillSlotNum);
-        SkillInfo skillInfo = slot.skillinfo;
-
-        //아직 스킬쿨타임이 남아있다면 사용할 수 없다.
-        if (slot.remainCoolTime > 0f)
-            return;
-
-        //스킬을 사용하였으므로, 쿨타임 적용.
-        slot.remainCoolTime = skillInfo.skillCoolTime;
-
-
-        int skillLevel = slot.skillLevel;
-
-
-        Vector3 direction = event.skillDirection;
-        float distanceRate = event.skillDistanceRate;
-
-        //존재하지 않을수도 있음.
-        int targetEntityID = event.targetEntityID;
-
-
-        FlyingObjectEntity newFlyingObjectEntity = new FlyingObjectEntity();
-        SkillObjectEntity newSkillObjectEntity = new SkillObjectEntity();
-
-        targetWorldMap.requestCreateQueue.add(newFlyingObjectEntity);
-        targetWorldMap.requestCreateQueue.add(newSkillObjectEntity);
     }
 
 
@@ -223,15 +167,19 @@ public class SkillFactory {
                     doAttack_onArcherFire(targetWorldMap, attacker);
                     return;
                 }
-                else if(attackerCondition.isArcherHeadShotActivated){
+                /**
+                 * 2020 05 31
+                 * 헤드샷의.. 평타강화 처리 취소, 즉발 투사체 공격으로 수정.
+                 */
+                /*else if(attackerCondition.isArcherHeadShotActivated){
 
                     //System.out.println("궁수 헤드샷 스킬 적용된 공격");
 
-                    /* 헤드샷 스킬 사용 직후 평타 공격 처리 */
-                    doAttack_onArcherHeadShot(targetWorldMap, attacker, event);
+                    *//* 헤드샷 스킬 사용 직후 평타 공격 처리 *//*
+                    //doAttack_onArcherHeadShot(targetWorldMap, attacker, event);
                     return;
 
-                }
+                }*/
 
                 break;
 
@@ -4665,8 +4613,17 @@ public class SkillFactory {
         skillObjectEntity.entityID = skillObjectEntityID;
 
 
-        //전사 E 장판
+        //전사 E 장판 생성
         worldMap.requestCreateQueue.add(skillObjectEntity);
+
+        /**
+         * 작성날짜 : 2020 05 31
+         * 업뎃내용 : 방어력 추가 처리
+         */
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
 
         /* 스킬 모션 중계 */
 
@@ -4674,8 +4631,6 @@ public class SkillFactory {
         skillInfoData.skillType = SkillType.KNIGHT_GARREN_E;
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
@@ -6104,8 +6059,10 @@ public class SkillFactory {
 
         /* 2020 04 02 */
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "헤드샷활성화", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+        doAttack_onArcherHeadShot(worldMap, skillUser, event);
+
+        /*skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "헤드샷활성화", skillToUse.skillLevel, skillUser, skillUser.entityID) );*/
 
         /*skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "크리뎀", skillToUse.skillLevel, skillUser) );*/
@@ -7076,11 +7033,11 @@ public class SkillFactory {
     /**
      * 헤드샷이 적용된 평타 처리
      */
-    public static void doAttack_onArcherHeadShot(WorldMap worldMap, CharacterEntity attacker, ActionUseAttack event){
+    public static void doAttack_onArcherHeadShot(WorldMap worldMap, CharacterEntity attacker, ActionUseSkill event){
 
 
         /** 스킬 사용에 필요한 정보들을 찾는다 ; 슬롯, 유저, 스킬정보 등등 */
-        CharacterEntity skillUser = worldMap.characterEntity.get(event.attackerEntityID);
+        CharacterEntity skillUser = worldMap.characterEntity.get(event.userEntityID);
         if(skillUser == null){
             return;
         }
@@ -7111,8 +7068,12 @@ public class SkillFactory {
 
         int createdSkillType = SkillType.ARCHER_HEAD_SHOT;
 
-        float flyingObjectRadius = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).attackRange;
-        float flyingObjectSpeed = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).flyingObjectSpeed;
+        /*float flyingObjectRadius = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).attackRange;
+        float flyingObjectSpeed = skillInfoPerLevelLIST.get(SkillType.ARCHER_NORMAL_ATTACK).get(1).flyingObjectSpeed;*/
+
+        float flyingObjectRadius = skillInfo.attackRange;
+        float flyingObjectSpeed = skillInfo.flyingObjectSpeed;
+
 
         Vector3 startPosition;
         startPosition = (Vector3) positionComponent.position.clone();
@@ -7128,7 +7089,7 @@ public class SkillFactory {
         /* 버프 */
 
         BuffAction headShotBuff = new BuffAction();
-        headShotBuff.unitID = flyingObjectEntityID;
+        /*headShotBuff.unitID = flyingObjectEntityID;
         headShotBuff.skillUserID = attacker.entityID;
 
         headShotBuff.remainTime = 0.5f;
@@ -7148,7 +7109,7 @@ public class SkillFactory {
         //          노 쿨타임, 노 리멘쿨타임, 위의 리멘타임을 상태이상의 리메인 타임으로 주면.. 쪼개기 넘하네..
         headShotBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, true));
         headShotBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableMove, true));
-
+*/
 
         /* FlyingObject Component */
         FlyingObjectComponent flyingObjectComponent
@@ -7173,7 +7134,7 @@ public class SkillFactory {
         attacker.attackComponent.remainCoolTime = ( 1f / attacker.attackComponent.attackSpeed );
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(SkillType.ARCHER_NORMAL_ATTACK, "이동불가", 1, skillUser, skillUser.entityID) );
+                createSkillEffect(SkillType.ARCHER_HEAD_SHOT, "이동불가", skillUsed.skillLevel, skillUser, skillUser.entityID) );
 
 
 
@@ -7455,7 +7416,7 @@ public class SkillFactory {
             boolean effectSwitch = Boolean.parseBoolean(effectInfo.effectValue);
             ConditionBoolParam conditionEffect = new ConditionBoolParam(effectType, effectSwitch);
             newEffect.addEffect(conditionEffect);
-            System.out.println("t/f = " + effectSwitch);
+
         }
         else{
 

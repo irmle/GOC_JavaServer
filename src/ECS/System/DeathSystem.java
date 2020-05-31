@@ -188,7 +188,7 @@ public class DeathSystem {
             return;
         }
 
-        
+
         /**
          * 2020 05 30
          * 에어본 예외처리 임시로 여기서 함
