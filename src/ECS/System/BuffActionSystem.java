@@ -195,7 +195,7 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
+                    System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
@@ -214,6 +214,7 @@ public class BuffActionSystem {
                                     switch (condition.type){
                                         case ConditionType.isDisableMove:
                                             newCondition.isDisableMove = true;
+                                            System.out.println("이상..");
                                             break;
                                         case ConditionType.isDisableAttack:
                                             newCondition.isDisableAttack = true;
@@ -417,11 +418,13 @@ public class BuffActionSystem {
                         for(int k=0; k<buffAction.boolParam.size(); k++){
 
                             ConditionBoolParam condition = buffAction.boolParam.get(k);
+                            System.out.println("버프타입 : " + condition.type);
 
                             if(condition.value == true){
                                 switch (condition.type){
                                     case ConditionType.isDisableMove:
                                         newCondition.isDisableMove = true;
+                                        System.out.println("못움직임");
                                         break;
                                     case ConditionType.isDisableAttack:
                                         newCondition.isDisableAttack = true;

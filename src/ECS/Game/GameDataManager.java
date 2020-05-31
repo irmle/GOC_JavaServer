@@ -1948,7 +1948,7 @@ public class GameDataManager {
                     buffInfo = createEffectBuffInfo(effectCauseTypeID, effectCause, effectType, tokenizer);
 
                     effectInfoPerCauseList.put(effectType, buffInfo);
-                    //buffInfo.printEffectInfo();
+                    buffInfo.printEffectInfo();
 
                     System.out.println(effectCause + "의 " + effectType + "효과 데이터를 파싱했습니다.");
 
@@ -1983,6 +1983,7 @@ public class GameDataManager {
             effectDurationTime = 0f;
         }
         else{
+            //System.out.println("스킬이 아님..");
             effectDurationTime = Float.parseFloat(effectDurationTimeStr);
         }
 
@@ -2090,6 +2091,9 @@ public class GameDataManager {
         int effectType;
         switch (str){
 
+            case "이동불가":
+                effectType = ConditionType.isDisableMove;
+                break;
             case "데미지":
                 effectType = ConditionType.damageAmount;
                 break;

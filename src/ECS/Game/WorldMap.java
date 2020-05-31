@@ -4091,11 +4091,11 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 10;
+        entity.characterComponent.level = 1;
         entity.characterComponent.exp = 0;
         entity.characterComponent.gold = 10000;
 
-        entity.characterComponent.skillPoint = 10;
+        entity.characterComponent.skillPoint = 1;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
@@ -4105,8 +4105,7 @@ public class WorldMap {
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
-//      entity.hpComponent.recoveryRateHP = characterData.hpRecoveryRate;
-        entity.hpComponent.recoveryRateHP = 10000;
+        entity.hpComponent.recoveryRateHP = characterData.hpRecoveryRate;
 
         /** 오후 8:05 2020-05-05 추가 */
         entity.hpComponent.shieldAmount = 0f;
@@ -4136,12 +4135,10 @@ public class WorldMap {
         entity.attackComponent.criticalDamage = characterData.criticalBonus;
 
         entity.defenseComponent = new DefenseComponent();
-//      entity.defenseComponent.defense = characterData.defense;
-        entity.defenseComponent.defense = 10000;
+        entity.defenseComponent.defense = characterData.defense;
+        //entity.defenseComponent.defense = 10000;
 
         entity.positionComponent = new PositionComponent();
-        //entity.positionComponent.position = new Vector3(150f, 0, -150f);
-        //entity.positionComponent.position = new Vector3(150f, 0, -150f);
         entity.positionComponent.position = new Vector3(3f + ran.nextFloat()*0.5f, 0, -3f + ran.nextFloat()*0.5f);
 
         entity.rotationComponent = new RotationComponent();

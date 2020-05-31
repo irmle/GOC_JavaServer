@@ -349,12 +349,14 @@ public class SkillObjectSystem {
                                 BuffAction buff = buffActionList.get(q);
                                 if(buff.unitID == buffActionList.get(q).unitID){
 
-                                    if((buff.floatParam.size() > 0)
-                                            && (buff.floatParam.get(0).type == ConditionType.damageAmount)){
+                                    if((buff.floatParam.size() > 0)){
+                                        if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+                                                ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
-                                        haveDamage = true;
-                                        break;
+                                            haveDamage = true;
+                                            break;
 
+                                        }
                                     }
                                 }
                             }
@@ -388,7 +390,8 @@ public class SkillObjectSystem {
 
                                         if(buff.floatParam.size() > 0){
 
-                                            if(buff.floatParam.get(0).type == ConditionType.damageAmount){
+                                            if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+                                                    ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
                                                 haveDamage = true;
                                                 break;
@@ -434,7 +437,8 @@ public class SkillObjectSystem {
                                     if (buff.unitID == buffActionList.get(q).unitID) {
 
                                         if(buff.floatParam.size() > 0){
-                                            if (buff.floatParam.get(0).type == ConditionType.damageAmount) {
+                                            if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+                                                    ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
                                                 haveDamage = true;
                                                 break;

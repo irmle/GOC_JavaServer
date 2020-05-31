@@ -28,6 +28,8 @@ public class MonsterComponent implements Cloneable {
 
     public int monsterLevel;
 
+    public int monsterCollisionCount;
+    public boolean move;
 
     public MonsterComponent(int monsterType, String monsterName) {
         this.monsterType = monsterType;
@@ -39,6 +41,8 @@ public class MonsterComponent implements Cloneable {
         movePointIndex = 0;
 
         monsterLevel = 1;
+        monsterCollisionCount = 0;
+        move = false;
     }
 
     public MonsterComponent(int monsterType, String monsterName, int monsterLevel) {

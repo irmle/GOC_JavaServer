@@ -35,10 +35,13 @@ public class MonsterSystem2 {
 
     /* 멤버 변수 */
     WorldMap worldMap;
+    int tickRateCount;
 
     /* 생성자 */
     public MonsterSystem2(WorldMap worldMap) {
+
         this.worldMap = worldMap;
+        tickRateCount = 0;
     }
 
     /* 매서드 */
@@ -84,6 +87,9 @@ public class MonsterSystem2 {
      */
     public void onUpdate(float deltaTime){
 
+        //tickRateCount = ((int)worldMap.totalPlayTime / 100) % 10;
+        tickRateCount++;
+
         boolean testMode = false;
         boolean doOldVersion = false;
 
@@ -105,7 +111,8 @@ public class MonsterSystem2 {
                 continue;
             }
 
-            if(testMode){
+
+            if(true){
                 System.out.println("몬스터 " + monster.entityID + " 의 로직을 처리합니다.");
             }
 
@@ -149,6 +156,7 @@ public class MonsterSystem2 {
                 HPComponent targetHP = null;
                 DefenseComponent targetDefense = null;
                 BuffActionHistoryComponent targetBuff = null;
+
 
 //                System.out.println("몹" + monster.entityID + "의 현재 타겟 : " + targetType);
                 switch (targetType){
@@ -298,7 +306,6 @@ public class MonsterSystem2 {
                 }
                 else{    // 쿨타임이 안됐거나, 몹 본인이 공격 불가능한 상태
                     toDoAction = MonsterActionType.DO_NOTHING;   // 애매한데.. 일단은 이렇게 해보고, 이상하면 얘 빼고 기존 체제로 고고
-
                 }
             }
             else{
@@ -307,6 +314,7 @@ public class MonsterSystem2 {
 
                 if(ableToMove){
                     if(targetHasSelected){ //인식범위 내에는 들어있는데, 공격 범위내에 있는 건 아님 => 쫒아간다
+
                         toDoAction = MonsterActionType.CHASE_TARGET;
 
                         /**
@@ -328,38 +336,91 @@ public class MonsterSystem2 {
                         else{
                             //toDoAction = MonsterActionType.DO_NOTHING;
 
-                            /* 현 위치를 기준으로 가까운 MOVE POINT를 검색한다 */
-                            MapInfo nearMovePoint = MapFactory.findNearMovePointVer20200213(worldMap, monsterPos);
-                            if(nearMovePoint == null){
 
-                                //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트가 null임, 그래서 아무것도 안하려고..");
+                            /**
+                             * 2020 05 28
+                             */
+
+                            int mobIDRM = (monster.entityID % 5);
+                            int tickCountRM = (tickRateCount % 5);
+                            boolean tooManyMob = (worldMap.monsterEntity.size() >= 10) ? true : false;
+                            boolean rmIsDiff = (mobIDRM != tickCountRM) ? true : false;
+
+                            if(tooManyMob && rmIsDiff){
 
                                 toDoAction = MonsterActionType.DO_NOTHING;
+                                System.out.println("부하처리용 딴짓");
                             }
                             else{
 
-                                /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
+                                /* 현 위치를 기준으로 가까운 MOVE POINT를 검색한다 */
+                                MapInfo nearMovePoint = MapFactory.findNearMovePointVer20200213(worldMap, monsterPos);
+                                if(nearMovePoint == null){
 
-                                MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
-                                ArrayList<MapInfo> tempPath = MapFactory.pathFind(worldMap, currentTilePoint, nearMovePoint);
+                                    System.out.println("타겟은 선택되지 않았음, 근처 이동포인트가 null임, 그래서 아무것도 안하려고..");
 
-                                // 월드에 경로 등록
-                                worldMap.mpPathList.put(monster.entityID, tempPath);
+                                    toDoAction = MonsterActionType.DO_NOTHING;
 
-                                // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
-                                int pathType = PathType.TO_MP;
-                                int pathIndex = 0;
+                                    /**
+                                     * 2020 05 28
+                                     * 왜 멍때리냐!
+                                     */
+                                    MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
 
-                                // 갱신
-                                monster.monsterComponent.movePathType = pathType;
-                                monster.monsterComponent.movePointIndex = pathIndex;
+                                    Vector3 crystalPos = monster.positionComponent.crystalTargetPosition;
+                                    MapInfo crystalTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, crystalPos.x(), crystalPos.z());
 
-                                toDoAction = MonsterActionType.MOVE;
+                                    ArrayList<MapInfo> crystalPath = MapFactory.pathFind(worldMap, currentTilePoint, crystalTilePoint);
 
-                                //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
+
+                                    // 월드에 경로 등록
+                                    worldMap.mpPathList.put(monster.entityID, crystalPath);
+
+                                    // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
+                                    int pathType = PathType.TO_MP;
+                                    int pathIndex = 0;
+
+                                    // 갱신
+                                    monster.monsterComponent.movePathType = pathType;
+                                    monster.monsterComponent.movePointIndex = pathIndex;
+
+                                    toDoAction = MonsterActionType.MOVE;
+
+                                    //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
+
+
+
+                                }
+                                else{
+
+                                    /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
+
+                                    MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
+                                    ArrayList<MapInfo> tempPath = MapFactory.pathFind(worldMap, currentTilePoint, nearMovePoint);
+
+                                    // 월드에 경로 등록
+                                    worldMap.mpPathList.put(monster.entityID, tempPath);
+
+                                    // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
+                                    int pathType = PathType.TO_MP;
+                                    int pathIndex = 0;
+
+                                    // 갱신
+                                    monster.monsterComponent.movePathType = pathType;
+                                    monster.monsterComponent.movePointIndex = pathIndex;
+
+                                    toDoAction = MonsterActionType.MOVE;
+
+                                    //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
+
+
+                                }
 
 
                             }
+
+
+
 
 
                         }
@@ -369,15 +430,17 @@ public class MonsterSystem2 {
                 else{
                     toDoAction = MonsterActionType.DO_NOTHING;
 
-                    //System.out.println("이동이 불가능함.");
+                    System.out.println("이동이 불가능함.");
                 }
             }
 
 
             // 테스트
             if(true){
-                /*System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
-                System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);*/
+                //System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
+                System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);
+                System.out.println("PathType : " + monster.monsterComponent.movePathType
+                        + ", " + monster.monsterComponent.movePointIndex);
             }
 
             Vector3 movedPosition = new Vector3();
@@ -533,6 +596,7 @@ public class MonsterSystem2 {
                     boolean willBeCrash = (!(crashMob == null)) ? true : false;
 
                     /** 이동 방향을 결정한다 */
+                    //willBeCrash = false;
                     if(willBeCrash){
 
                         Vector3 crashMobPos = crashMob.positionComponent.position;
@@ -805,6 +869,7 @@ public class MonsterSystem2 {
 
                     /* 현재 설정된 MOVE POINT에 도달했는지 확인한다 */
                     // 도달했다면, 다음 Move Point로 갱신한다..
+
                     int pathType = monster.monsterComponent.movePathType;
                     int pathIndex = monster.monsterComponent.movePointIndex;
 
@@ -849,6 +914,8 @@ public class MonsterSystem2 {
                         }*/
 
                         //
+
+
                         monster.monsterComponent.movePointIndex++;
                         if(pathType == PathType.TO_MP){
                             if(monster.monsterComponent.movePointIndex >= (worldMap.mpPathList.get(monster.entityID).size()) ){
@@ -933,6 +1000,13 @@ public class MonsterSystem2 {
 
                     /* 현 위치를 기준으로 가까운 MOVE POINT를 검색한다 */
                     MapInfo nearMovePoint = MapFactory.findNearMovePointVer20200213(worldMap, monsterPos);
+                    if(nearMovePoint == null){
+
+                        Vector3 crystalPos = monster.positionComponent.crystalTargetPosition;
+                        MapInfo crystalTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, crystalPos.x(), crystalPos.z());
+
+                        nearMovePoint = crystalTilePoint;
+                    }
 
                     /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
                     /* A* 알고리즘으로 경로를 찾는다... */
@@ -999,8 +1073,9 @@ public class MonsterSystem2 {
         MonsterEntity beCrashedMob = null;
 
         float COLLISION_DISTANCE = distance;
-
         float minDis = COLLISION_DISTANCE;
+
+        int crushCount = 0;
         for (MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
 
             MonsterEntity target = monsterEntity;
@@ -1040,6 +1115,13 @@ public class MonsterSystem2 {
                 }
             }
 
+            //
+            crushCount++;
+            if(crushCount >= 5){
+                //beCrashedMob = null;
+                //break;
+
+            }
 
 
             /* 최소 거리 업데이트 */
@@ -1051,6 +1133,8 @@ public class MonsterSystem2 {
             }
 
         }
+
+        monster.monsterComponent.monsterCollisionCount = crushCount;
 
         return beCrashedMob;
     }

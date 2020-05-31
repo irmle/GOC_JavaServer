@@ -595,7 +595,17 @@ public class JungleMonsterSystem {
         ArrayList<MapInfo> pathToTarget = MapFactory.pathFindForJungle(worldMap, currentTile, targetTile, 0);
 
         /* 이동 처리하기 */
-        moveTo(monster, pathToTarget.get(1));
+
+        /**
+         * 2020 05 29
+         * 인덱스 오류..
+         */
+        if(pathToTarget.size() <= 1){
+            moveTo(monster, pathToTarget.get(0));
+        }
+        else{
+            moveTo(monster, pathToTarget.get(1));
+        }
 
 
     }
@@ -805,7 +815,8 @@ public class JungleMonsterSystem {
         //System.out.println("인내심 : " + slot.patience);
 
         /** 너무 멀리왔나? */
-        float distnaceFromSP =  Vector3.distance(spawnPoint, monsterPos);
+        float distnaceFromSP =  Vector3.distance(new Vector3(spawnPoint.x(), 0, spawnPoint.z()),
+                new Vector3(monsterPos.x(), 0, monsterPos.z()));
         boolean isFarFromHome = (distnaceFromSP > monsterLookRadius) ? true : false;
         //System.out.println("거리 : " + distnaceFromSP + ", 시야 : " + monsterLookRadius);
 
