@@ -7285,6 +7285,15 @@ public class SkillFactory {
                 server_to_client.motionCharacterCancelSkill(TARGET, RMI_Context.Reliable, skillUser.entityID, KNIGHT_GARREN_E);
                 break;
 
+            case SkillType.KNIGHT_TORNADO :
+
+                SkillInfoData KNIGHT_TORNADO = new SkillInfoData();
+                KNIGHT_TORNADO.skillType = skillType;
+
+                TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+                server_to_client.motionCharacterCancelSkill(TARGET, RMI_Context.Reliable, skillUser.entityID, KNIGHT_TORNADO);
+                break;
+
             case SkillType.MAGICIAN_FROZEN_BEAM :
 
                 SkillInfoData MAGICIAN_FROZEN_BEAM = new SkillInfoData();
