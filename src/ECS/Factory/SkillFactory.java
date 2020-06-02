@@ -6851,6 +6851,15 @@ public class SkillFactory {
                 server_to_client.motionCharacterCancelSkill(TARGET, RMI_Context.Reliable, skillUser.entityID, KNIGHT_GARREN_E);
                 break;
 
+            case SkillType.KNIGHT_TORNADO :
+
+                SkillInfoData KNIGHT_TORNADO = new SkillInfoData();
+                KNIGHT_TORNADO.skillType = skillType;
+
+                TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+                server_to_client.motionCharacterCancelSkill(TARGET, RMI_Context.Reliable, skillUser.entityID, KNIGHT_TORNADO);
+                break;
+
             case SkillType.MAGICIAN_FROZEN_BEAM :
 
                 SkillInfoData MAGICIAN_FROZEN_BEAM = new SkillInfoData();
@@ -7337,10 +7346,7 @@ public class SkillFactory {
 
         /** 스킬 효과 목록에서, 생성하고자 하는 effect 를 검색한다 */
         BuffInfo effectInfo = skillEffectInfoLIST.get(skillType).get(effectName);
-        if(effectInfo.effectType == ConditionType.isDisableMove){
-            effectInfo.printEffectInfo();
-            System.out.println("스킬처리 후 이동불가 효과 읽음");
-        }
+
 
         /** 효과의 지속시간을 구한다 (필요하다면) */
         /*
@@ -7363,7 +7369,24 @@ public class SkillFactory {
         if(needToGetDurationTime){
 
             /* 지속시간 값을 구해야 한다면, 시전자의 스킬 레벨 값에 맞는 적용시간 값을 가져와 적용한다 */
-            effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+            if(effectInfo.effectType == ConditionType.isAirborne){
+                effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).effectDurationTime;
+            }
+            else if(effectInfo.effectType == ConditionType.isDisableMove){
+
+                if(skillType == SkillType.KNIGHT_PIERCE){
+
+                    SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillLevel);
+                    effectDurationTime = (skillInfo.range / skillInfo.flyingObjectSpeed);
+                }
+                else{
+                    effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+                }
+
+            }
+            else{
+                effectDurationTime = skillInfoPerLevelLIST.get(skillType).get(skillLevel).durationTime;
+            }
 
         }
         else{

@@ -656,7 +656,7 @@ public class FlyingObjectSystem {
                     /** 찌르기 스킬의 경우 */
                     if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE){
 
-            //            System.out.println("찌르기 스킬의 삭제 처리 ");
+                        System.out.println("찌르기 스킬의 삭제 처리 ");
 
                         CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
 
@@ -753,10 +753,13 @@ public class FlyingObjectSystem {
                                 CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
                                 Vector3 changedPos = (Vector3) flyingObjectPos.clone();
                                 worldMap.charNextPosList.put(character.entityID, changedPos);
+                                System.out.println("찌르기 투사체 이동, 남은 거리 : " + flyingObjectComponent.flyingObjectRemainDistance);
+                                System.out.println(changedPos.x() + ", " + changedPos.z());
 
                             }else {
 
                                 flyingObjectComponent.flyingObjectRemainDistance = 0;
+                                System.out.println("찌르기 이동 불가능한 지점에 도달해서 0");
 
                             }
                         }

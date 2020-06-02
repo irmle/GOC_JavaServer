@@ -156,7 +156,7 @@ public class DamageHistorySystem {
                  */
                 if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
 
-                    damageHistory.remove(i);
+                    damageHistory.remove(currentDamage);
                     i--;
 
                     continue;

@@ -46,7 +46,10 @@ public class SkillInfoPerLevel implements Cloneable {
     /* 2020 05 31 추가 ; 전사 토네이도 에이본 효과 처리를 위한 값 */
     public float maxHeight;
 
-    public SkillInfoPerLevel(int level, float durationTime, float coolTime, float attackDamage, float range, float attackRange, float flyingObjectSpeed, float moveSpeedRate, float attackSpeedRate, float bloodSuckingRate, float maxHpRate, float freezingTime, float criticalChanceRate, float criticalDamageRate, float criticalBonusDamageRate, float attackDamageCoefficient, float defenseCoefficient, float attackSpeedCoefficient, float maxHPCoefficient, float maxMPCoefficient, float maxHeight) {
+    /* 2020 06 01 추가 ; 토네이도 스킬 지속시간이랑 에어본 지속시간 분리하기 위한 값 */
+    public float effectDurationTime;
+
+    public SkillInfoPerLevel(int level, float durationTime, float coolTime, float attackDamage, float range, float attackRange, float flyingObjectSpeed, float moveSpeedRate, float attackSpeedRate, float bloodSuckingRate, float maxHpRate, float freezingTime, float criticalChanceRate, float criticalDamageRate, float criticalBonusDamageRate, float attackDamageCoefficient, float defenseCoefficient, float attackSpeedCoefficient, float maxHPCoefficient, float maxMPCoefficient, float maxHeight, float effectDurationTime) {
         this.level = level;
         this.durationTime = durationTime;
         this.coolTime = coolTime;
@@ -70,6 +73,7 @@ public class SkillInfoPerLevel implements Cloneable {
         this.maxMPCoefficient = maxMPCoefficient;
 
         this.maxHeight = maxHeight;
+        this.effectDurationTime = effectDurationTime;
     }
 
     // 기존 스킬 &  새로 추가된 변수들을 사용하지 않는 경우에 사용하는 생성자. >> 이것도.. 나중에 좀 더 정교하게 바뀔 것.

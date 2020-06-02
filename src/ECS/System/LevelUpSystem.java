@@ -81,7 +81,7 @@ public class LevelUpSystem {
                     CharacterLevelUpInfo levelUpInfo = GameDataManager.getLevelUpInfo(characterComponent.characterType);
 
                     character.hpComponent.originalMaxHp += levelUpInfo.maxHP;
-                    character.hpComponent.maxHP += character.hpComponent.originalMaxHp;
+                    character.hpComponent.maxHP += levelUpInfo.maxHP;
                     //character.hpComponent.currentHP = character.hpComponent.maxHP;
                     character.hpComponent.recoveryRateHP += levelUpInfo.recoveryRateHP;
 
@@ -90,8 +90,13 @@ public class LevelUpSystem {
                         character.hpComponent.currentHP = character.hpComponent.maxHP;
                     }
 
+
+                    /*System.out.println("originalMaxHp : " + character.hpComponent.originalMaxHp);
+                    System.out.println("maxHP : " + character.hpComponent.maxHP);                    System.out.println("originalMaxHp : " + character.hpComponent.originalMaxHp);
+                    System.out.println("maxHP 증가량 : " + );*/
+
                     character.mpComponent.originalMaxMP += levelUpInfo.maxMP;
-                    character.mpComponent.maxMP += character.mpComponent.originalMaxMP;
+                    character.mpComponent.maxMP += levelUpInfo.maxMP;
                     //character.mpComponent.currentMP = character.mpComponent.maxMP;
                     character.mpComponent.recoveryRateMP += levelUpInfo.recoveryRateMP;
 
@@ -118,8 +123,6 @@ public class LevelUpSystem {
                     /** 4. 그 외 레벨업에 따른 추가 버프처리가 있다면 수행...  */
 
 
-
-                    /* (여기서 필요하다면) 중계 처리를 한다 */
 
                 }
                 else {

@@ -4095,11 +4095,11 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 15;
+        entity.characterComponent.level = 1;
         entity.characterComponent.exp = 0;
-        entity.characterComponent.gold = 10000;
+        entity.characterComponent.gold = 1000;
 
-        entity.characterComponent.skillPoint = 15;
+        entity.characterComponent.skillPoint = 1;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
@@ -4140,7 +4140,7 @@ public class WorldMap {
 
         entity.defenseComponent = new DefenseComponent();
         entity.defenseComponent.defense = characterData.defense;
-        //entity.defenseComponent.defense = 10000;
+        //entity.defenseComponent.defense = 1000;
 
         entity.positionComponent = new PositionComponent();
         entity.positionComponent.position = new Vector3(3f + ran.nextFloat()*0.5f, 0, -3f + ran.nextFloat()*0.5f);

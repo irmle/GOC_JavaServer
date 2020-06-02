@@ -1810,7 +1810,7 @@ public class GameDataManager {
                 moveSpeedIncrRate, attackSpeedIncrRate, bloodSuckingRate, maxHPIncrRate, freezingTime,
                 criticalAppearProbRate, criticalDamageRate,criticalBonusDamRate,
                 attackDamageCoefficient, defenseCoefficient, attackSpeedCoefficient, maxHPCoefficient, maxMPCoefficient,
-                maxHeight);
+                maxHeight, effectDurationTime);
 
         return newSkillInfo;
     }

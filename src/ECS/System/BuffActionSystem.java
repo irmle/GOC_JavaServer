@@ -101,6 +101,8 @@ public class BuffActionSystem {
             if( worldMap.checkUserIsDead(character)){
 
                 character.buffActionHistoryComponent.conditionHistory.clear();
+                applyNewCharCondValue_HP(character);
+                applyNewCharCondValue_MP(character);
                 continue;
             }
 
