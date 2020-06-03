@@ -449,15 +449,40 @@ public class MonsterFactory {
         MonsterEntity newMonster;
 
         /* 생성 */
-        newMonster = (MonsterEntity) ( monsterEntityTable.get(requestedMonsterID) ).clone();
+        /*newMonster = (MonsterEntity) ( monsterEntityTable.get(requestedMonsterID) ).clone();
         newMonster.monsterComponent.monsterType %= 3;
-        newMonster.monsterComponent.monsterType++;
+        newMonster.monsterComponent.monsterType++;*/
+
+        int monsterType = requestedMonsterID % 3;
+        monsterType++;
+        newMonster = (MonsterEntity) ( monsterEntityTable.get(monsterType) ).clone();
+
 
         /* 몬스터의 레벨을 결정한다 */
-        int level = decideMonsterLevel(worldMap);
+        int level = decideMonsterLevel(worldMap) + (worldMap.getWaveInfoCount() - 1);
 
         /* 게임 등급에 맞춰, 몬스터의 초기 스탯 비율을 적용한다 */
         applyMonsterStatByGameGrade(worldMap, newMonster);
+
+        /* 플레이 인원 수에 맞춰서 스탯 추가 세팅 */
+        if(worldMap.userCount == 2){
+
+            newMonster.hpComponent.originalMaxHp *= 1.5f;
+            newMonster.hpComponent.maxHP = newMonster.hpComponent.originalMaxHp;
+            newMonster.hpComponent.currentHP = newMonster.hpComponent.originalMaxHp;
+
+            newMonster.attackComponent.attackDamage *= 1.5f;
+            newMonster.defenseComponent.defense *= 1.5f;
+        }
+        else if(worldMap.userCount == 3){
+
+            newMonster.hpComponent.originalMaxHp *= 2f;
+            newMonster.hpComponent.maxHP = newMonster.hpComponent.originalMaxHp;
+            newMonster.hpComponent.currentHP = newMonster.hpComponent.originalMaxHp;
+
+            newMonster.attackComponent.attackDamage *= 2f;
+            newMonster.defenseComponent.defense *= 2f;
+        }
 
         /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
         resetMonsterStatByLevel(newMonster, level);

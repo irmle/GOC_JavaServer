@@ -578,6 +578,7 @@ public class SkillFactory {
 
         }
 
+        //System.out.println("쿨타임 : " + skillToUse.remainCoolTime);
 
         switch (skillType){
 

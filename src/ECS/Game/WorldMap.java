@@ -3046,7 +3046,8 @@ public class WorldMap {
         characterData.recoveryRateHP = entity.hpComponent.recoveryRateHP;
 
         characterData.currentMP = entity.mpComponent.currentMP;
-        characterData.maxMP = entity.mpComponent.maxMP;
+        //characterData.maxMP = entity.mpComponent.maxMP;
+        characterData.maxMP = entity.mpComponent.originalMaxMP;
         characterData.recoveryRateMP = entity.mpComponent.recoveryRateMP;
 
         characterData.attackRange = entity.attackComponent.attackRange;
@@ -3136,11 +3137,16 @@ public class WorldMap {
 
             skillSlotData.skillCoolTime = skillSlot.skillinfo.skillCoolTime;
             skillSlotData.remainCoolTime = skillSlot.remainCoolTime;
+            if(skillSlotData.remainCoolTime <= 0){
+                skillSlotData.remainCoolTime = 0;
+            }
 
             skillSlotData.skillInfo = new SkillInfoData();
             skillSlotData.skillInfo.skillType = skillSlot.skillinfo.skillType;
 
             characterData.skillSlot.add(skillSlotData);
+
+            System.out.println("스킬 쿨타임 : " + skillSlotData.remainCoolTime);
         }
 
 
@@ -4095,11 +4101,11 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 1;
+        entity.characterComponent.level = 10;
         entity.characterComponent.exp = 0;
         entity.characterComponent.gold = 1000;
 
-        entity.characterComponent.skillPoint = 1;
+        entity.characterComponent.skillPoint = 10;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
@@ -4601,6 +4607,8 @@ public class WorldMap {
 
         }
 
+        /** 2020 06 03 몹 수 줄임 */
+        entireMonsterCount = Math.round(entireMonsterCount / 2);
 
         return entireMonsterCount;
 
@@ -4746,6 +4754,9 @@ public class WorldMap {
 
     }
 
+    public int getWaveInfoCount(){
+        return this.waveInfoCount;
+    }
 
 
 }
