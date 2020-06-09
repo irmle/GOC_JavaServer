@@ -543,7 +543,7 @@ public class ChattingManager {
      *          // 이게 실패하는 케이스는 없겠지..
      *          // '채널변경' 타입의 메시지를 생성하는 처리를, 메시지생성 매서드에 추가해야 함.
      */
-    public MessageData changeChannel(ChattingUser chattingUser, int newChannelNum){
+    public static MessageData changeChannel(ChattingUser chattingUser, int newChannelNum){
 
         /** 채널 변경 처리 */
 
