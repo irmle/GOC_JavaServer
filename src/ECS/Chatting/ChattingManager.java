@@ -221,34 +221,76 @@ public class ChattingManager {
     }
 
 
+    /**
+     * 업뎃날짜 : 2020 06 09 화요일
+     * 업뎃내용 :
+     *      주석..
+     *      1. 유저로부터 받은 메시지를 가지고, "중계용" 메시지 객체를 생성한다
+     *      2. 로그를 쓴다.
+     *      3. 메시지를 중계한다.
+     * @param user
+     * @param Message
+     */
     public static void broadcastChatMsg_Lobby(ChattingUser user, String Message){
 
         // 유저가 속한 채널을 찾음
         LinkedList<ChattingUser> channel = lobbyChannelMap.get(user.lobbyChannelNum);
 
+        /** 메시지 생성 */
+        MessageData chatMsg = createMessageData(MessageType.LOBBY_CHAT_MSG, user);
+        // 메시지 내용 채우는 메스드를 MessageData에 추가하거나, 아니면 createMessageData에 인자로 추가해야 할 듯.
+
+
+        /** 로그 쓰기 */
+
+
+
+        /** 메시지 중계 */
 
         RMI_ID[] targetToBroadcast = new RMI_ID[channel.size()];
         for(int i=0; i<targetToBroadcast.length; i++){
-        //for (ChattingUser channelMember : channel){
 
-            // 머.. RMI_ID 하나를 대상으로? 혹은 여럿을 대상으로 하는 RMI broadcasting 매서드를 호출하면 되겟지.
             targetToBroadcast[i] = channel.get(i).rmi_id;
         }
 
+        server_to_client.broadcastChattingMessage(targetToBroadcast, RMI_Context.Reliable_AES128, chatMsg);
 
 
     }
 
+    /**
+     * 업뎃날짜 : 2020 06 09 화요일
+     * 업뎃내용 :
+     *      주석..
+     *      1. 유저로부터 받은 메시지를 가지고, "중계용" 메시지 객체를 생성한다
+     *      2. 로그를 쓴다.
+     *      3. 메시지를 중계한다.
+     * @param user
+     * @param Message
+     */
     public static void broadcastChatMsg_Session(ChattingUser user, String Message){
 
         // 유저가 속한 채널을 찾음
         LinkedList<ChattingUser> channel = sessionChannelMap.get(user.sessionChannelNum);
 
-        for (ChattingUser channelMember : channel){
+        /** 메시지 생성 */
+        MessageData chatMsg = createMessageData(MessageType.SESSION_CHAT_MSG, user);
+        // 메시지 내용 채우는 메스드를 MessageData에 추가하거나, 아니면 createMessageData에 인자로 추가해야 할 듯.
 
-            // 머.. RMI_ID 하나를 대상으로? 혹은 여럿을 대상으로 하는 RMI broadcasting 매서드를 호출하면 되겟지.
 
+        /** 로그 쓰기 */
+
+
+
+        /** 메시지 중계 */
+
+        RMI_ID[] targetToBroadcast = new RMI_ID[channel.size()];
+        for(int i=0; i<targetToBroadcast.length; i++){
+
+            targetToBroadcast[i] = channel.get(i).rmi_id;
         }
+
+        server_to_client.broadcastChattingMessage(targetToBroadcast, RMI_Context.Reliable_AES128, chatMsg);
 
     }
 
