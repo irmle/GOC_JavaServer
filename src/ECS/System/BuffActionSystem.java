@@ -216,7 +216,6 @@ public class BuffActionSystem {
                                     switch (condition.type){
                                         case ConditionType.isDisableMove:
                                             newCondition.isDisableMove = true;
-                                            System.out.println("이상..");
                                             break;
                                         case ConditionType.isDisableAttack:
                                             newCondition.isDisableAttack = true;
@@ -420,7 +419,6 @@ public class BuffActionSystem {
                         for(int k=0; k<buffAction.boolParam.size(); k++){
 
                             ConditionBoolParam condition = buffAction.boolParam.get(k);
-                            System.out.println("버프타입 : " + condition.type);
 
                             if(condition.value == true){
                                 switch (condition.type){
@@ -969,10 +967,6 @@ public class BuffActionSystem {
                                          * c = maxHeight
                                          */
 
-                                        System.out.println("rotationY = " + monster.rotationComponent.y);
-                                        System.out.println("rotationZ = " + monster.rotationComponent.z);
-
-
                                         float a;
                                         float b = (buffAction.buffDurationTime / 2);
                                         float c = condition.value;
@@ -988,9 +982,6 @@ public class BuffActionSystem {
                                         // 높이 반영하기
                                         Vector3 monsterPos = monster.positionComponent.position;
                                         monsterPos.y(currentHeight);
-
-                                        System.out.println("rotationY = " + monster.rotationComponent.y);
-                                        System.out.println("rotationZ = " + monster.rotationComponent.z);
 
                                         break;
 
@@ -2959,13 +2950,13 @@ public class BuffActionSystem {
         ConditionComponent condition = character.conditionComponent;
         HPComponent hpComponent = character.hpComponent;
 
-/*
-        System.out.println("최대체력 비율 : " + condition.maxHPRate);
-        System.out.println("최대체력 보너스 : " + condition.maxHPBonus);
-        System.out.println("오리지널 최대체력 : " + hpComponent.originalMaxHp);
-        System.out.println("현재 최대체력 : " + hpComponent.maxHP);
-        System.out.println("현재 체력 : " + hpComponent.currentHP);
-*/
+        if(false){
+            System.out.println("최대체력 비율 : " + condition.maxHPRate);
+            System.out.println("최대체력 보너스 : " + condition.maxHPBonus);
+            System.out.println("오리지널 최대체력 : " + hpComponent.originalMaxHp);
+            System.out.println("현재 최대체력 : " + hpComponent.maxHP);
+            System.out.println("현재 체력 : " + hpComponent.currentHP);
+        }
 
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
@@ -2977,14 +2968,6 @@ public class BuffActionSystem {
             hpComponent.currentHP = hpComponent.maxHP;
         }
 
-/*
-        System.out.println("증가량 : " + (hpComponent.maxHP - hpComponent.originalMaxHp));
-        System.out.println("현재 최대체력 : " + hpComponent.maxHP);
-        System.out.println("현재 체력 : " + hpComponent.currentHP);
-
-        System.out.println("===============================");
-*/
-
     }
 
     public void applyNewCharCondValue_MP(CharacterEntity character){
@@ -2992,6 +2975,13 @@ public class BuffActionSystem {
         ConditionComponent condition = character.conditionComponent;
         MPComponent mpComponent = character.mpComponent;
 
+        if(false){
+            System.out.println("최대체력 비율 : " + condition.maxMPRate);
+            System.out.println("최대체력 보너스 : " + condition.maxMPBonus);
+            System.out.println("오리지널 최대체력 : " + mpComponent.originalMaxMP);
+            System.out.println("현재 최대체력 : " + mpComponent.maxMP);
+            System.out.println("현재 체력 : " + mpComponent.currentMP);
+        }
         /** 최대 마력 처리 */
         float maxMpRate = condition.maxMPRate;
         float formerMaxMp = mpComponent.maxMP;
@@ -3003,6 +2993,7 @@ public class BuffActionSystem {
         }
 
     }
+
 
 
 

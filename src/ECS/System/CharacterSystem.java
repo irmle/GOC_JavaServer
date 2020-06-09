@@ -48,6 +48,7 @@ public class CharacterSystem {
                 else{
                     slot.remainCoolTime = 0;
                 }
+                //System.out.println(i + "번째 슬롯 남은 쿨타임 : " + slot.remainCoolTime);
             }
 
             //아이템 사용 쿨타임 감소처리
@@ -69,9 +70,13 @@ public class CharacterSystem {
             if(isMovable){
 
                 if(worldMap.charNextPosList_gotStuck.containsKey(character.entityID)){
-                    System.out.println("건물에 끼엇음.. ");
+                    //System.out.println("건물에 끼엇음.. ");
                     continue;
 
+                }
+
+                if(character.velocityComponent.velocity.length() < 0.9){
+                    continue;
                 }
 
                 /*System.out.println("이동 가능함");
@@ -104,10 +109,12 @@ public class CharacterSystem {
                 worldMap.charNextPosList.put(character.entityID, changedPosition);
                 //System.out.println("이동될 좌표 : " + changedPosition.x() + ", " + changedPosition.z() );
 
+                //
+                //character.velocityComponent.velocity.set(0,0,0);
             }
             else{   /* 이동이 불가능한 경우 */
 
-                character.velocityComponent.velocity.set(0,0,0);
+                //character.velocityComponent.velocity.set(0,0,0);
                 /*System.out.println("캐릭터 좌표 x : "+character.positionComponent.position.x()+"  /  캐릭터 좌표 y : "+ character.positionComponent.position.z());
                 System.out.println("이동불가능");*/
             }

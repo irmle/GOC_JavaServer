@@ -527,14 +527,47 @@ public class ChattingManager {
 
 
     /**
-     * 채널 변경 매서드 // 굳이.. 변경처리하는 '매서드'가 필요하진 않을수도?? 걍 RMI에서 처리 로직을 전개하는 게 나을수도 있을듯.
+     * 채널 변경 매서드
+     * 업뎃날짜 : 2020 06 09 화요일 오후
+     * 처리내용 :
+     *      1. 채널 변경 처리를 수행
+     *          1) 변경 전 채널 번호를 유지한다
+     *          2) 기존 채널을 떠난다
+     *          3) 새 채널에 가입한다
+     *          4) 새 채널 번호를 얻는다
+     *
+     *      2. 채널 변경에 대한 로그 메시지 생성 및 로그 쌓기
+     *          // 로그메시지 생성 및 로그 쓰기 처리는 다음에 작성할 것.
+     *
+     *      3. 채널 변경 성공(?) 중계 메시지를 생성해 리턴함
+     *          // 이게 실패하는 케이스는 없겠지..
+     *          // '채널변경' 타입의 메시지를 생성하는 처리를, 메시지생성 매서드에 추가해야 함.
      */
-    public void changeChannel(ChattingUser chattingUser){
+    public MessageData changeChannel(ChattingUser chattingUser, int newChannelNum){
+
+        /** 채널 변경 처리 */
+
+        int oldChannelNum = chattingUser.getLobbyChannelNum();
+
+        leaveLobbyChannel(chattingUser);
+        joinLobbyChannel(newChannelNum, chattingUser);
+
+        int currentChannelNum = chattingUser.getLobbyChannelNum();
+
+
+
+        /** "채널 변경" 로그 메시지 생성 */
 
 
 
 
+        /** 중계 메시지 생성 */
 
+        MessageData channelChangedMsg = createMessageData(MessageType.LOBBY_CHANGE_CHANNEL, chattingUser);
+
+
+
+        return channelChangedMsg;
 
     }
 

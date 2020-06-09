@@ -1,14 +1,12 @@
 package ECS.System;
 
 import ECS.Classes.*;
-import ECS.Classes.Type.ConditionType;
-import ECS.Classes.Type.MonsterActionType;
-import ECS.Classes.Type.MonsterActionType_ForEffect;
-import ECS.Classes.Type.PathType;
+import ECS.Classes.Type.*;
 import ECS.Components.*;
 import ECS.Entity.*;
 import ECS.Factory.MapFactory;
 import ECS.Factory.MonsterFactory;
+import ECS.Factory.SkillFactory;
 import ECS.Game.WorldMap;
 import Network.RMI_Classes.RMI_Context;
 import Network.RMI_Classes.RMI_ID;
@@ -511,13 +509,61 @@ public class MonsterSystem2 {
 
                         /** 2020 04 03 작성 */
 
-                        finalTargetBuffComponent.conditionHistory.add(
+                        /*finalTargetBuffComponent.conditionHistory.add(
                                 MonsterFactory.createMonsterActionEffect(
-                                        MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monster, monster.entityID));
+                                        MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monster, monster.entityID));*/
 
+                        /**
+                         * 원거리 공격 추가
+                         */
+                        boolean isLongDistanceAttack = (minDistance >= 9f) ? true : false;
+                        if(isLongDistanceAttack){
+
+                            /* 투사체를 생성한다 */
+
+                            FlyingObjectComponent flyingObject = new FlyingObjectComponent();
+                            flyingObject.userEntityID = monster.entityID;
+                            flyingObject.targetEntityID = finalTargetID;
+
+                            flyingObject.createdSkillType = SkillType.MAGICIAN_NORMAL_ATTACK;    // "포탑 공격" 타입
+
+                            flyingObject.flyingObjectRemainDistance = 0f; // 타겟이 정해져 있으므로, 목적지를 따로 정하지 않음
+
+                            flyingObject.flyingSpeed = 15f;
+                            flyingObject.flyingObjectRadius = 0.75f;
+
+                            flyingObject.direction = new Vector3(0f, 0f, 0f);
+
+                            flyingObject.buffAction = new BuffAction();
+                            flyingObject.buffAction.unitID = monster.entityID;
+
+                            FlyingObjectEntity flyingObjectEntity = new FlyingObjectEntity(flyingObject);
+                            flyingObjectEntity.team = Team.RED;
+                            flyingObjectEntity.entityID = worldMap.worldMapEntityIDGenerater.getAndIncrement();
+
+                            flyingObjectEntity.positionComponent.position = (Vector3)monster.positionComponent.position.clone();
+                            flyingObjectEntity.positionComponent.position.set(
+                                    flyingObjectEntity.positionComponent.position.x(),
+                                    flyingObjectEntity.positionComponent.position.y() + 1.3f,
+                                    flyingObjectEntity.positionComponent.position.z()
+                            );
+
+                            flyingObjectEntity.flyingObjectComponent = flyingObject;
+                            flyingObject.startPosition = flyingObjectEntity.positionComponent.position;
+
+                            /* 월드 내 Entity 생성 요청 큐에 추가한다 */
+                            worldMap.requestCreateQueue.add(flyingObjectEntity);
+
+                        }
+                        else{
+                            finalTargetBuffComponent.conditionHistory.add(
+                                    MonsterFactory.createMonsterActionEffect(
+                                            MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monster, monster.entityID));
+
+
+                        }
 
                     }
-
 
 
 
@@ -1111,7 +1157,7 @@ public class MonsterSystem2 {
             if(betweenAngle >= 80){
 
                 // 수평에 가까운 영역에 있다면, 비교적 가까이 있어도, 충돌 아닌걸로 하자..
-                if((currentDis < 0.25f) ){
+                if((currentDis < 0.15f) ){
                     continue;
                 }
             }

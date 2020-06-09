@@ -57,6 +57,7 @@ public class Logic_moveCharacter {
         character.rotationComponent.z = characterMoveData.quarternionZ;
         character.velocityComponent.velocity.set(characterMoveData.velX, characterMoveData.velY, characterMoveData.velZ);
 
+        //System.out.println("이동방향 벡터 크기 : " + character.velocityComponent.velocity.length());
         //character.velocityComponent.velocity.set(characterMoveData.velX, characterMoveData.velY, characterMoveData.velZ);
 //
 //        if (MapFactory.moveCheck(worldmap.gameMap,characterMoveData.posX,characterMoveData.posZ)) {

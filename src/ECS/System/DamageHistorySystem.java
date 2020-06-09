@@ -809,6 +809,13 @@ public class DamageHistorySystem {
             float damage, AttackComponent attackerAttack, ConditionComponent attackerCondition,
             DefenseComponent targetDefense, ConditionComponent targetCondition){
 
+        /**** 테스트용 ***********/
+        if(false){
+            return damage;
+        }
+        /********************/
+
+
         float STANDARD_DEVIATION = 28.9f;    // 표준편차... 확정되면 파일로 처리할 것.
         Random random = new Random();
 
@@ -926,6 +933,12 @@ public class DamageHistorySystem {
      * 공식 : 최종딜 * 속성보정
      */
     public float applyAttribute(float damage, int attackerAttrType, int targetAttrType){
+
+        /*** 테스트용 *******/
+        if(false){
+            return damage;
+        }
+        /********************/
 
         float attributedDamage = 0f;
 

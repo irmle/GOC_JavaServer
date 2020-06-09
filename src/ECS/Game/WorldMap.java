@@ -1765,7 +1765,7 @@ public class WorldMap {
 
                         long elapsedTime = System.nanoTime();
 
-                        System.out.println( "웨이브 로직 처리 시간 : "  + String.format("%.6f", (elapsedTime - startLogicTime) * 0.000001d));
+                        //System.out.println( "웨이브 로직 처리 시간 : "  + String.format("%.6f", (elapsedTime - startLogicTime) * 0.000001d));
                         //System.out.println( "웨이브 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         /* ================================================================================================= */
@@ -1774,7 +1774,7 @@ public class WorldMap {
                         elapsedTime = System.nanoTime();
                         dequeueClientAction();
 
-                        System.out.println( "클라요청 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "클라요청 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "클라요청 처리 후 경과 시간: "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d) );
 
                         //이전 틱에서 추가된, [추가요청 Queue] 에 쌓여있는 오브젝트들을 리스트에 추가함.
@@ -1782,49 +1782,49 @@ public class WorldMap {
                         createEntityFromQueue();
 
 
-                        System.out.println( "앤티티 생성 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "앤티티 생성 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "앤티티 생성 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //아이템 관련 처리
                         elapsedTime = System.nanoTime();
                         itemSlotSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "아이템 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "아이템 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "아이템 로직 처리 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //건설 관련 처리
                         elapsedTime = System.nanoTime();
                         buildSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "건설 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "건설 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "건설 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         /** 2020 03 20 추가 */
                         elapsedTime = System.nanoTime();
                         wellSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "우물 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "우물 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "우물 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         // 2019 12 26 추가
                         elapsedTime = System.nanoTime();
                         selfRecoverySystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "자가회복 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "자가회복 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "자가회복 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //버프 관련 처리
                         elapsedTime = System.nanoTime();
                         buffActionSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "버프 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "버프 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "버프 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         /** 2020 02 06 추가 */
                         elapsedTime = System.nanoTime();
                         damageHistorySystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "데미지 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "데미지 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "데미지 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
 
@@ -1832,14 +1832,14 @@ public class WorldMap {
                         elapsedTime = System.nanoTime();
                         characterSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "캐릭터 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "캐릭터 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "캐릭터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         /** 2020 02 19 추가 */
                         elapsedTime = System.nanoTime();
                         positionSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "위치 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "위치 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "위치 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
 
@@ -1847,63 +1847,63 @@ public class WorldMap {
                         elapsedTime = System.nanoTime();
                         mpHistorySystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "mp 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "mp 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "mp 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //HP 상태 관련 처리
                         elapsedTime = System.nanoTime();
                         hpHistorySystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "hp 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "hp 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "hp 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         // 레벨업 처리
                         elapsedTime = System.nanoTime();
                         levelUpSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "레벨업 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "레벨업 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "레벨업 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //몬스터AI, 상태, 행동 관련 처리
                         elapsedTime = System.nanoTime();
                         monsterSystem2.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "몬스터 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "몬스터 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "몬스터 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         /** 2020 02 28 추가 */
                         elapsedTime = System.nanoTime();
                         jungleMonsterSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "정글몹 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "정글몹 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "정글몹 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //공격 포탑 관련 처리
                         elapsedTime = System.nanoTime();
                         attackTurretSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "공격포탑 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "공격포탑 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "공격포탑 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //버프 포탑 관련 처리
                         elapsedTime = System.nanoTime();
                         buffTurretSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "버프포탑 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "버프포탑 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "버프포탑 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //투사체 관련 처리
                         elapsedTime = System.nanoTime();
                         flyingObjectSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "투사체 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "투사체 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "투사체 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         //스킬 오브젝트 관련 처리
                         elapsedTime = System.nanoTime();
                         skillObjectSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "장판 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "장판 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "장판 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         /** 2020 02 13 위치 옮겨봄..... 사망한 앤티티 널 문제 때문에 */
@@ -1911,14 +1911,14 @@ public class WorldMap {
                         elapsedTime = System.nanoTime();
                         deathSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "사망 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "사망 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "사망 로직 후 경과 시간 : " +  String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
                         // 보상 처리
                         elapsedTime = System.nanoTime();
                         rewardSystem.onUpdate(tickRate * 0.001f);
 
-                        System.out.println( "보상 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "보상 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "보상 로직 후 경과 시간 : "  + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
 
@@ -1927,7 +1927,7 @@ public class WorldMap {
                         elapsedTime = System.nanoTime();
                         deleteEntityFromQueue();
 
-                        System.out.println( "앤티티 삭제 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                        //System.out.println( "앤티티 삭제 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                         //System.out.println( "앤티티 삭제 로직 후 경과 시간 : " + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
 
@@ -1940,7 +1940,7 @@ public class WorldMap {
                     long elapsedTime = System.nanoTime();
                     broadcastingWorldSnapshot();
 
-                    System.out.println( "중계 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
+                    //System.out.println( "중계 로직 처리 시간 : "  + String.format("%.6f", (System.nanoTime() - elapsedTime) * 0.000001d));
                     //System.out.println( "중계 로직 후 경과 시간 : " + String.format("%.6f", (System.nanoTime() - startLogicTime) * 0.000001d));
 
 
@@ -3146,7 +3146,7 @@ public class WorldMap {
 
             characterData.skillSlot.add(skillSlotData);
 
-            System.out.println("스킬 쿨타임 : " + skillSlotData.remainCoolTime);
+            //System.out.println("스킬 쿨타임 : " + skillSlotData.remainCoolTime);
         }
 
 
@@ -4101,11 +4101,11 @@ public class WorldMap {
         entity.attribute = characterData.elemental;
         entity.attribute++;
 
-        entity.characterComponent.level = 10;
+        entity.characterComponent.level = 1;
         entity.characterComponent.exp = 0;
         entity.characterComponent.gold = 1000;
 
-        entity.characterComponent.skillPoint = 10;
+        entity.characterComponent.skillPoint = 1;
 
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();

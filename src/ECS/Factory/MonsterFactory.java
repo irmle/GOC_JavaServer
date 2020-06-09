@@ -449,17 +449,17 @@ public class MonsterFactory {
         MonsterEntity newMonster;
 
         /* 생성 */
-        /*newMonster = (MonsterEntity) ( monsterEntityTable.get(requestedMonsterID) ).clone();
+        newMonster = (MonsterEntity) ( monsterEntityTable.get(requestedMonsterID) ).clone();
         newMonster.monsterComponent.monsterType %= 3;
-        newMonster.monsterComponent.monsterType++;*/
+        newMonster.monsterComponent.monsterType++;
 
-        int monsterType = requestedMonsterID % 3;
+        /*int monsterType = requestedMonsterID % 3;
         monsterType++;
-        newMonster = (MonsterEntity) ( monsterEntityTable.get(monsterType) ).clone();
-
+        newMonster = (MonsterEntity) ( monsterEntityTable.get(monsterType) ).clone();*/
 
         /* 몬스터의 레벨을 결정한다 */
         int level = decideMonsterLevel(worldMap) + (worldMap.getWaveInfoCount() - 1);
+        //level = decideMonsterLevel(worldMap);
 
         /* 게임 등급에 맞춰, 몬스터의 초기 스탯 비율을 적용한다 */
         applyMonsterStatByGameGrade(worldMap, newMonster);

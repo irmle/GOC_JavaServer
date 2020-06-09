@@ -105,7 +105,7 @@ public class BuffTurretSystem {
                 if( (currentDistance < buff.buffAreaRange) && targetHP > 0) {
                     isInTargetRange = true;
 
-                    System.out.println("타겟을 찾았습니다");
+                    //System.out.println("타겟을 찾았습니다");
 
                 }
 

@@ -2250,25 +2250,24 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
-            /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
-
             /* 시전자 상태 업데이트 */
 
-
+            /* 스킬 쿨타임을 초기화한다 */
+            skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
-
-            //공격모션 중계
-            SkillInfoData skillInfoData = new SkillInfoData();
-            skillInfoData.skillType = SkillType.MAGICIAN_FIREBALL;
-            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+            //공격모션 중계
+            SkillInfoData skillInfoData = new SkillInfoData();
+            skillInfoData.skillType = SkillType.MAGICIAN_FIREBALL;
+            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
         }
 
@@ -2459,26 +2458,20 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            //skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
             skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
-
-            /* 시전자 상태 업데이트 */
-
-
-
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
-
-            //공격모션 중계
-            SkillInfoData skillInfoData = new SkillInfoData();
-            skillInfoData.skillType = SkillType.MAGICIAN_HEAL;
-            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+            //공격모션 중계
+            SkillInfoData skillInfoData = new SkillInfoData();
+            skillInfoData.skillType = SkillType.MAGICIAN_HEAL;
+            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
         }
 
@@ -2632,13 +2625,14 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            //skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
-            skillToUse.remainCoolTime = skillInfoLIST.get(skillType).skillCoolTime;
-
-
-            /* 시전자 상태 업데이트 */
-
+            skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
+
+            skillUser.buffActionHistoryComponent.conditionHistory.add(
+                    createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+            skillUser.buffActionHistoryComponent.conditionHistory.add(
+                    createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
 
             //공격모션 중계
@@ -2646,12 +2640,6 @@ public class SkillFactory {
             skillInfoData.skillType = SkillType.MAGICIAN_METEOR;
             RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
             server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-            skillUser.buffActionHistoryComponent.conditionHistory.add(
-                    createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-            skillUser.buffActionHistoryComponent.conditionHistory.add(
-                    createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
         }
     }
@@ -2688,10 +2676,7 @@ public class SkillFactory {
         }
 
         SkillInfo skillInfo = skillToUse.skillinfo;
-        SkillInfoPerLevel currentLevelSkillInfo = skillLevelTable.get(skillInfo.skillType).get(skillToUse.skillLevel);
-
-        /** 2020 04 01 작성 */
-        currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
+        SkillInfoPerLevel currentLevelSkillInfo = skillInfoPerLevelLIST.get(skillInfo.skillType).get(skillToUse.skillLevel);
 
         /***************************************************************************************************************/
 
@@ -2847,14 +2832,8 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
-
-            /* 시전자 상태 업데이트 */
-
-
-
+            skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
-
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
@@ -3060,24 +3039,19 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
-
-            /* 시전자 상태 업데이트 */
-
-
+            skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
-
-
-            SkillInfoData skillInfoData = new SkillInfoData();
-            skillInfoData.skillType = SkillType.KNIGHT_PIERCE;
-            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+            SkillInfoData skillInfoData = new SkillInfoData();
+            skillInfoData.skillType = SkillType.KNIGHT_PIERCE;
+            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
 
         }
@@ -3245,25 +3219,20 @@ public class SkillFactory {
 
             /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
-
-            /* 시전자 상태 업데이트 */
-
-
-
+            skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
             skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
-
-
-            SkillInfoData skillInfoData = new SkillInfoData();
-            skillInfoData.skillType = SkillType.KNIGHT_TORNADO;
-            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
             skillUser.buffActionHistoryComponent.conditionHistory.add(
                     createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+            SkillInfoData skillInfoData = new SkillInfoData();
+            skillInfoData.skillType = SkillType.KNIGHT_TORNADO;
+            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
         }
         else{
@@ -4390,21 +4359,15 @@ public class SkillFactory {
             targetMob.buffActionHistoryComponent.conditionHistory.add(damage);
 
 
-
-
+            /**
+             * 2020 06 06 주석.. 왜햇냐;
+             */
             // doAttack()에 있는거 가져옴.
-            skillUser.attackComponent.remainCoolTime = (1f / skillUser.attackComponent.attackSpeed);
+            //skillUser.attackComponent.remainCoolTime = (1f / skillUser.attackComponent.attackSpeed);
 
 
             /** 침묵.. 필요한 경우 나중에 추가 (실제 가렌 스킬에는 이 효과가 있엇음 )*/
             // ...
-
-            /* 스킬 모션 중계 */
-
-            SkillInfoData skillInfoData = new SkillInfoData();
-            skillInfoData.skillType = SkillType.KNIGHT_GARREN_Q;
-            RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-            server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
         }
         else{   // 지정된 타겟이 없는 상태, 범위 내에 타게팅 대상이 존재하지 않을 때
@@ -4480,6 +4443,13 @@ public class SkillFactory {
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.KNIGHT_GARREN_Q;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -4625,17 +4595,7 @@ public class SkillFactory {
                 createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
 
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.KNIGHT_GARREN_E;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-
 
         // 쿨타임 처리
         skillToUse.remainCoolTime = skillInfo.coolTime;
@@ -4646,6 +4606,15 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.KNIGHT_GARREN_E;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
+
 
     }
 
@@ -4710,17 +4679,11 @@ public class SkillFactory {
         targetMob.buffActionHistoryComponent.conditionHistory.add(firstDamage);
 
 
+        /**
+         * 2020 06 06
+         */
         // doAttack()에 있는거 가져옴.
-        skillUser.attackComponent.remainCoolTime = (1f / skillUser.attackComponent.attackSpeed);
-
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.KNIGHT_GARREN_R;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
+        // skillUser.attackComponent.remainCoolTime = (1f / skillUser.attackComponent.attackSpeed);
 
         /**
          * 2020 02 06
@@ -4747,26 +4710,6 @@ public class SkillFactory {
         targetMob.buffActionHistoryComponent.conditionHistory.add(secondDamage);
 
 
-        /** 상태 버프 */
-        ConditionBoolParam moveDebuff = new ConditionBoolParam(ConditionType.isDisableMove, true);
-        ConditionBoolParam attackDebuff = new ConditionBoolParam(ConditionType.isDisableAttack, true);
-
-        BuffAction condBuff = new BuffAction();
-        condBuff.unitID = skillUser.entityID;
-        condBuff.skillUserID = skillUser.entityID;
-
-        condBuff.remainTime = 3f;
-        condBuff.remainCoolTime = -1f;
-        condBuff.coolTime = -1f;
-
-        condBuff.boolParam.add(moveDebuff);
-        condBuff.boolParam.add(attackDebuff);
-
-        //targetMob.buffActionHistoryComponent.conditionHistory.add(condBuff);
-
-
-
-
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
 
         // 쿨타임 처리
@@ -4778,6 +4721,14 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.KNIGHT_GARREN_R;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
 
     }
@@ -4822,23 +4773,6 @@ public class SkillFactory {
 
         /** 스킬 시전자에게, 흡혈 및 공격속도 증가 버프를 적용한다 */
 
-        BuffAction berserkerBuff = new BuffAction();
-        berserkerBuff.unitID = skillUser.entityID;
-        berserkerBuff.skillUserID = skillUser.entityID;
-        berserkerBuff.remainTime = skillInfo.durationTime;
-        berserkerBuff.remainCoolTime = -1f;
-        berserkerBuff.coolTime = -1f;
-
-        berserkerBuff.floatParam.add(new ConditionFloatParam(ConditionType.bloodSuckingRate, skillInfo.bloodSuckingRate ));
-        berserkerBuff.floatParam.add(new ConditionFloatParam(ConditionType.attackSpeedRate, skillInfo.attackSpeedRate ));
-
-        /** 2020 03 12 */
-        berserkerBuff.skillType = SkillType.KNIGHT_BERSERKER;
-        berserkerBuff.buffDurationTime = berserkerBuff.remainTime;
-
-        //skillUser.buffActionHistoryComponent.conditionHistory.add(berserkerBuff);
-
-
         /* 2020 04 02 */
 
         BuffAction bloodSucking = createSkillEffect(skillType, "흡혈", skillToUse.skillLevel, skillUser, skillUser.entityID);
@@ -4846,16 +4780,6 @@ public class SkillFactory {
 
         BuffAction attackSpeedIncr = createSkillEffect(skillType, "공격속도", skillToUse.skillLevel, skillUser, skillUser.entityID);
         skillUser.buffActionHistoryComponent.conditionHistory.add(attackSpeedIncr);
-
-
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.KNIGHT_BERSERKER;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
@@ -4869,6 +4793,14 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.KNIGHT_BERSERKER;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -4913,33 +4845,9 @@ public class SkillFactory {
 
         /** 시전자에게.. 체력증가 버프를 넣어준다. */
 
-        /*BuffAction hpIncBuff = new BuffAction();
-        hpIncBuff.unitID = skillUser.entityID;
-        hpIncBuff.skillUserID = skillUser.entityID;
-        hpIncBuff.remainTime = skillInfo.durationTime;
-        hpIncBuff.coolTime = -1f;
-        hpIncBuff.remainCoolTime = -1f;
-        hpIncBuff.floatParam.add(new ConditionFloatParam(ConditionType.maxHPRate, skillInfo.maxHpRate));*/
-        // skillUser.buffActionHistoryComponent.conditionHistory.add(hpIncBuff);
-
-
-        /** 2020 03 12 */
-        //hpIncBuff.skillType = SkillType.KNIGHT_INCR_HP;
-        //hpIncBuff.buffDurationTime = hpIncBuff.remainTime;
-
-
         /* 2020 04 02 */
         BuffAction hpIncr = createSkillEffect(skillType, "최대체력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
         skillUser.buffActionHistoryComponent.conditionHistory.add(hpIncr);
-
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.KNIGHT_INCR_HP;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
@@ -4954,6 +4862,14 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.KNIGHT_INCR_HP;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
 
     }
@@ -4996,32 +4912,9 @@ public class SkillFactory {
 
         /* 스킬 사용 처리를 한다 */
 
-        BuffAction invincibleBuff = new BuffAction();
-        invincibleBuff.unitID = skillUser.entityID;
-        invincibleBuff.skillUserID = skillUser.entityID;
-        invincibleBuff.remainTime = skillInfo.durationTime;
-        invincibleBuff.coolTime = -1f;
-        invincibleBuff.remainCoolTime = -1f;
-        invincibleBuff.boolParam.add(new ConditionBoolParam(ConditionType.isTargetingInvincible, true));
-
-        /** 2020 03 12 */
-        invincibleBuff.skillType = SkillType.KNIGHT_INVINCIBLE;
-        invincibleBuff.buffDurationTime = invincibleBuff.remainTime;
-        //skillUser.buffActionHistoryComponent.conditionHistory.add(invincibleBuff);
-
         /* 2020 04 02 */
         BuffAction invincible = createSkillEffect(skillType, "무적", skillToUse.skillLevel, skillUser, skillUser.entityID);
         skillUser.buffActionHistoryComponent.conditionHistory.add(invincible);
-
-
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.KNIGHT_INVINCIBLE;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
@@ -5035,6 +4928,15 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.KNIGHT_INVINCIBLE;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -5147,29 +5049,6 @@ public class SkillFactory {
 
         }
 
-
-        /** 버프 구성 */
-
-        /* 데미지 버프 */
-        float skillDefaultDamage = skillInfo.attackDamage;  // 스킬레벨당 공격 데미지를 따른다.
-        ConditionFloatParam damageParam = createDamageParam(skillDefaultDamage, userAttack, skillUserCondition);
-        BuffAction damageBuff = createDamageBuff(damageParam, skillUser.entityID, skillUser.entityID);
-
-        /* 상태 버프 */
-        ConditionBoolParam moveDebuff = new ConditionBoolParam(ConditionType.isDisableMove, true);
-        ConditionBoolParam attackDebuff = new ConditionBoolParam(ConditionType.isDisableAttack, true);
-
-        BuffAction condBuff = new BuffAction();
-        condBuff.unitID = skillUser.entityID;
-        condBuff.skillUserID = skillUser.entityID;
-
-        condBuff.remainTime = 3f;
-        condBuff.remainCoolTime = -1f;
-        condBuff.coolTime = -1f;
-
-        condBuff.boolParam.add(moveDebuff);
-        condBuff.boolParam.add(attackDebuff);
-
         /* ********************************************************/
 
         /** 2. 타겟에 대해, 대미지 혹은 추가 스킬효과를 적용한다 */
@@ -5178,22 +5057,10 @@ public class SkillFactory {
 
             MonsterEntity monster = targetList.get(i);
 
-            //monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) damageBuff.clone());
-            //monster.buffActionHistoryComponent.conditionHistory.add((BuffAction) condBuff.clone());
-
             BuffAction damage = createSkillEffect(skillType, "데미지", skillToUse.skillLevel, skillUser, skillUser.entityID);
             monster.buffActionHistoryComponent.conditionHistory.add(damage);
 
         }
-
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.MAGICIAN_LIGHTNING_ROAD;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
@@ -5207,6 +5074,14 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.MAGICIAN_LIGHTNING_ROAD;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -5327,15 +5202,6 @@ public class SkillFactory {
         skillToUse.remainCoolTime = skillInfo.coolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.MAGICIAN_ICEBALL;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
-
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
@@ -5343,6 +5209,13 @@ public class SkillFactory {
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.MAGICIAN_ICEBALL;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -5384,21 +5257,6 @@ public class SkillFactory {
 
         /* 스킬 사용 처리를 한다 */
 
-        /** 버프 정보 구성 */
-
-        BuffAction defenseBuff = new BuffAction();
-        defenseBuff.unitID = skillUser.entityID;
-        defenseBuff.skillUserID = skillUser.entityID;
-        defenseBuff.remainTime = skillInfo.durationTime;
-        defenseBuff.coolTime = -1f;
-        defenseBuff.remainCoolTime = -1f;
-        defenseBuff.floatParam.add(new ConditionFloatParam(ConditionType.defenseBonus, skillInfo.attackDamage));
-
-
-        /** 2020 03 12 */
-        defenseBuff.skillType = SkillType.MAGICIAN_SHIELD;
-        defenseBuff.buffDurationTime = defenseBuff.remainTime;
-
 
         /** 타겟을 검색한다 */
         /**
@@ -5437,8 +5295,6 @@ public class SkillFactory {
 
             /** 타겟에게 효과를 걸어준다 */
 
-            //character.buffActionHistoryComponent.conditionHistory.add(defenseBuff);
-
             BuffAction defense = createSkillEffect(skillType, "방어력증가", skillToUse.skillLevel, skillUser, skillUser.entityID);
             character.buffActionHistoryComponent.conditionHistory.add(defense);
 
@@ -5447,16 +5303,6 @@ public class SkillFactory {
             character.buffActionHistoryComponent.conditionHistory.add(shield);
 
         }
-
-
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.MAGICIAN_SHIELD;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
 
 
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
@@ -5471,6 +5317,13 @@ public class SkillFactory {
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.MAGICIAN_SHIELD;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -5606,13 +5459,6 @@ public class SkillFactory {
         skillToUse.remainCoolTime = skillInfo.coolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-        /* 스킬 모션 중계 */
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.MAGICIAN_ICE_FIELD;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
@@ -5620,6 +5466,13 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.MAGICIAN_ICE_FIELD;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -5753,16 +5606,6 @@ public class SkillFactory {
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
-
-        /* 스킬 모션 중계 */
-
-        SkillInfoData skillInfoData = new SkillInfoData();
-        skillInfoData.skillType = SkillType.MAGICIAN_THUNDER;
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
-
         /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
@@ -5770,6 +5613,14 @@ public class SkillFactory {
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
                 createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+        /* 스킬 모션 중계 */
+
+        SkillInfoData skillInfoData = new SkillInfoData();
+        skillInfoData.skillType = SkillType.MAGICIAN_THUNDER;
+        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
     }
 
@@ -5932,6 +5783,13 @@ public class SkillFactory {
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
+        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
 
         /* 스킬 모션 중계 */
 
@@ -5939,14 +5797,6 @@ public class SkillFactory {
         skillInfoData.skillType = SkillType.MAGICIAN_FROZEN_BEAM;
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
-        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
     }
 
@@ -6073,7 +5923,13 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+        skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
         /* 스킬 모션 중계 */
 
@@ -6082,15 +5938,6 @@ public class SkillFactory {
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
-
-
-        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
     }
 
@@ -6185,6 +6032,12 @@ public class SkillFactory {
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
 
         /* 스킬 모션 중계 */
 
@@ -6193,15 +6046,6 @@ public class SkillFactory {
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
-
-
-        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
     }
 
@@ -6229,6 +6073,7 @@ public class SkillFactory {
         ConditionComponent skillUserCondition = skillUser.conditionComponent;
         AttackComponent userAttack = skillUser.attackComponent;
 
+
         /* 스킬 시전 가능 여부를 판단한다 */
 
         //스킬 타입에 따라, 시전 가능 조건이 달라질 수 있어 함수화 하지 않음.
@@ -6241,8 +6086,11 @@ public class SkillFactory {
             if(!hasEnoughMP){   // 마력이 부족해서 스킬을 중단해야 하는 경우
 
                 /* 스킬 쿨타임을 초기화한다 */
-                skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
+                //skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
             }
+
+            /* 스킬 쿨타임을 초기화한다 */
+            skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
 
             return;
         }
@@ -6361,12 +6209,12 @@ public class SkillFactory {
 
         /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
-        /**
-         * 2020 04 21 추가,, 폭시 사용 시, 캐릭터가 바라보는 방향이. 스킬을 사용하는 방향과 일치해야 할 거 같아서 이렇게 고쳤는데
-         * 이게 맞을지는 아직 잘 모르겠다.
-         */
-        /*skillUser.rotationComponent.y = event.skillDirection.y();
-        skillUser.rotationComponent.z = event.skillDirection.z();*/
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
 
         /* 스킬 모션 중계 */
 
@@ -6375,13 +6223,6 @@ public class SkillFactory {
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
 
-
-        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
     }
 
@@ -6498,8 +6339,14 @@ public class SkillFactory {
 
         /* 스킬 쿨타임을 초기화한다 */
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
-        skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
+        //skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
 
         /* 스킬 모션 중계 */
@@ -6508,15 +6355,6 @@ public class SkillFactory {
         skillInfoData.skillType = SkillType.ARCHER_FIRE;
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
-
-        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
     }
 
@@ -6657,6 +6495,11 @@ public class SkillFactory {
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+        skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
         /* 스킬 모션 중계 */
 
@@ -6664,15 +6507,6 @@ public class SkillFactory {
         skillInfoData.skillType = SkillType.ARCHER_SNIPE;
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
-
-
-
-        /* 스킬 사용 후 시전자에게 걸어줄 상태처리를 한다 (이동/스킬사용 등등) */
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
-
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
 
     }
 
@@ -7092,8 +6926,19 @@ public class SkillFactory {
         int targetEntityID = event.targetEntityID;
         MonsterEntity targetMob = worldMap.monsterEntity.get(targetEntityID);
 
-        Vector3 targetPos = (Vector3) targetMob.positionComponent.position.clone();
-        targetPos.set(targetPos.x(), 1.5f, targetPos.y());
+        /**
+         * 2020 06 06
+         * 죽은 몹 대상으로 위치복사 하려고 해서 널이 뜬거같은데
+         */
+        if(targetMob == null){
+
+            //return;
+        }
+        //Vector3 targetPos = (Vector3) targetMob.positionComponent.position.clone();
+        //targetPos.set(targetPos.x(), 1.5f, targetPos.y());
+
+
+
 
 
         /* 버프 */
@@ -7123,7 +6968,7 @@ public class SkillFactory {
 
         /* FlyingObject Component */
         FlyingObjectComponent flyingObjectComponent
-                = new FlyingObjectComponent(skillUser.entityID,startPosition, targetPos, flyingObjectSpeed, flyingObjectRadius, 0f, headShotBuff, targetEntityID);
+                = new FlyingObjectComponent(skillUser.entityID,startPosition, event.skillDirection, flyingObjectSpeed, flyingObjectRadius, 0f, headShotBuff, targetEntityID);
         flyingObjectComponent.beDestroyedByCrash = true;
         flyingObjectComponent.createdSkillType = createdSkillType;
 
@@ -7141,17 +6986,16 @@ public class SkillFactory {
         /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
         /* 공격 쿨타임 초기화 */
-        attacker.attackComponent.remainCoolTime = ( 1f / attacker.attackComponent.attackSpeed );
+        //attacker.attackComponent.remainCoolTime = ( 1f / attacker.attackComponent.attackSpeed );
 
-        skillUser.buffActionHistoryComponent.conditionHistory.add(
-                createSkillEffect(SkillType.ARCHER_HEAD_SHOT, "이동불가", skillUsed.skillLevel, skillUser, skillUser.entityID) );
-
+        /*skillUser.buffActionHistoryComponent.conditionHistory.add(
+                createSkillEffect(SkillType.ARCHER_HEAD_SHOT, "이동불가", skillUsed.skillLevel, skillUser, skillUser.entityID) );*/
 
 
         /* 스킬 모션 중계 */
 
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-        server_to_client.motionCharacterDoAttack(TARGET, RMI_Context.Reliable_Public_AES256, attacker.entityID, event.targetEntityID);
+        //RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+        //server_to_client.motionCharacterDoAttack(TARGET, RMI_Context.Reliable_Public_AES256, attacker.entityID, event.targetEntityID);
     }
 
 

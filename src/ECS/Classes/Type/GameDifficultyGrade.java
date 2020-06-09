@@ -100,11 +100,12 @@ public class GameDifficultyGrade {
         float attackDamage = characterEntity.attackComponent.attackDamage;
         float attackSpeed = characterEntity.attackComponent.attackSpeed;
         float criticalChance = characterEntity.attackComponent.criticalChance * 0.01f;
-        float criticalDamage = characterEntity.attackComponent.criticalDamage * 0.01f;
+        float criticalDamage = characterEntity.attackComponent.criticalDamage;
 
         float LIFE_VALUE = 1f;
         float DEFENSE_VALUE = 9.33f;
         float ATTACK_VALUE = 30.11f;
+        //ATTACK_VALUE = 10.11f;
 
 
         /** 계산 */
@@ -113,6 +114,7 @@ public class GameDifficultyGrade {
                 = (life * LIFE_VALUE) + (defense * DEFENSE_VALUE)
                         + ( attackDamage * attackSpeed * ( 1 + criticalChance * criticalDamage / ATTACK_VALUE) );
 
+        System.out.println("캐릭터 전투력 : " + guardianStrength);
         return guardianStrength;
 
     }

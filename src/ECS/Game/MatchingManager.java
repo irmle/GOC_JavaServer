@@ -17,7 +17,7 @@ public class MatchingManager {
     public static int userCount = 3;
 
     //
-    public static float waitTime = 3f;
+    public static float waitTime = 9f;
 
 
     //매칭용 tokenID(String), RMI_ID 목록정보.
@@ -180,6 +180,7 @@ public class MatchingManager {
 
                     matchingList.put(tokenID, rmi_id);
                     matchingWaitTime.put(tokenID, waitTime);
+
 
                     broadcastingCurrentMatchingPlayerCount();
 
@@ -400,12 +401,14 @@ public class MatchingManager {
 
         //매칭된 유저수만큼 반복
         int count = 0;
+        System.out.println("매칭 대기 인원 : " + matchingList.size());
         while (keys.hasNext()) {
 
             TARGET[count] = matchingList.get(keys.next());
+            count++;
         }
 
-        server_to_client.broadcastingCurrentMatchingPlayerCount(TARGET, RMI_Context.Reliable, matchingList.size());
+        server_to_client.broadcastingCurrentMatchingPlayerCount(TARGET, RMI_Context.Reliable, count);
 
     }
 

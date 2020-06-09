@@ -1,7 +1,9 @@
 package ECS.System;
 
+import ECS.Classes.Type.MonsterActionType_ForEffect;
 import ECS.Factory.AttackTurretFactory;
 import ECS.Factory.MapFactory;
+import ECS.Factory.MonsterFactory;
 import ECS.Factory.SkillFactory;
 import Network.AutoCreatedClass.CharacterData;
 import ECS.Classes.*;
@@ -60,6 +62,7 @@ public class FlyingObjectSystem {
             // 스킬 시전자 및 스킬 레벨 정보를 구한다
             CharacterEntity skillUser;
             AttackTurretEntity attackTurret;
+            MonsterEntity monsterAttacker;
 
             SkillSlot skillSlot;
             int skillLevel;
@@ -93,6 +96,9 @@ public class FlyingObjectSystem {
                         skillLevel = skillSlot.skillLevel;
 
                     }
+
+                    monsterAttacker = null;
+
                     break;
 
                 case EntityType.AttackTurretEntity :
@@ -111,10 +117,23 @@ public class FlyingObjectSystem {
                     skillSlot = null;
                     skillLevel = 1;
 
+                    monsterAttacker = null;
+
                     break;
 
+                case EntityType.MonsterEntity :
+
+                    monsterAttacker = worldMap.monsterEntity.get(flyingObjectComponent.userEntityID);
+                    skillUser = null;
+                    skillType = flyingObjectComponent.createdSkillType;
+                    attackTurret = null;
+                    skillSlot = null;
+                    skillLevel = 1;
+
+                    break;
                 default:
 
+                    monsterAttacker = null;
                     skillUser = null;
                     skillType = flyingObjectComponent.createdSkillType;
                     attackTurret = null;
@@ -187,23 +206,10 @@ public class FlyingObjectSystem {
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
                         if(distance <= (movedDeltaDistance * 1.5))
                         {
-                            //투사체를 파괴하고, 해당 타겟의 DamageHistory에, FlyingObject에 설정된 효과를 부여한다.
 
-                            /*targetEntity.hpHistoryComponent.hpHistory.add(
-                                    new DamageHistory(flyingObjectComponent.userEntityID, true, 50f) );*/
-
-
-                            /** 2020 01 31 추가, 수정 */
-                            /* 데미지 처리 */
-                            BuffAction damage = new BuffAction();
-                            damage.unitID = flyingObject.entityID;
-                            damage.skillUserID = flyingObjectComponent.userEntityID;
-                            damage.remainTime = 0.15f;
-                            damage.coolTime = -1f;
-                            damage.remainCoolTime = -1f;
-                            damage.floatParam.add( new ConditionFloatParam(ConditionType.damageAmount, 50f) );
-                            targetEntity.buffActionHistoryComponent.conditionHistory.add(damage);
-
+                            targetEntity.buffActionHistoryComponent.conditionHistory.add(
+                                    MonsterFactory.createMonsterActionEffect(
+                                            MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monsterAttacker, monsterAttacker.entityID));
 
                             //삭제요청Queue에 FlyingObjectEntity를 삽입하여, 삭제요청을 한다.
                             worldMap.requestDeleteQueue.add(flyingObject);
