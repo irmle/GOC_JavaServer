@@ -470,13 +470,25 @@ public class ChattingManager {
 
     }
 
-    public static void joinSessionChannel(int channelNum, ChattingUser user){
+    public static MessageData joinSessionChannel(int channelNum, ChattingUser user){
 
         LinkedList<ChattingUser> channelMemberList = getChannel(ChannelType.SESSION, channelNum);
 
         channelMemberList.add(user);
 
         user.setLobbyChannelNum(channelNum);
+
+        /** 로그 메시지 생성 */
+
+
+
+
+        /** 중계 메시지 생성 */
+
+        MessageData channelLeaveMsg = createMessageData(MessageType.SESSION_JOIN_CHANNEL, user);
+
+
+        return channelLeaveMsg;
 
     }
 

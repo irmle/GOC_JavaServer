@@ -8,8 +8,11 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import ECS.Chatting.ChattingManager;
+import ECS.Chatting.Classes.ChattingUser;
 import Network.AutoCreatedClass.LoadingPlayerData;
 import ECS.Classes.Type.CharacterType;
+import Network.AutoCreatedClass.MessageData;
 import Network.RMI_Classes.RMI_Context;
 import Network.RMI_Classes.RMI_ID;
 import Network.RMI_Common.server_to_client;
@@ -163,8 +166,14 @@ public class GameSessionRoom {
          *      인자로 3명 유저 정보 주고말임.
          */
 
+        for(int i = 0; i < matchingList.length; i++){
 
+            RMI_ID rmi_id = matchingList[i];
+            ChattingUser user = ChattingManager.searchUser(rmi_id);
+            MessageData messageData = ChattingManager.joinSessionChannel(worldMapID, user);
 
+            server_to_client.broadcastNoticeMessage(rmi_id, RMI_Context.Reliable_AES128, messageData);
+        }
 
 
 
