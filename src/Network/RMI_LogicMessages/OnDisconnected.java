@@ -1,5 +1,6 @@
 package Network.RMI_LogicMessages;
 
+import ECS.Chatting.ChattingManager;
 import ECS.Game.GameSessionRoom;
 import ECS.Game.MatchingManager;
 import ECS.Game.SessionManager;
@@ -29,8 +30,13 @@ public class OnDisconnected {
             WorldMap targetWorldMap = MatchingManager.findWorldMapFromTokenID(tokenID);
 
             //유저의 연결이 끊겼을때의 처리를 행한다.
-            if(targetWorldMap != null)
+            if(targetWorldMap != null) {
                 targetWorldMap.userLeftWorldMap(tokenID, disconnectID);
+
+                /** 2020 06 09 */
+                ChattingManager.leaveChattingServer(disconnectID);
+
+            }
         }
 
         //유저가 로그아웃 하였을 경우, RMI_HostID로부터 리스트에서 제거 후 초기화 할것. 이 부분은 맨 마지막에 호출될 것.

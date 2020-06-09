@@ -4,8 +4,11 @@ import ECS.Chatting.Classes.ChattingUser;
 import ECS.Chatting.Type.ChannelType;
 import ECS.Chatting.Type.MessageType;
 import ECS.Game.GameSessionRoom;
+import ECS.Game.MatchingManager;
 import ECS.Game.SessionManager;
+import ECS.Game.WorldMap;
 import Network.AutoCreatedClass.MessageData;
+import Network.RMI_Classes.RMI_Context;
 import Network.RMI_Classes.RMI_ID;
 import Network.RMI_Common.server_to_client;
 import com.google.gson.Gson;
@@ -321,21 +324,60 @@ public class ChattingManager {
 
     /**
      * 유저가 접속해있는 채널 전부 해제.
+     *
+     * 업뎃날짜 : 2020 06 09 화요일
+     * 업뎃내용 :
+     *
      */
-    public void leaveChattingServer(RMI_ID rmi_id){
+    public static MessageData leaveChattingServer(RMI_ID rmi_id){
 
         ChattingUser leaveUser = chattingUserMap.get(rmi_id);
+        int sessionChannelNum = leaveUser.getSessionChannelNum();
 
-        leaveLobbyChannel(leaveUser);
-        leaveSessionChannel(leaveUser);
+        MessageData leaveLobbyMsg = leaveLobbyChannel(leaveUser);
+        MessageData leaveSessionMsg = leaveSessionChannel(leaveUser);
         leaveGuildChannel(leaveUser);
 
         chattingUserMap.remove(rmi_id);
         chattingUserList.remove(leaveUser);
 
+        // 중계
+        WorldMap worldMap = MatchingManager.findWorldMapFromWorldMapID(sessionChannelNum);
+        if((worldMap != null)){
+
+            RMI_ID[] sessionUsers = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+            server_to_client.broadcastNoticeMessage(sessionUsers, RMI_Context.Reliable_AES128, leaveSessionMsg);
+        }
+
+
+
+        /** 로그 메시지 생성 */
+
+
+
+
+        /** 중계 메시지 생성 */
+
+        MessageData serverLeaveMsg = createMessageData(MessageType.SERVER_DISCONNECT, leaveUser);
+
+
+
+        return serverLeaveMsg;
     }
 
-    public static void leaveLobbyChannel(ChattingUser user){
+    /**
+     * 업뎃날짜 : 2020 06 09 화요일
+     * 업뎃내용 :
+     *      - 주석
+     *      - 로그 메시지 생성은 다음에 작성할 것
+     *      - 리턴값 void -> messageData로 변경.
+     *          경우에 따라 중계 메시지를 유저한테 중계하는 경우가 있고, 같은 처리를 하더라도 중계하지 않는 경우가 있어 고민했는데,
+     *          일단은 공통으로 메시지를 생성해 리턴하도록 하고
+     *          호출자 측에서 이를 필요로 하지 않는 경우, 걍 무시하는 걸로.
+     *
+     * @param user
+     */
+    public static MessageData leaveLobbyChannel(ChattingUser user){
 
         LinkedList<ChattingUser> channel = lobbyChannelMap.get(user.lobbyChannelNum);
 
@@ -345,11 +387,38 @@ public class ChattingManager {
 
         user.setLobbyChannelNum(-1);
 
+
+        /** 로그 메시지 생성 */
+
+
+
+
+        /** 중계 메시지 생성 */
+
+        MessageData channelLeaveMsg = createMessageData(MessageType.LOBBY_LEAVE_CHANNEL, user);
+
+
+
+        return channelLeaveMsg;
+
     }
 
-    public static void leaveSessionChannel(ChattingUser user){
+    /**
+     * 업뎃날짜 : 2020 06 09 화요일
+     * 업뎃내용 :
+     *      - 주석
+     *      - 로그 메시지 생성은 다음에 작성할 것
+     *      - 리턴값 void -> messageData로 변경.
+     *          경우에 따라 중계 메시지를 유저한테 중계하는 경우가 있고, 같은 처리를 하더라도 중계하지 않는 경우가 있어 고민했는데,
+     *          일단은 공통으로 메시지를 생성해 리턴하도록 하고
+     *          호출자 측에서 이를 필요로 하지 않는 경우, 걍 무시하는 걸로.
+     *
+     * @param user
+     */
+    public static MessageData leaveSessionChannel(ChattingUser user){
 
-        LinkedList<ChattingUser> channel = sessionChannelMap.get(user.lobbyChannelNum);
+        int sessionChannelNum  = user.sessionChannelNum;
+        LinkedList<ChattingUser> channel = sessionChannelMap.get(sessionChannelNum);
 
         if(channel.contains(user)){
             channel.remove(user);
@@ -357,7 +426,26 @@ public class ChattingManager {
 
         user.setSessionChannelNum(-1);
 
+        /** 로그 메시지 생성 */
+
+
+
+
+        /** 중계 메시지 생성 */
+
+        MessageData channelLeaveMsg = createMessageData(MessageType.SESSION_LEAVE_CHANNEL, user);
+
+        // 중계
+        WorldMap worldMap = MatchingManager.findWorldMapFromWorldMapID(sessionChannelNum);
+        RMI_ID[] sessionUsers = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+
+        server_to_client.broadcastNoticeMessage(sessionUsers, RMI_Context.Reliable_AES128, channelLeaveMsg);
+
+
+        return channelLeaveMsg;
+
     }
+
 
     public static void leaveGuildChannel(ChattingUser user){
 
@@ -575,7 +663,7 @@ public class ChattingManager {
     /**
      * 채널이 비어있는지 확인. ( 접속자가 아무도 없으면, 목록에서 해제?.. 그대로 냅둘수도.)
      */
-    public boolean isEmptyChannel(int channelType, int channelNum){
+    public static boolean isEmptyChannel(int channelType, int channelNum){
 
         boolean isEmpty = false;
 
