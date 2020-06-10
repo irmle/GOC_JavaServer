@@ -103,7 +103,7 @@ public class MatchingManager {
 
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         }
@@ -278,7 +278,8 @@ public class MatchingManager {
                     //매칭이 완료되었음을 반환한다.
                     return true;
                 } catch (Exception e) {
-                    System.out.println("checkMatchingUserCount() 매칭중 에러발생! \n" + e);
+                    System.out.println("checkMatchingUserCount() 매칭중 에러발생! \n");
+                    e.printStackTrace();
 
                     //errorCode 임시값.
                     //0 = otherException, 100 = NullPointerException

@@ -243,7 +243,7 @@ public class GameSessionRoom {
                     }
                 }
             } catch (Exception e) {
-                System.out.println(e.toString());
+                e.printStackTrace();
             }
             finally {
                 //gameSession 클리어 하는부분
