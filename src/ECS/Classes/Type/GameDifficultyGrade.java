@@ -102,8 +102,8 @@ public class GameDifficultyGrade {
         float criticalChance = characterEntity.attackComponent.criticalChance * 0.01f;
         float criticalDamage = characterEntity.attackComponent.criticalDamage;
 
-        float LIFE_VALUE = 1f;
-        float DEFENSE_VALUE = 9.33f;
+        float LIFE_VALUE = 3f;          // 1
+        float DEFENSE_VALUE = 5.33f;    // 9.33
         float ATTACK_VALUE = 30.11f;
         //ATTACK_VALUE = 10.11f;
 

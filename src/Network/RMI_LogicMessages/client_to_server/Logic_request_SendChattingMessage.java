@@ -56,6 +56,6 @@ public class Logic_request_SendChattingMessage {
                 break;
         }
 
-        
+
     }
 }

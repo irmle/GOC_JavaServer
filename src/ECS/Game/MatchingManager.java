@@ -103,7 +103,7 @@ public class MatchingManager {
 
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         }
@@ -280,6 +280,7 @@ public class MatchingManager {
                     return true;
                 } catch (Exception e) {
                     System.out.println("checkMatchingUserCount() 매칭중 에러발생! \n" + e);
+                    e.printStackTrace();
 
                     //errorCode 임시값.
                     //0 = otherException, 100 = NullPointerException
@@ -348,6 +349,9 @@ public class MatchingManager {
     public static void removeGameSessionRoom(String tokenID) {
         if (gameSessionList.containsKey(tokenID))
             gameSessionList.remove(tokenID);
+
+        if (playerWorldMapMappingList.containsKey(tokenID))
+            playerWorldMapMappingList.remove(tokenID);
     }
 
 
@@ -375,7 +379,8 @@ public class MatchingManager {
         while (tokenIDs.hasNext()) {
             String tokenID = tokenIDs.next();
 
-            playerWorldMapMappingList.remove(tokenID);
+            if(playerWorldMapMappingList.containsKey(tokenID))
+                playerWorldMapMappingList.remove(tokenID);
         }
 
         //활성화 중인 월드맵 리스트에서 해당 월드맵을 제거한다.
