@@ -4055,11 +4055,6 @@ public class WorldMap {
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
         entity.hpComponent.recoveryRateHP = characterData.hpRecoveryRate;
-<<<<<<< HEAD
-        //entity.hpComponent.recoveryRateHP = 3.74f;
-
-=======
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
 
         /** 오후 8:05 2020-05-05 추가 */
         entity.hpComponent.shieldAmount = 0f;
@@ -4095,10 +4090,6 @@ public class WorldMap {
 
         entity.defenseComponent = new DefenseComponent();
         entity.defenseComponent.defense = characterData.defense;
-<<<<<<< HEAD
-        //entity.defenseComponent.defense = 141f;
-=======
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
 
         entity.positionComponent = new PositionComponent();
         entity.positionComponent.position = new Vector3(3f + ran.nextFloat()*0.5f, 0, -3f + ran.nextFloat()*0.5f);

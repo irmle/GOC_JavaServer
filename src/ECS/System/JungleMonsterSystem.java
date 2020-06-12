@@ -815,12 +815,9 @@ public class JungleMonsterSystem {
         //System.out.println("인내심 : " + slot.patience);
 
         /** 너무 멀리왔나? */
-<<<<<<< HEAD
         float distnaceFromSP =  Vector3.distance(new Vector3(spawnPoint.x(), 0, spawnPoint.z()),
                 new Vector3(monsterPos.x(), 0, monsterPos.z()));
-=======
-        float distnaceFromSP =  Vector3.distance(new Vector3(spawnPoint.x(), 0, spawnPoint.z()), new Vector3(monsterPos.x(), 0, monsterPos.z()));
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
+
         boolean isFarFromHome = (distnaceFromSP > monsterLookRadius) ? true : false;
         //System.out.println("거리 : " + distnaceFromSP + ", 시야 : " + monsterLookRadius);
 

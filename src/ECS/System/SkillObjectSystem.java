@@ -349,11 +349,9 @@ public class SkillObjectSystem {
                                 BuffAction buff = buffActionList.get(q);
                                 if(buff.unitID == buffActionList.get(q).unitID){
 
-<<<<<<< HEAD
-                                    if((buff.floatParam.size() > 0)){
-=======
+
                                     if(buff.floatParam.size() > 0){
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
+
                                         if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
                                                 ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
@@ -394,10 +392,7 @@ public class SkillObjectSystem {
                                     if(buff.unitID == buffActionList.get(q).unitID){
 
                                         if(buff.floatParam.size() > 0){
-<<<<<<< HEAD
 
-=======
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                                             if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
                                                     ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
@@ -445,11 +440,7 @@ public class SkillObjectSystem {
 
                                         if(buff.floatParam.size() > 0){
                                             if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
-<<<<<<< HEAD
-                                                    ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
-=======
                                                 ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
 
                                                 haveDamage = true;
                                                 break;

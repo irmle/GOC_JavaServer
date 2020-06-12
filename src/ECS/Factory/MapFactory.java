@@ -205,16 +205,7 @@ public class MapFactory implements Cloneable {
 */
             return null;
         } else{
-<<<<<<< HEAD
-  /*          System.out.println("최종목적 좌표 : " + posX + ", "
-=======
-            /*System.out.println("최종목적 좌표 : " + posX + ", "
->>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
-                    + posY );
 
-            System.out.println("최종목적 타일 : " + tileX + ", "
-                    + tileY );
-*/
             return maps[tileX].mapInfos.get(tileY);
 
         }
