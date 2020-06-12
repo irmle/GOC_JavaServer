@@ -1144,15 +1144,19 @@ public class MonsterFactory {
 
         /* 공격력 */
         monsterAttack.attackDamage *= statRate;
+        //monsterAttack.attackDamage += ( statRate * 10f) ;
 
         /* 방어력 */
-        monsterDefense.defense *= statRate;
+        //monsterDefense.defense *= statRate;
+        monsterDefense.defense += ( statRate * 10f) ;
 
         /* 공격속도 */
-        monsterAttack.attackSpeed *= statRate;
+        //monsterAttack.attackSpeed *= statRate;
+        monsterAttack.attackSpeed += ( statRate * 0.1f);
 
         /* 이동속도 */
-        monsterMove.moveSpeed += statRate;
+        //monsterMove.moveSpeed += statRate;
+        monsterMove.moveSpeed += ( statRate * 0.2f) ;
 
         /* 사거리 */
         /**

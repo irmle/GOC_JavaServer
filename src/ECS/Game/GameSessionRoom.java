@@ -530,6 +530,27 @@ public class GameSessionRoom {
         return playerInfoJS;
     }
 
+    AsyncCompletionHandler completionHandler = new AsyncCompletionHandler<Response>() {
+        @Override
+        public Response onCompleted(Response response) throws Exception {
+            System.out.println("요청에 대한 응답 : " + response);
+            // httpClient.close();
+            return response;
+        }
+
+        @Override
+        public void onThrowable(Throwable t) {
+            //System.out.println("오류?");
+            super.onThrowable(t);
+        }
+
+        @Override
+        public State onStatusReceived(HttpResponseStatus status) throws Exception {
+            //System.out.println("상태 코드 : " + status);
+            return super.onStatusReceived(status);
+        }
+    };
+
     public Response RQ_getPlayerNickInfo(String playerRequestInfo){
 
         Response response = null;
@@ -539,26 +560,7 @@ public class GameSessionRoom {
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
                         .addFormParam("data", playerRequestInfo)
-                        .execute(new AsyncCompletionHandler<Response>() {
-                            @Override
-                            public Response onCompleted(Response response) throws Exception {
-                                System.out.println("요청에 대한 응답 : " + response);
-                                // httpClient.close();
-                                return response;
-                            }
-
-                            @Override
-                            public void onThrowable(Throwable t) {
-                                System.out.println("오류?");
-                                super.onThrowable(t);
-                            }
-
-                            @Override
-                            public State onStatusReceived(HttpResponseStatus status) throws Exception {
-                                System.out.println("상태 코드 : " + status);
-                                return super.onStatusReceived(status);
-                            }
-                        });
+                        .execute(completionHandler);
 
         try {
             response = future.get();

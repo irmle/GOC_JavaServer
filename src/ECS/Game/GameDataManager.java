@@ -2940,6 +2940,18 @@ public class GameDataManager {
             case "S":
                 gradeType = GameDifficultyGrade.GRADE_S;
                 break;
+            case "SS":
+                gradeType = GameDifficultyGrade.GRADE_SS;
+                break;
+            case "SSS":
+                gradeType = GameDifficultyGrade.GRADE_SSS;
+                break;
+            case "U":
+                gradeType = GameDifficultyGrade.GRADE_U;
+                break;
+            case "R":
+                gradeType = GameDifficultyGrade.GRADE_R;
+                break;
 
             default:
                 gradeType = GameDifficultyGrade.NONE;

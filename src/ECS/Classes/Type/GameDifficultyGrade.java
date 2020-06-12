@@ -31,6 +31,10 @@ public class GameDifficultyGrade {
     public static final int GRADE_B = 5;
     public static final int GRADE_A = 6;
     public static final int GRADE_S = 7;
+    public static final int GRADE_SS = 8;
+    public static final int GRADE_SSS = 9;
+    public static final int GRADE_U = 10;
+    public static final int GRADE_R = 11;
 
 
 
@@ -102,8 +106,8 @@ public class GameDifficultyGrade {
         float criticalChance = characterEntity.attackComponent.criticalChance * 0.01f;
         float criticalDamage = characterEntity.attackComponent.criticalDamage;
 
-        float LIFE_VALUE = 3f;          // 1
-        float DEFENSE_VALUE = 5.33f;    // 9.33
+        float LIFE_VALUE = 1f;
+        float DEFENSE_VALUE = 9.33f;    // 9.33
         float ATTACK_VALUE = 30.11f;
         //ATTACK_VALUE = 10.11f;
 

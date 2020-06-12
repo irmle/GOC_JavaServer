@@ -1965,62 +1965,9 @@ public class WorldMap {
                 }
                 System.out.println("게임 로직 스레드 종료.");
 
-                /** 2020 03 09 월요일 권령희 작성 */
-                boolean oldVersion = false;
-                if(oldVersion){
+                /** 2020 06 12 게임 결과 저장 및 중계 */
+                broadcastingGameResult();
 
-                    /* 2020 01 17 금 */
-                    /* 게임 결과 계산하는 처리 및 DB(웹서버)에 저장, 유저들에게 게임 결과를(등급 및 점수 등등) 중계 */
-
-                    calculateGameResult();  // 게임 결과를 계산한다
-                    String gameResult = convertGameResultToJSon();  // 서버에 보내줄 데이터를 json 형태로 변환
-
-                    /* HTTP 요청을 만들어 전송 */
-
-                    String ipAddr = "http://ngnl.xyz/result/endgame.php";
-                    Future<Response> future = httpClient.preparePost(ipAddr)
-                            .addFormParam("data", gameResult)
-                            .execute(new AsyncCompletionHandler<Response>() {
-                                @Override
-                                public Response onCompleted(Response response) throws Exception {
-                                    System.out.println("요청에 대한 응답 : " + response);
-                                    //client.close();
-
-                                    //gameResultIsSaved = true;
-                                    return response;
-                                }
-
-                                @Override
-                                public void onThrowable(Throwable t) {
-                                    System.out.println("오류?");
-                                    super.onThrowable(t);
-                                }
-
-                                @Override
-                                public State onStatusReceived(HttpResponseStatus status) throws Exception {
-                                    System.out.println("상태 코드 : " + status);
-                                    return super.onStatusReceived(status);
-                                }
-                            });
-                    try {
-                        future.get();
-
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-
-                    /* **************************************************************************/
-
-
-
-                }
-                else{
-
-                    broadcastingGameResult();
-                }
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -2030,18 +1977,20 @@ public class WorldMap {
             } catch (Exception e) {
                 e.printStackTrace();
             }*/  finally {
+
+                clearWorldMap();
+
                 if (isGameEnd == true && gameResultIsSaved == true) {
                     System.out.println("worldMapID [" + worldMapID + "] 의 게임 로직 스레드 정상 종료됨.");
 
                     //정상적으로 맵이 종료됨.
-                    clearWorldMap();
                 } else {
                     System.out.println("Error : worldMapID [" + worldMapID + "] 의 게임 로직 스레드 에러 발생!!");
 
                     //스레드 상태 체크. 스레드가 꺼졌다면, 다시 재실행.
                     //그 후 로그 출력 or 기록.
                     /** 디버깅시 오류 발생하는 정확한 지점 알아보려고 주석처리함 */
-                    //restartGameLogicThread();
+                    restartGameLogicThread();
                 }
             }
         }
@@ -3920,26 +3869,7 @@ public class WorldMap {
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
                         .addFormParam("data", playerRequestInfo)
-                        .execute(new AsyncCompletionHandler<Response>() {
-                            @Override
-                            public Response onCompleted(Response response) throws Exception {
-                                System.out.println("요청에 대한 응답 : " + response);
-                                // httpClient.close();
-                                return response;
-                            }
-
-                            @Override
-                            public void onThrowable(Throwable t) {
-                                //System.out.println("오류?");
-                                super.onThrowable(t);
-                            }
-
-                            @Override
-                            public State onStatusReceived(HttpResponseStatus status) throws Exception {
-                                //System.out.println("상태 코드 : " + status);
-                                return super.onStatusReceived(status);
-                            }
-                        });
+                        .execute(completionHandler);
 
         try {
             response = future.get();
@@ -3952,6 +3882,33 @@ public class WorldMap {
         }
 
     }
+
+
+    /**
+     *
+     */
+    AsyncCompletionHandler completionHandler = new AsyncCompletionHandler<Response>() {
+        @Override
+        public Response onCompleted(Response response) throws Exception {
+            System.out.println("요청에 대한 응답 : " + response);
+            // httpClient.close();
+            return response;
+        }
+
+        @Override
+        public void onThrowable(Throwable t) {
+            //System.out.println("오류?");
+            super.onThrowable(t);
+        }
+
+        @Override
+        public State onStatusReceived(HttpResponseStatus status) throws Exception {
+            //System.out.println("상태 코드 : " + status);
+            return super.onStatusReceived(status);
+        }
+    };
+
+
 
     /**
      *
@@ -3966,26 +3923,7 @@ public class WorldMap {
         Future<Response> future =
                 httpClient.preparePost(ipAddr)
                         .addFormParam("data", gameResult)
-                        .execute(new AsyncCompletionHandler<Response>() {
-                            @Override
-                            public Response onCompleted(Response response) throws Exception {
-                                System.out.println("요청에 대한 응답 : " + response);
-                                // httpClient.close();
-                                return response;
-                            }
-
-                            @Override
-                            public void onThrowable(Throwable t) {
-                                //System.out.println("오류?");
-                                super.onThrowable(t);
-                            }
-
-                            @Override
-                            public State onStatusReceived(HttpResponseStatus status) throws Exception {
-                                //System.out.println("상태 코드 : " + status);
-                                return super.onStatusReceived(status);
-                            }
-                        });
+                        .execute(completionHandler);
 
         try {
             response = future.get();
@@ -4110,29 +4048,34 @@ public class WorldMap {
         entity.skillSlotComponent = new SkillSlotComponent();
         entity.itemSlotComponent = new ItemSlotComponent();
 
-        //characterData.hp *= 100f;
+        //characterData.hp = 548f;
         entity.hpComponent = new HPComponent();
         entity.hpComponent.originalMaxHp = characterData.hp;
         entity.hpComponent.currentHP = characterData.hp;
         entity.hpComponent.maxHP = characterData.hp;
         entity.hpComponent.recoveryRateHP = characterData.hpRecoveryRate;
+        //entity.hpComponent.recoveryRateHP = 3.74f;
+
 
         /** 오후 8:05 2020-05-05 추가 */
         entity.hpComponent.shieldAmount = 0f;
 
         /*******************************************************************/
 
-
+        //characterData.mp = 727.5f;
         entity.mpComponent = new MPComponent();
         entity.mpComponent.originalMaxMP = characterData.mp;
         entity.mpComponent.currentMP = characterData.mp;
         entity.mpComponent.maxMP = characterData.mp;
         entity.mpComponent.recoveryRateMP = characterData.mpRecoveryRate;
+        //entity.mpComponent.recoveryRateMP = 8.75f;
 
         entity.attackComponent = new AttackComponent();
         entity.attackComponent.attackRange = characterData.attackRange;
         entity.attackComponent.attackSpeed = characterData.attackSpeed;
+        //entity.attackComponent.attackSpeed = 1.09f;
         entity.attackComponent.attackDamage = characterData.attackDamage;
+        //entity.attackComponent.attackDamage = 1129f;
 
 
         /**
@@ -4143,10 +4086,12 @@ public class WorldMap {
         entity.attackComponent.balance = characterData.balance;
         entity.attackComponent.criticalChance = characterData.criticalRate;
         entity.attackComponent.criticalDamage = characterData.criticalBonus;
+        //entity.attackComponent.criticalChance = 100f;
+        //entity.attackComponent.criticalDamage = 315.5f;
 
         entity.defenseComponent = new DefenseComponent();
         entity.defenseComponent.defense = characterData.defense;
-        //entity.defenseComponent.defense = 1000;
+        //entity.defenseComponent.defense = 141f;
 
         entity.positionComponent = new PositionComponent();
         entity.positionComponent.position = new Vector3(3f + ran.nextFloat()*0.5f, 0, -3f + ran.nextFloat()*0.5f);
@@ -4233,7 +4178,7 @@ public class WorldMap {
 
 
                 System.out.println("게임 결과 저장 실패.. 재도전!");
-
+                broadcastingGameResult();
             }
 
 

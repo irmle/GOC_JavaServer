@@ -39,11 +39,11 @@ public class SessionManager {
     //클라이언트로부터 Logic_requestLogin 메소드가 호출되었을 때. 해당하는 RMI_ID와 Token값을 세팅함.
     public static void login(int rmi_hostID, String tokenID)
     {
-        if(!sessionMappingList.containsKey(rmi_hostID))
+        if(!sessionMappingList.containsValue(tokenID))
             sessionMappingList.put(rmi_hostID, tokenID);
         else
         {
-            System.out.println("잘못된 클라이언트. Logic_requestLogin는 1번만 호출되어야 합니다.");
+            System.out.println("이미 접속중인 계정입니다.");
             RMI_ID target = RMI_ID.findRMI_HOST_ID(rmi_hostID);
             target.getTCP_Object().close();
         }
