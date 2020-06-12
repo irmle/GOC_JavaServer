@@ -110,7 +110,11 @@ public class MonsterSystem2 {
             }
 
 
+<<<<<<< HEAD
             if(false){
+=======
+            if(true){
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                 System.out.println("몬스터 " + monster.entityID + " 의 로직을 처리합니다.");
             }
 
@@ -359,6 +363,7 @@ public class MonsterSystem2 {
                                     System.out.println("타겟은 선택되지 않았음, 근처 이동포인트가 null임, 그래서 아무것도 안하려고..");
 
                                     toDoAction = MonsterActionType.DO_NOTHING;
+<<<<<<< HEAD
 
                                     /**
                                      * 2020 05 28
@@ -400,6 +405,49 @@ public class MonsterSystem2 {
                                     // 월드에 경로 등록
                                     worldMap.mpPathList.put(monster.entityID, tempPath);
 
+=======
+
+                                    /**
+                                     * 2020 05 28
+                                     * 왜 멍때리냐!
+                                     */
+                                    MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
+
+                                    Vector3 crystalPos = monster.positionComponent.crystalTargetPosition;
+                                    MapInfo crystalTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, crystalPos.x(), crystalPos.z());
+
+                                    ArrayList<MapInfo> crystalPath = MapFactory.pathFind(worldMap, currentTilePoint, crystalTilePoint);
+
+
+                                    // 월드에 경로 등록
+                                    worldMap.mpPathList.put(monster.entityID, crystalPath);
+
+                                    // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
+                                    int pathType = PathType.TO_MP;
+                                    int pathIndex = 0;
+
+                                    // 갱신
+                                    monster.monsterComponent.movePathType = pathType;
+                                    monster.monsterComponent.movePointIndex = pathIndex;
+
+                                    toDoAction = MonsterActionType.MOVE;
+
+                                    //System.out.println("타겟은 선택되지 않았음, 근처 이동포인트를 찾아가지고.. 이동포인트를 따라서 이동하려고 함.");
+
+
+
+                                }
+                                else{
+
+                                    /* 몬스터의 MOVE POINT(Path Type, index)를 갱신한다 */
+
+                                    MapInfo currentTilePoint = MapFactory.findTileByPosition(worldMap.gameMap, monsterPos.x(), monsterPos.z());
+                                    ArrayList<MapInfo> tempPath = MapFactory.pathFind(worldMap, currentTilePoint, nearMovePoint);
+
+                                    // 월드에 경로 등록
+                                    worldMap.mpPathList.put(monster.entityID, tempPath);
+
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                                     // nearMovePoint 가 속한 경로 및 그 인덱스를 찾는다
                                     int pathType = PathType.TO_MP;
                                     int pathIndex = 0;
@@ -435,7 +483,11 @@ public class MonsterSystem2 {
 
 
             // 테스트
+<<<<<<< HEAD
             if(false){
+=======
+            if(true){
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                 //System.out.println("DO_NOTHING = 0, ATTACK_TARGET = 1, CHASE_TARGET = 2, MOVE = 3");
                 System.out.println("몬스터 " + monster.entityID + "의 행동 판정 : " + toDoAction);
                 System.out.println("PathType : " + monster.monsterComponent.movePathType

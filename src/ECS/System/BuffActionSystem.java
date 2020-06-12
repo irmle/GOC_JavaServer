@@ -632,6 +632,7 @@ public class BuffActionSystem {
             } // 버프액션 한 개에 대한 처리 끝
 
             /* 지금까지 누적된 컴포넌트 정보로 캐릭터의 상태를 업데이트해준다. */
+
             ConditionComponent formerCondition = (ConditionComponent) character.conditionComponent.clone();
             character.conditionComponent = newCondition;
 
@@ -732,6 +733,7 @@ public class BuffActionSystem {
                                 Vector3 monsterPos = monster.positionComponent.position;
                                 monsterPos.set(monsterPos.x(), 0f, monsterPos.z());
 
+                                System.out.println("에어본 원상복귀");
                             }
                             break;
 
@@ -1033,12 +1035,14 @@ public class BuffActionSystem {
                                         break;
                                     case ConditionType.isAirborne :
                                         newCondition.isAriborne = true;
+                                        newCondition.isDisableMove = true;
+                                        newCondition.isDisableAttack = true;
 
                                         // 2020 04 13 주석처리함.. 머지...
                                         //Vector3 monsterPos = monster.positionComponent.position;
                                         //monsterPos.set(monsterPos.x(), 10f, monsterPos.z());
 
-                                        Vector3 monsterPos = monster.positionComponent.position;
+                                        /*Vector3 monsterPos = monster.positionComponent.position;
                                         if(monsterPos.y() >= 0.4){
 
                                             monsterPos.set(monsterPos.x(), 0.2f, monsterPos.z());
@@ -1046,7 +1050,109 @@ public class BuffActionSystem {
                                         else{
 
                                             monsterPos.set(monsterPos.x(), 0.4f, monsterPos.z());
+                                        }*/
+
+
+                                        /**
+                                         * 2020 05 29 에어본 처리방식 수정
+                                         */
+                                        /*******************************************************************************/
+
+                                        float 중력_가중치 = 25f;
+                                        float 중력_역가중치 = 10f;
+
+                                        float remainTime = buffAction.remainTime;
+                                        float durationTime = buffAction.buffDurationTime;
+
+                                        if(((remainTime ) > (durationTime/2-0.1f)) && ((remainTime) < (durationTime/2))){
+                                            System.out.println("정상");
+                                            System.out.println("남은 시간 :" + String.format("%.3f", remainTime) );
+
                                         }
+                                        else if(remainTime > (durationTime/2) ){
+
+                                            System.out.println("올라감");
+                                            System.out.println("남은 시간 :" + remainTime );
+
+                                            /** 올라가는 처리 수행 */
+
+                                            /* 1. 이동량을 구한다 */
+                                            float 이동량;
+
+                                            이동량 = (float)
+                                                    ( Math.pow( Math.abs( remainTime - (durationTime/2) ), 2 )
+                                                            / Math.pow( ((durationTime/2) + 1 ), 2));
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 *= 중력_가중치;
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 = (1 / 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            //이동량 *= 중력_역가중치;
+
+                                            /* 2. 이동량을 높이에 반영한다 ( + )*/
+
+                                            Vector3 monsterPos = monster.positionComponent.position;
+                                            if(monsterPos.y() + 이동량 >= 15f){
+                                                break;
+                                            }
+
+                                            System.out.println("이동 전높이 : " + monsterPos.y());
+                                            monsterPos.y(monsterPos.y() + 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+                                            System.out.println("높이 : " + monsterPos.y());
+
+                                        }
+                                        else{
+
+                                            /** 내려가는 처리 수행 */
+
+                                            System.out.println("내려감");
+                                            System.out.println("남은 시간 :" + remainTime );
+
+                                            /* 1. 이동량을 구한다 */
+                                            float 이동량;
+
+                                            이동량 = (float)
+                                                    ( Math.pow( Math.abs( remainTime - (durationTime/2) ), 2 )
+                                                            / Math.pow( ((durationTime/2) + 1 ), 2));
+
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 *= 중력_가중치;
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            이동량 = (1 / 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+
+                                            //이동량 *= 중력_역가중치;
+
+
+                                            /* 2. 이동량을 높이에 반영한다 ( - )*/
+
+                                            Vector3 monsterPos = monster.positionComponent.position;
+                                            if(monsterPos.y()-이동량 <= 0f){
+                                                break;
+                                            }
+
+                                            System.out.println("이동 전 높이 : " + monsterPos.y());
+                                            monsterPos.y(monsterPos.y() - 이동량);
+
+                                            System.out.println("이동량 : " + String.format("%.3f", 이동량));
+                                            System.out.println("높이 : " + monsterPos.y());
+
+                                        }
+
+                                        /*******************************************************************************/
 
                                         break;
 
@@ -2960,10 +3066,12 @@ public class BuffActionSystem {
 
         /** 최대 체력 처리 */
         float maxHpRate = condition.maxHPRate;
-        float formerMaxHp = hpComponent.maxHP;
+
+        float formerMaxHP = hpComponent.maxHP;
         hpComponent.maxHP = hpComponent.originalMaxHp + condition.maxHPBonus;
         hpComponent.maxHP *= maxHpRate;
-        hpComponent.currentHP += (hpComponent.maxHP - formerMaxHp);
+        hpComponent.currentHP += (hpComponent.maxHP - formerMaxHP);
+
         if(hpComponent.currentHP > hpComponent.maxHP){
             hpComponent.currentHP = hpComponent.maxHP;
         }
@@ -2984,10 +3092,12 @@ public class BuffActionSystem {
         }
         /** 최대 마력 처리 */
         float maxMpRate = condition.maxMPRate;
-        float formerMaxMp = mpComponent.maxMP;
+
+        float formerMaxMP = mpComponent.maxMP;
         mpComponent.maxMP = mpComponent.originalMaxMP + condition.maxMPBonus;
         mpComponent.maxMP *= maxMpRate;
-        mpComponent.currentMP += (mpComponent.maxMP - formerMaxMp);
+        mpComponent.currentMP += (mpComponent.maxMP - formerMaxMP);
+
         if(mpComponent.currentMP > mpComponent.maxMP){
             mpComponent.currentMP = mpComponent.maxMP;
         }

@@ -252,7 +252,10 @@ public class GameSessionRoom {
                     }
                 }
             } catch (Exception e) {
+<<<<<<< HEAD
                 System.out.println(e.toString());
+=======
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                 e.printStackTrace();
             }
             finally {

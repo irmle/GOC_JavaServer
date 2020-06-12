@@ -69,7 +69,7 @@ public class SkillObjectSystem {
             //System.out.println("스킬 오브젝트의 지속 시간 : " + skillObjectComponent.skillObjectDurationTime);
 
             /** 스킬 오브젝트의 지속 여부를 판단한다 */
-            if(skillObjectComponent.skillObjectDurationTime < 0f){  /* 오브젝트의 지속 시간이 끝났다면 */
+            if(skillObjectComponent.skillObjectDurationTime <= 0f){  /* 오브젝트의 지속 시간이 끝났다면 */
 
                 /* 스킬 오브젝트를 삭제한다 */
               //  System.out.println("스킬 오브젝트의 지속 시간이 다 되어, 오브젝트를 삭제합니다. ");
@@ -94,7 +94,7 @@ public class SkillObjectSystem {
 
                                 Vector3 targetPos = monster.positionComponent.position;
 
-                                targetPos.set(targetPos.x(), 0f, targetPos.z());
+                                //targetPos.set(targetPos.x(), 0f, targetPos.z());
 
                             }
 
@@ -349,7 +349,11 @@ public class SkillObjectSystem {
                                 BuffAction buff = buffActionList.get(q);
                                 if(buff.unitID == buffActionList.get(q).unitID){
 
+<<<<<<< HEAD
                                     if((buff.floatParam.size() > 0)){
+=======
+                                    if(buff.floatParam.size() > 0){
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                                         if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
                                                 ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
@@ -358,6 +362,7 @@ public class SkillObjectSystem {
 
                                         }
                                     }
+
                                 }
                             }
 
@@ -389,7 +394,10 @@ public class SkillObjectSystem {
                                     if(buff.unitID == buffActionList.get(q).unitID){
 
                                         if(buff.floatParam.size() > 0){
+<<<<<<< HEAD
 
+=======
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                                             if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
                                                     ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
 
@@ -397,7 +405,6 @@ public class SkillObjectSystem {
                                                 break;
 
                                             }
-
                                         }
 
                                     }
@@ -438,7 +445,11 @@ public class SkillObjectSystem {
 
                                         if(buff.floatParam.size() > 0){
                                             if ((buff.floatParam.get(0).type == ConditionType.damageAmount)
+<<<<<<< HEAD
                                                     ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
+=======
+                                                ||(buff.floatParam.get(0).type == ConditionType.criticalDamageAmount)) {
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
 
                                                 haveDamage = true;
                                                 break;
@@ -478,7 +489,8 @@ public class SkillObjectSystem {
 
                         Vector3 targetPos = target.positionComponent.position;
 
-                        targetPos.set(targetPos.x(), 2f, targetPos.z());
+                        /** 2020 05 29 주석*/
+                        //targetPos.set(targetPos.x(), 2f, targetPos.z());
 
                         if(doOldVersion){
 
@@ -731,17 +743,19 @@ public class SkillObjectSystem {
                             float skillDuration = SkillFactory.skillInfoPerLevelLIST.get(SkillType.MAGICIAN_METEOR).get(skillLevel).durationTime;
 
 
-                            if((skillObjectComponent.skillObjectDurationTime + 0.1f) >= skillDuration){
+                            if((skillObjectComponent.skillObjectDurationTime + 0.1f) >= (skillDuration)){
 
                                 target.buffActionHistoryComponent.conditionHistory.add(
                                         SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, skillObjectEntity.entityID));
 
+                                System.out.println("메테오 충돌뎀 : " + skillObjectComponent.skillObjectDurationTime);
                             }
                             else{
 
                                 target.buffActionHistoryComponent.conditionHistory.add(
                                         SkillFactory.createSkillEffect(skillType, "장판 데미지", skillLevel, skillUser, skillObjectEntity.entityID));
 
+                                System.out.println("메테오 장판뎀 : " + skillObjectComponent.skillObjectDurationTime);
                             }
 
                         }

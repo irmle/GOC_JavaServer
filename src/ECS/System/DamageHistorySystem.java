@@ -156,7 +156,12 @@ public class DamageHistorySystem {
                  */
                 if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
 
+<<<<<<< HEAD
                     damageHistory.remove(currentDamage);
+=======
+                    damageHistory.remove(i);
+                    //damageHistory.remove(currentDamage);
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                     i--;
 
                     continue;

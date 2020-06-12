@@ -77,6 +77,8 @@ public class HpHistorySystem {
             }
 
             if(testMode){
+
+                character.hpHistoryComponent.hpHistory.clear();
                 continue;
             }
 
@@ -243,6 +245,8 @@ public class HpHistorySystem {
             if( (monster.hpComponent.currentHP <= 0)){
                 continue;
             }
+
+
 
             // 계산
             float sum = 0f;

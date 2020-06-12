@@ -279,7 +279,11 @@ public class MatchingManager {
                     //매칭이 완료되었음을 반환한다.
                     return true;
                 } catch (Exception e) {
+<<<<<<< HEAD
                     System.out.println("checkMatchingUserCount() 매칭중 에러발생! \n" + e);
+=======
+                    System.out.println("checkMatchingUserCount() 매칭중 에러발생! \n");
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                     e.printStackTrace();
 
                     //errorCode 임시값.

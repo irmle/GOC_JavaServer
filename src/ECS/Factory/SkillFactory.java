@@ -717,6 +717,15 @@ public class SkillFactory {
                 useSkill_magicianFrozenBeam(worldMap, event);
                 System.out.println("프로즌빔 사용");
 
+<<<<<<< HEAD
+=======
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                 break;
 
 
@@ -745,6 +754,17 @@ public class SkillFactory {
                 useSKill_knightTornado(worldMap, event);
                 System.out.println("회오리 사용");
 
+<<<<<<< HEAD
+=======
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "스킬사용불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+                skillUser.buffActionHistoryComponent.conditionHistory.add(
+                        createSkillEffect(skillType, "이동불가", skillToUse.skillLevel, skillUser, skillUser.entityID) );
+
+
+
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
                 break;
 
             case SkillType.KNIGHT_GARREN_Q :
@@ -1855,7 +1875,7 @@ public class SkillFactory {
             /** 스킬 쿨타임 및 시전자쪽에 필요한 처리 */    // 뭔가 명확하게 정리가 잘 안되네
 
             /* 스킬 쿨타임을 초기화한다 */
-            skillToUse.remainCoolTime = skillInfoTable.get(skillToUse.skillinfo.skillType).skillCoolTime;
+            skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
 
             /* 시전자 상태 업데이트 */
 
@@ -6338,8 +6358,12 @@ public class SkillFactory {
         /** 스킬 쿨타임 등 시전자에 필요한 처리를 한다 */
 
         /* 스킬 쿨타임을 초기화한다 */
+<<<<<<< HEAD
         skillToUse.remainCoolTime = skillToUse.skillinfo.skillCoolTime;
         //skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
+=======
+        skillToUse.remainCoolTime = skillInfoLIST.get(skillToUse.skillinfo.skillType).skillCoolTime;
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
         skillUser.mpComponent.currentMP -= skillToUse.skillinfo.reqMP;
 
         skillUser.buffActionHistoryComponent.conditionHistory.add(
@@ -7445,6 +7469,7 @@ public class SkillFactory {
                     break;
                 }
 
+<<<<<<< HEAD
             /**
              *  2020 05 31
              *  에어본 효과에, 계수가 적용되지 않도록 함
@@ -7453,6 +7478,8 @@ public class SkillFactory {
 
                 break;
 
+=======
+>>>>>>> da989e90291b1041aa7163869fd981e0a9f8608c
             default:
 
                 SkillInfoPerLevel skillInfo = skillInfoPerLevelLIST.get(skillType).get(skillLevel);
