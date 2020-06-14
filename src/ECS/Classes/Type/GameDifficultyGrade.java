@@ -107,8 +107,8 @@ public class GameDifficultyGrade {
         float criticalDamage = characterEntity.attackComponent.criticalDamage;
 
         float LIFE_VALUE = 1f;
-        float DEFENSE_VALUE = 9.33f;    // 9.33
-        float ATTACK_VALUE = 30.11f;
+        float DEFENSE_VALUE = 3.33f;    // 9.33
+        float ATTACK_VALUE = 10.11f;    // 30.11
         //ATTACK_VALUE = 10.11f;
 
 
@@ -198,6 +198,8 @@ public class GameDifficultyGrade {
         System.out.println("난이도 등급 : " + grade);
         System.out.println("전투력 : " + strengthPower);
         System.out.println("몬스터 기대 레벨 :" + level);
+
+        level = minLevel;
 
         return level;
 

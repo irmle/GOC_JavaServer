@@ -461,6 +461,9 @@ public class MonsterFactory {
         int level = decideMonsterLevel(worldMap) + (worldMap.getWaveInfoCount() - 1);
         //level = decideMonsterLevel(worldMap);
 
+        /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
+        resetMonsterStatByLevel(newMonster, level);
+
         /* 게임 등급에 맞춰, 몬스터의 초기 스탯 비율을 적용한다 */
         applyMonsterStatByGameGrade(worldMap, newMonster);
 
@@ -483,9 +486,6 @@ public class MonsterFactory {
             newMonster.attackComponent.attackDamage *= 2f;
             newMonster.defenseComponent.defense *= 2f;
         }
-
-        /* 레벨에 맞게, 몬스터의 스탯을 세팅한다 */
-        resetMonsterStatByLevel(newMonster, level);
 
         return newMonster;
     }

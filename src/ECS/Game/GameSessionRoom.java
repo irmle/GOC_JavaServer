@@ -168,11 +168,11 @@ public class GameSessionRoom {
 
         for(int i = 0; i < matchingList.length; i++){
 
-            RMI_ID rmi_id = matchingList[i];
+            /*RMI_ID rmi_id = matchingList[i];
             ChattingUser user = ChattingManager.searchUser(rmi_id);
             MessageData messageData = ChattingManager.joinSessionChannel(worldMapID, user);
 
-            server_to_client.broadcastNoticeMessage(rmi_id, RMI_Context.Reliable_AES128, messageData);
+            server_to_client.broadcastNoticeMessage(rmi_id, RMI_Context.Reliable_AES128, messageData);*/
         }
 
 

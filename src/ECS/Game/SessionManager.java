@@ -37,16 +37,21 @@ public class SessionManager {
 
 
     //클라이언트로부터 Logic_requestLogin 메소드가 호출되었을 때. 해당하는 RMI_ID와 Token값을 세팅함.
-    public static void login(int rmi_hostID, String tokenID)
+    public static boolean login(int rmi_hostID, String tokenID)
     {
-        if(!sessionMappingList.containsValue(tokenID))
+        boolean success = false;
+        if(!sessionMappingList.containsValue(tokenID)){
             sessionMappingList.put(rmi_hostID, tokenID);
-        else
-        {
+            success = true;
+        }
+        else {
+            success = false;
             System.out.println("이미 접속중인 계정입니다.");
             RMI_ID target = RMI_ID.findRMI_HOST_ID(rmi_hostID);
             target.getTCP_Object().close();
         }
+
+        return success;
     }
 
     //클라이언트와의 연결이 끊겼을 때 호출됨. 접속이 끊겼을 경우, 매핑 리스트에서 제거한다.

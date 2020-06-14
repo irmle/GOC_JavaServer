@@ -34,7 +34,7 @@ public class OnDisconnected {
                 targetWorldMap.userLeftWorldMap(tokenID, disconnectID);
 
                 /** 2020 06 09 */
-                ChattingManager.leaveChattingServer(disconnectID);
+                // ChattingManager.leaveChattingServer(disconnectID);
 
             }
         }

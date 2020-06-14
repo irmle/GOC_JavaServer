@@ -105,6 +105,11 @@ public class SelfRecoverySystem {
                     continue;
                 }
 
+                if(crystal.hpHistoryComponent.hpHistory.size() > 0){
+                    continue;
+                }
+
+
                 /** 1초동안 지속되는 회복 버프를 넣어준다 */
 
                 crystal.buffActionHistoryComponent.conditionHistory.add(
