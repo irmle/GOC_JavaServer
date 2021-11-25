@@ -74,7 +74,7 @@ public class MapFactory implements Cloneable {
     }
 
 
-    //맵데이터 메니져에서 맵 깊은볶사
+    //맵데이터 메니져에서 맵 깊은복사
     private static void initMap2() {
 
         MapDTO[] mapDTOS = MapDataManager.gameMaps.get(MapType.MAIN);   // 참조
@@ -111,11 +111,6 @@ public class MapFactory implements Cloneable {
 
     /**
      * 2019 12 18 권령희 추가
-     * <p>
-     * 맵 타입을 인자로 받아, 해당하는 맵 정보를 맵매니저로부터 가져와 깊은 복사를 진행, 넘겨주는 함수.
-     * 월드맵에서 호출할 것
-     * <p>
-     * 잘 동작할지 모르겠네,,
      *
      * @param mapType
      * @return
@@ -138,7 +133,7 @@ public class MapFactory implements Cloneable {
         boolean canmove = false;
         int y = (int) Math.floor(Math.abs((posX / tileSize)));
         int x = (int) Math.floor(Math.abs((posY / tileSize)));
-        //몰라 시바 밥먹고 클라가 보낸 캐릭터xy 좌표 맵에서 이동가능 불가능 첵
+
         //if (x < 100 && y < 100)
         if ((x > 0) && (x < 100) && (y < 100) && (y > 0) && (posY<0) && (posX>0))
             canmove = maps[x].mapInfos.get(y).canMove;
@@ -214,10 +209,7 @@ public class MapFactory implements Cloneable {
 
     }
 
-    /**
-     * 이 함수 먼가 응용할 수 있을듯.. 찾고자 하는 타일 타입을 주면, 다 찾아주는거.
-     * 그러면,, OO타일 찾기 각 함수들은 걍 매핑함수가 되는거지..
-     */
+
     public static ArrayList<MapInfo> findMonsterSpawnPointList(MapDTO[] maps){
 
         ArrayList<MapInfo> monsterSpawnPoints = new ArrayList<>();
@@ -249,10 +241,6 @@ public class MapFactory implements Cloneable {
      * 2019 12 26
      * 탑, 미들, 바텀 이동경로(Path) 목록 검색해주는 함수
      *
-     * .. 뻘짓했는데, 일단 다 집어넣고 나서
-     *      탑은 Y를 기준으로 정렬해주면 되고
-     *      바텀은 X를 기준으로 정렬해주면 되고
-     *      미들은 그냥 뒤집어넣으면 됨
      */
     public static HashMap<Integer, ArrayList<MapInfo>> findMovePointsByPath(MapDTO[] maps){
 
@@ -289,7 +277,7 @@ public class MapFactory implements Cloneable {
 
         }
 
-        /** 각 Path의 특징에 맞게?? 재정렬한다. 몬스터가 시작하는 방향으..로.. */
+        /** 각 Path의 특징에 맞게 재정렬한다. 몬스터가 시작하는 방향으로.. */
         // 일단 대강 작성만 해둠. 비교 이렇게 사용하는거 맞는지 모르겠음
         topPath.sort(new Comparator<MapInfo>() {
             @Override

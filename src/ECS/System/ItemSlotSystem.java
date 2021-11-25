@@ -40,7 +40,6 @@ public class ItemSlotSystem {
         this.coolTime = coolTime;
         this.remainCoolTime = this.coolTime;
 
-
         itemEffectInfoLIST = GameDataManager.effectInfoList.get(EffectCauseType.ITEM);
     }
 
@@ -74,8 +73,6 @@ public class ItemSlotSystem {
 
                 currentSlot = itemSlotList.get(i);
                 int slotState = currentSlot.getSlotState();
-
-                //System.out.print("유저" + character.entityID + " 의 " + currentSlot.slotNum + "번째 슬롯 상태 : ");
 
                 /* 슬롯의 각 상태에 따라 처리한다 */
                 switch (slotState){
@@ -138,19 +135,14 @@ public class ItemSlotSystem {
                             currentSlot.setSlotState(ItemSlotState.EMPTY);
                         }
                         else{
-                            //System.out.println("슬롯 상태가 IDLE로 돌아갑니다, 남은 아이템 갯수 : " + currentSlot.itemCount);
                             // 쿨타임이 종료되었을 때 추가로 해줄 처리가 있다면 해주고
                             // 상태 전이
                             currentSlot.setSlotState(ItemSlotState.IDLE);
                         }
                         break;
-
                 }
-
             }
-
         }
-
     }
 
     /**
@@ -165,9 +157,6 @@ public class ItemSlotSystem {
 
         int resultCode = -1;
 
-        /*System.out.println("유저" + event.userEntityID + " 의 "
-                + event.itemSlotNum + "번 슬롯의 아이템 사용 가능에 대한 판정을 시작합니다.");*/
-
         /* 이벤트 정보 */
         CharacterEntity user = worldMap.characterEntity.get(event.userEntityID);    // ID로 유저 찾음
         ItemSlot itemSlot = user.itemSlotComponent.findItemSlotBySlotNum(event.itemSlotNum);    // 슬롯번호로 슬롯 찾음
@@ -176,12 +165,9 @@ public class ItemSlotSystem {
         boolean isCoolTimeZero = (itemSlot.slotState == ItemSlotState.IDLE) ? true : false;
         boolean isValidItem = (itemSlot.itemCount > 0) ? true : false;
 
-
         isAbleToUseItem = ( userStateAbleUseItem && isCoolTimeZero && isValidItem ) ? true : false;
 
-
         if(isAbleToUseItem){
-            //System.out.println("아이템을 사용할 수 있습니다.");
             resultCode =  NotificationType.SUCCESS;
         }
         else{
@@ -208,13 +194,6 @@ public class ItemSlotSystem {
      * 월드맵의 아이템사용 이벤트 처리에서,
      *  위의 사용가능 여부 함수 호출 결과 유저가 아이템 사용하는 것이 가능하다면,
      *  그 후 해당 함수를 통해 실제 아이템 사용 처리를 하는 식.
-     *
-     * 살짝 고민되는거는
-     *  월드맵에서 이 매서드를 호출하고,
-     *  이 매서드 내에서 위 검사함수를 호출하는게 더 자연스러운지 아닌지..
-     *  똑같이 event객체를 넘겨받고, 유저를 찾고.. 갖가지 처리를 다 해야되잖아
-     *
-     *  아 먼가 의도했던 게 이게 아닌거같기도 한데.. 이렇게 간단한다고?
      * @param event
      * @return
      */
@@ -226,11 +205,8 @@ public class ItemSlotSystem {
         CharacterEntity user = worldMap.characterEntity.get(event.userEntityID);    // ID로 유저 찾음
         ItemSlot itemSlot = user.itemSlotComponent.findItemSlotBySlotNum(event.itemSlotNum);    // 슬롯번호로 슬롯 찾음
 
-        /* 아이템 사용에 따른 처리 예)) 못움직인다! 이런거 처리해줄 거 있으면 작성하고  */
-
         /* 슬롯의 상태를 변경한다 */
         itemSlot.setSlotState(ItemSlotState.READY);
-
     }
 
 
@@ -244,8 +220,6 @@ public class ItemSlotSystem {
      */
     public void applyItemBuff(CharacterEntity user, ItemInfo itemInfo){
 
-        //System.out.println("아이템 " + itemInfo.itemName + "의 효과를 적용합니다. ");
-
         BuffAction itemBuff = null;
 
         int itemType = itemInfo.itemType;
@@ -255,27 +229,13 @@ public class ItemSlotSystem {
 
                 System.out.println("체력회복 포션의 효과를 적용합니다.");
 
-                /*itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 1f);
-                itemBuff.itemType = ItemType.HP_POTION;
-
-                ConditionFloatParam hpBuff = new ConditionFloatParam(ConditionType.hpRecoveryAmount, 20);
-                itemBuff.floatParam.add(hpBuff);
-                */
-
                 itemBuff = createItemEffect(itemType, "체력회복", user.entityID);
-
 
                 break;
 
             case ItemType.MP_POTION :
 
                 System.out.println("마력회복 포션의 효과를 적용합니다.");
-
-                /*itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 1f);
-                itemBuff.itemType = ItemType.MP_POTION;
-
-                ConditionFloatParam mpBuff = new ConditionFloatParam(ConditionType.mpRecoveryAmount, 20);
-                itemBuff.floatParam.add(mpBuff);*/
 
                 itemBuff = createItemEffect(itemType, "마력회복", user.entityID);
 
@@ -285,12 +245,6 @@ public class ItemSlotSystem {
 
                 System.out.println("이동속도 증가 포션의 효과를 적용합니다.");
 
-                /*itemBuff = new BuffAction(user.entityID, user.entityID, 5f, 0f, 0f);
-                itemBuff.itemType = ItemType.SPEED_POTION;
-
-                ConditionFloatParam speedBuff = new ConditionFloatParam(ConditionType.moveSpeedRate, 250f);
-                itemBuff.floatParam.add(speedBuff);*/
-
                 itemBuff = createItemEffect(itemType, "이동속도증가", user.entityID);
 
                 break;
@@ -298,12 +252,6 @@ public class ItemSlotSystem {
             case ItemType.DEFENSE_POTION :
 
                 System.out.println("방어력 증가 포션의 효과를 적용합니다.");
-
-                /*itemBuff = new BuffAction(user.entityID, user.entityID, 10f, 0f, 0f);
-                itemBuff.itemType = ItemType.DEFENSE_POTION;
-
-                ConditionFloatParam defenseBuff = new ConditionFloatParam(ConditionType.defenseRate, 10f);
-                itemBuff.floatParam.add(defenseBuff);*/
 
                 itemBuff = createItemEffect(itemType, "방어력증가", user.entityID);
 
@@ -313,18 +261,11 @@ public class ItemSlotSystem {
 
                 System.out.println("공격력 증가 포션의 효과를 적용합니다.");
 
-                /*itemBuff = new BuffAction(user.entityID, user.entityID, 10f, 0f, 0f);
-                itemBuff.itemType = ItemType.ATTACK_POTION;
-
-                ConditionFloatParam attackBuff = new ConditionFloatParam(ConditionType.attackDamageRate, 20f);
-                itemBuff.floatParam.add(attackBuff);*/
-
                 itemBuff = createItemEffect(itemType, "공격속도증가", user.entityID);
 
                 break;
         }
 
-        // 이렇게 해보고.. 만약에 안되면 각 케이스 안에다 넣어줄 것.
         user.buffActionHistoryComponent.conditionHistory.add(itemBuff);
 
     }
@@ -365,9 +306,6 @@ public class ItemSlotSystem {
         }
 
 
-        /* 별도 예외처리가 필요하다면?? */
-
-
         /** 효과 객체를 생성한다 (틀) */
         // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
         BuffAction newEffect = new BuffAction(0, effectDurationTime, effectInfo.remainCoolTime, effectInfo.effectCoolTime);
@@ -392,7 +330,6 @@ public class ItemSlotSystem {
 
         }
 
-        // 나중에.. 근거리 공격용? 매서드도 하나 만들자..
         newEffect.unitID = effectEntityID;
         newEffect.skillUserID = newEffect.unitID;
 
@@ -476,9 +413,7 @@ public class ItemSlotSystem {
             default :
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
-
-                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
-                break;
+        break;
 
         }
 
@@ -675,14 +610,5 @@ public class ItemSlotSystem {
 
         return str;
     }
-
-
-
-
-
-
-
-
-
 
 }

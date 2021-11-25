@@ -171,9 +171,7 @@ public class WorldMap {
 
     HpHistorySystem hpHistorySystem;
     MpHistorySystem mpHistorySystem;
-    LevelSystem levelSystem;
 
-    MonsterSystem monsterSystem;
     MonsterSystem2 monsterSystem2;
 
     AttackTurretSystem attackTurretSystem;
@@ -345,8 +343,7 @@ public class WorldMap {
         characterSystem = new CharacterSystem(this);
         hpHistorySystem = new HpHistorySystem(this);
         mpHistorySystem = new MpHistorySystem(this, 200f);
-        //levelSystem = new LevelSystem(this);
-        //monsterSystem = new MonsterSystem(this);
+
         monsterSystem2 = new MonsterSystem2(this);
         attackTurretSystem = new AttackTurretSystem(this);
         buffTurretSystem = new BuffTurretSystem(this, 200f);
@@ -395,7 +392,6 @@ public class WorldMap {
         gameMap = MapFactory.createMap(MapType.MAIN);
         mapComponentUnitList = MapFactory.getMapComponentUnitsFromEntireMap(gameMap);
 
-        //buildableAreaList = MapFactory.getBuildableArea(gameMap);   // 건설(build) 가능한 맵 영역을 찾는다.// 이 함수 나중에, 빌드 시스템으로 옮기기
         buildableAreaList = MapFactory.getBuildableArea(mapComponentUnitList);
 
         buildSlotList = buildSystem.initBuildSlotList(buildableAreaList);
@@ -407,23 +403,10 @@ public class WorldMap {
 
         if(true){
             /* 초기화 */ // 나중에, 함수로 뺄 것.
-            /*
-            pathList = new HashMap<>();
 
-            topPathMovePointList = new ArrayList<>();
-            pathList.put(PathType.TOP, topPathMovePointList);
-
-            middlePathMovePointList = new ArrayList<>();
-            pathList.put(PathType.MIDDLE, middlePathMovePointList);
-
-            bottomPathMovePointList = new ArrayList<>();
-            pathList.put(PathType.BOTTOM, bottomPathMovePointList);
-            */
 
             /* 길(맵인포 목록) 찾아주고 */
             pathList = MapFactory.findMovePointsByPath(gameMap);
-
-
 
             /* 몬스터 스폰 지점 찾기 */
             monsterSpawnPointList = MapFactory.findMonsterSpawnPointList(gameMap);
@@ -705,8 +688,6 @@ public class WorldMap {
 
             String testStr = playerInfoString.substring(index);
             System.out.println("테스트 스트링 : " + testStr);
-            // 위 처리를 왜 해주냐면.. 응답 내용에, 서버의 IP 주소(아마도) 가 같이 포함되어서 오는데, 왜 그런지는 모르겠지만
-            // 이거때문에 JS 파싱이 제대로 되지 않아서.. 걔를 분리해주기 위함임.
 
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(testStr);
@@ -1591,12 +1572,12 @@ public class WorldMap {
 
                                         /**
                                          * 2020 04 25 수정,
-                                         *      플레이어 수에 따라 몹 수가 비례해서 나오게끔..
+                                         *      플레이어 수에 따라 몹 수가 비례해서 나오게끔
                                          *      단, 이렇게 처리하면 중간에 유저 이탈 시 등장 마릿수에도 영향을 주게 되는데,
                                          *      이걸로 괜찮은지?? 는 회의를 통해 결정해야 할 듯.
                                          *
                                          *      또, 21웨이브 이하에서만 이게 적용되도록 할지
-                                         *          아니면 전부 적용되도록 할지도..
+                                         *          아니면 전부 적용되도록 할지도
                                          */
                                         /* 해당 종류의 마릿수만큼 반복한다 */
                                         int charCount = characterEntity.size();
@@ -2540,10 +2521,6 @@ public class WorldMap {
             //파괴해야할 목록을 모든 클라이언트에 중계한다.
             server_to_client.destroyWorldMapEntityInfo(TARGET, RMI_Context.Reliable_Public_AES256, destroyEntityDataList);
 
-            /** 2020 05 08 */
-            // 원래 여기에 destroyEntityDataList.clear()를 해줬는데. 이게, 클라에서 일부 객체가 사라지지 않는 원인이 될 수도 잇어서.
-            // 지우기로 함.
-
         }
     }
 
@@ -2695,7 +2672,7 @@ public class WorldMap {
         broadcastingFlyingObjectEntitySnapshot(TARGET);
 
         /**
-         * 2020 02 17 여기
+         * 2020 02 17
          */
         broadcastingBuildSlotDataSnapshot(TARGET);
 
@@ -2824,7 +2801,7 @@ public class WorldMap {
 
     /**
      * 2020 02 17 권령희
-     * 음.. 빌드슬롯 하나의 목록 상태를 보내주기 위한 broadcasting 매서드를 server_to_client에 추가해줘야 할듯.
+     * 빌드슬롯 하나의 목록 상태를 보내주기 위한 broadcasting 매서드를 server_to_client에 추가해줘야 할듯.
      *
      */
     void broadcastingBuildSlotDataSnapshot(RMI_ID[] TARGET){
@@ -3134,9 +3111,8 @@ public class WorldMap {
 
         /** 2020 03 12 */
         /**
-         * 버프 받고있는 목록 넘겨주는거 (임시..)
+         * 버프 받고있는 목록 넘겨주는거
          */
-
         int size = entity.buffActionHistoryComponent.conditionHistory.size();
         for(int i=0; i<size; i++){
 
@@ -3574,9 +3550,9 @@ public class WorldMap {
          *      ★ public int slotNum;
          *      ★ public int slotState;
          *
-         *      public buildingType;    // 필요없을수도.. 서버에서 다 검사하니까?
+         *      public buildingType;    // 필요없을수도.. 서버에서 다 검사하니까
          *      public int buildingEntityID;   // 필요없을수도..
-         *      public int builderEntityID; // 필요없을수도.. 굳이 해당 건물의 건설자가 누구다! 라고 겜 화면에 명시해줄 게 아니라면?
+         *      public int builderEntityID; // 필요없을수도.. 굳이 해당 건물의 건설자가 누구다! 라고 겜 화면에 명시해줄 게 아니라면
          *
          *      // 아래는.. 건물이 위치한 영역의 중심 좌표. 맵팩토리의 매서드를 호출해서, 맵컴포넌트 영역의 중심 좌표를 알아낼 것.
          *      ★ public float centerX;
@@ -3659,8 +3635,8 @@ public class WorldMap {
                     (gameScore.givenDamageAmount + gameScore.monsterKillCount
                             + gameScore.earnedGold + character.characterComponent.level
                             - gameScore.getDamagedAmount) / (gameScore.characterDeathCount+1) * waveInfoCount;
-            // 왜 죽은 횟수에 +1 해줬냐면, 캐릭터가 한 번도 죽지 않았을 경우 나누기 0이 되어 값이.. 무한대가 나온다고 해야하나..
-            // 일단 이걸 피하기 위해서.
+            // 왜 죽은 횟수에 +1 해줬냐면, 캐릭터가 한 번도 죽지 않았을 경우 나누기 0이 되어 값이.. 무한대가 나온다고 해야하나
+            // 일단 이걸 피하기 위해서임.
 
             if(gameScore.finalScore < 0){
                 gameScore.finalScore= 0f;
@@ -3772,7 +3748,7 @@ public class WorldMap {
                 skill.addProperty("skillType", currentSKill.skillinfo.skillType);
                 skill.addProperty("skillLevel", currentSKill.skillLevel);
 
-                //skillSet.add(currentSKill.slotNum + "", skill);   // 슬롯 번호랑.. JSON Name?? 간 충돌... 찍은 스킬 목록만 보여주느냐, 아니면 빈 슬롯이라도 비어있다고 넣어주느냐,,
+                //skillSet.add(currentSKill.slotNum + "", skill);
                 skillSet.add(i+1 + "", skill);
             }
 
@@ -3785,8 +3761,6 @@ public class WorldMap {
             System.out.println(player);
 
         }
-
-        //System.out.println(players);
 
 
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -3844,8 +3818,6 @@ public class WorldMap {
         return resultJsonStr;
     }
 
-
-    /** 2020 02 10 추가한 매서드 시작 */
 
     public void initHttpClient(){
 
@@ -4122,10 +4094,6 @@ public class WorldMap {
         return entity;
 
     }
-
-
-
-    /** 2020 02 10 추가한 매서드 끝*/
 
 
 
@@ -4624,9 +4592,6 @@ public class WorldMap {
                 waveArmyList.put(randomMobType, 1);
             }
 
-        /*    System.out.println("몹 타입 " + randomMobType + "을 뽑았습니다., " +
-                    "해당 타입 마릿 수 : " + waveArmyList.get(randomMobType) + "마리");
-*/
         }
 
 

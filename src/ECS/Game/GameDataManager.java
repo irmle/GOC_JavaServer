@@ -59,12 +59,6 @@ public class GameDataManager {
         //데이터 로드
         loadWaveArmy();
 
-        loadCharacterTableDB();
-        loadMonsterTableDB();
-        loadAttackTurretTableDB();
-        loadBuffTurretTableDB();
-        loadBarricadeTableDB();
-
         // 2020 04 03
         initGameDataManager();
 
@@ -152,7 +146,6 @@ public class GameDataManager {
      * 파일로부터 읽어오는 처리를 하는 함수.
      * 일단은, 하드코딩을 통해 테이블을 채워준다.
      * 모든 월드가 공통.
-     * ㄴ 읽기 뿐이긴 한데.. 모두가 이걸 공유하도록 하는게 성능(?) 면에서 어떤 문제가.. 있을까??
      */
     static void loadWaveArmy() {
 
@@ -306,66 +299,9 @@ public class GameDataManager {
         monsters.put(15, 2);
         waveArmy.put(20, monsters);
     }
-    static void loadCharacterTableDB()
-    {
-
-    }
-
-    static void loadMonsterTableDB()
-    {
-
-    }
-
-    static void loadAttackTurretTableDB()
-    {
-
-    }
-
-    static void loadBuffTurretTableDB()
-    {
-
-    }
-
-    static void loadBarricadeTableDB()
-    {
-
-    }
 
 
-    //characterType을 통해 데이터를  불러옴.
-    public static CharacterInfo loadCharacterInfo(int characterType)
-    {
-        CharacterInfo result = characterTableDB.get(characterType);
-        return (CharacterInfo)result.clone();
-    }
 
-    //characterType을 통해 데이터를  불러옴.
-    public static MonsterInfo loadMonsterInfo(int monsterType)
-    {
-        MonsterInfo result = monsterTableDB.get(monsterType);
-        return (MonsterInfo)result.clone();
-    }
-
-    //characterType을 통해 데이터를  불러옴.
-    public static AttackTurretInfo loadAtackTurretInfo(int turretType)
-    {
-        AttackTurretInfo result = attackTurretInfoTableDB.get(turretType);
-        return (AttackTurretInfo)result.clone();
-    }
-
-    //characterType을 통해 데이터를  불러옴.
-    public static BuffTurretInfo loadBuffTurretInfo(int turretType)
-    {
-        BuffTurretInfo result = buffTurretInfoTableDB.get(turretType);
-        return (BuffTurretInfo)result.clone();
-    }
-
-    //characterType을 통해 데이터를  불러옴.
-    public static BarricadeInfo loadBarricadeInfo(int barricadeType)
-    {
-        BarricadeInfo result = barricadeTableDB.get(barricadeType);
-        return (BarricadeInfo)result.clone();
-    }
 
     /**
      * 넘겨받은 레벨 값을 가지고, 현 레벨에서 다음 레벨로 업그레이드 하기 위해 필요한 경험치 량을 찾아 리턴한다
@@ -467,7 +403,6 @@ public class GameDataManager {
     public static HashMap<Integer, BalanceData> balanceDataInfoList;
 
     /**
-     * 주석 작성
      * 오후 11:34 2020-04-07
      */
     /* 게임 난이도 등급 정보 목록 */
@@ -496,7 +431,8 @@ public class GameDataManager {
         filePathList = new HashMap<>();
 
         String path = "C:\\Users\\irmle\\Desktop\\로컬 서버 작업\\20200331(25th_2)\\NovaGameTeam\\GameDataFiles";
-        path = Paths.get("").toAbsolutePath().toString() + "/src/GameDataFiles/";
+//        path = Paths.get("").toAbsolutePath().toString() + "/src/GameDataFiles/";
+        path = Paths.get("").toAbsolutePath().toString() + "/GameDataFiles/";   // 2021 10 06, 로컬에서 테스트 중
 
         filePathList.put(FilePathType.MONSTER_INFO_LIST, path + "MonsterInfoList" + ".csv");
         filePathList.put(FilePathType.MONSTER_LIST_PER_WAVE, path + "MonsterListPerWave" + ".csv");
@@ -2328,7 +2264,7 @@ public class GameDataManager {
     /**
      * 상점에서 판매하는 목록정보를 읽어들임
      * 아이템 및 업그레이드..
-     * 나중에 봐서, 업그레이드는 빼던가 할 것.
+     * 나중에 봐서 업그레이드는 빼던가 할 것.
      */
     public static void readStoreSaleInfo(){
 

@@ -57,7 +57,6 @@ public class FlyingObjectSystem {
             FlyingObjectEntity flyingObject = flyingObjectEntity.getValue();
             FlyingObjectComponent flyingObjectComponent = flyingObject.flyingObjectComponent;
 
-
             /** 2020 04 02 */
             // 스킬 시전자 및 스킬 레벨 정보를 구한다
             CharacterEntity skillUser;
@@ -170,12 +169,6 @@ public class FlyingObjectSystem {
 //                    System.out.println("투사체의 타겟이 존재하지 않음. 투사체 파괴");
                     worldMap.requestDeleteQueue.add(flyingObject);
                     return;
-
-                    /**
-                     * 위에.. 리턴이 아니라 break 라던가 continue 해야하는 거 아님?? 일단 주석만 달아놓고
-                     * 내일 테스트하자.
-                     */
-
                 }
                 else
                     targetEntityType = worldMap.entityMappingList.get(targetEntityID);
@@ -184,11 +177,6 @@ public class FlyingObjectSystem {
                 //타겟의 EntityType별로 지정할 것.
                 switch (targetEntityType)
                 {
-                    /**
-                     * 왜.. 타겟별로 별도 처리를 해야하는지 아직 모르겠지만,
-                     * 일단 현 시점에서 타게팅 투사체 중 캐릭터를 타겟으로 하는 경우는
-                     * 존재하지 않으므로, 처리를 수정하지 않음.
-                     */
                     case EntityType.CharacterEntity: {
 
                         CharacterEntity targetEntity = worldMap.characterEntity.get(targetEntityID);
@@ -221,8 +209,6 @@ public class FlyingObjectSystem {
                             Vector3 direction = Vector3.normalizeVector(flyingObject.positionComponent.position, targetPos);
 
                             Vector3 movement = direction.setSpeed(movedDeltaDistance);
-
-                            //position + movement = newposition
 
                             //이전위치에서 movement만큼 이동시킨 위치를 현재 위치에 반영한다.
                             Vector3.movePosition(flyingObject.positionComponent.position, movement);
@@ -357,12 +343,7 @@ public class FlyingObjectSystem {
                                     targetEntity.buffActionHistoryComponent.conditionHistory.add(condBuff);
 
                                     /** 기존에 .. 시전자에게 들어있던 버프 제거해주기 */
-
-                                    //SkillFactory.cancelDeBuffEffect(skillUser, ConditionType.isArcherHeadShotActivated);
-
                                     SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
-
-    //                                System.out.println("헤드샷 버프 삭제함");
 
                                 }
                                 else{
@@ -373,14 +354,7 @@ public class FlyingObjectSystem {
                                     targetEntity.buffActionHistoryComponent.conditionHistory.add(
                                             SkillFactory.createSkillEffect(skillType, "크리뎀", skillLevel, skillUser, flyingObject.entityID));
 
-                                    // 시전자의 헤드샷활성화 버프 제거
-                                    /**
-                                     * 2020 05 31 >> 헤드샷의 평타강화 처리 취소, 즉발 투사체 처리로 수정함으로 인한 주석 처리.
-                                     */
-                                    //SkillFactory.cancelSkillBuffEffect(skillUser, SkillType.ARCHER_HEAD_SHOT);
-
                                 }
-
 
                             }
                             else {  // 그냥 버프를 그대로 넣어주면 되는 경우.
@@ -417,17 +391,7 @@ public class FlyingObjectSystem {
 
                                             break;
 
-                                        /*case EntityType.AttackTurretEntity :
-
-                                            System.out.println("공격자가 공격터렛이넹~ : " + attackTurret.entityID);
-
-                                            targetEntity.buffActionHistoryComponent.conditionHistory.add(
-                                                    AttackTurretFactory.createAttackTurretEffect(attackTurret.turretComponent.turretType, "데미지", attackTurret, attackTurret.entityID));
-
-
-                                            break;*/
                                     }
-
 
                                 }
 
@@ -448,7 +412,6 @@ public class FlyingObjectSystem {
                             //이전위치에서 movement만큼 이동시킨 위치를 현재 위치에 반영한다.
                             Vector3.movePosition(flyingObject.positionComponent.position, movement);
 
-
                             //투사체의 타겟이 있는 방향으로 지정!
                             flyingObject.flyingObjectComponent.direction = direction;
                         }
@@ -463,7 +426,6 @@ public class FlyingObjectSystem {
                         float movedDeltaDistance = speed * deltaTime;
 
                         Vector3 targetPos = targetEntity.positionComponent.position;
-                        //targetPos.set(targetPos.x(), targetPos.y()+1.6f, targetPos.z());
                         float distance = Vector3.distance(flyingObject.positionComponent.position, targetPos);
 
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
@@ -509,7 +471,6 @@ public class FlyingObjectSystem {
                         float movedDeltaDistance = speed * deltaTime;
 
                         Vector3 targetPos = targetEntity.positionComponent.position;
-                        //targetPos.set(targetPos.x(), targetPos.y()+1.6f, targetPos.z());
                         float distance = Vector3.distance(flyingObject.positionComponent.position, targetPos);
 
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
@@ -555,7 +516,6 @@ public class FlyingObjectSystem {
                         float movedDeltaDistance = speed * deltaTime;
 
                         Vector3 targetPos = targetEntity.positionComponent.position;
-                        //targetPos.set(targetPos.x(), targetPos.y()+1.6f, targetPos.z());
                         float distance = Vector3.distance(flyingObject.positionComponent.position, targetPos);
 
                         //만약 남은 거리가, 이동해야할 거리보다 적은 경우.
@@ -646,9 +606,6 @@ public class FlyingObjectSystem {
 
                 Vector3 flyingObjectPos = flyingObject.positionComponent.position;
 
-                /* 목적지와의 거리를 계산한다 */
-                //currentDistance = Vector3.distance(flyingObjectPos, destinationPos);
-
                 /* 목적지 도달 여부를 판단한다 */
                 boolean hasArrived = false;
                 hasArrived = ( flyingObjectComponent.flyingObjectRemainDistance <= 0 ) ? true : false;
@@ -664,8 +621,6 @@ public class FlyingObjectSystem {
                         System.out.println("찌르기 스킬의 삭제 처리 ");
 
                         CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
-
-              //          System.out.println("캐릭터 ID : " + character.entityID );
 
                         ArrayList<BuffAction> buffActionList = character.buffActionHistoryComponent.conditionHistory;
 
@@ -692,14 +647,9 @@ public class FlyingObjectSystem {
                     /* 다음 이동 위치 계산 후 반영한다 */
 
                     /* 다음 이동 좌표를 계산한다 */
-
                     // 다음 이동할 목적지(?) 좌표 구하기
                     Vector3 sourcePos = new Vector3(flyingObjectComponent.startPosition.x(),
                             flyingObjectComponent.startPosition.y(), flyingObjectComponent.startPosition.z());
-
-                    //Vector3 destinationPos = new Vector3(sourcePos.x(), sourcePos.y(), sourcePos.z());
-                    //destinationPos.setSpeed(flyingObjectComponent.flyingObjectRemainDistance);
-
 
                     // 방향을 구한다
                     //Vector3 direction = Vector3.normalizeVector(flyingObjectPos, destinationPos);
@@ -707,13 +657,11 @@ public class FlyingObjectSystem {
                     direction = direction.normalize();
 
                     // 이동할 거리(?)를 구한다
-                    //Vector3 거리 = direction * flyingObject.flyingObject.flyingSpeed * deltaTime;
                     float temp = flyingObjectComponent.flyingSpeed * deltaTime;
 
                     Vector3 moveVector = direction.setSpeed(temp);
 
                     /* 좌표를 반영한다 */
-                    // 기존 위치 + 이동할 거리. ??
                     flyingObjectPos.movePosition(flyingObjectPos, moveVector);
 
 
@@ -723,15 +671,8 @@ public class FlyingObjectSystem {
                         if (false){ // 이전 버전 {
 
                             /* 스킬 시전자의 좌표를 투사체와 같이 해준다. */
-
                             CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
-
                             character.positionComponent.position.set((Vector3) flyingObjectPos.clone());
-
-                            CharacterData characterData = worldMap.getCharacterDataFromEntity(character);
-
-                        /*RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-                        server_to_client.broadcastingCharacterSnapshot(TARGET, RMI_Context.Reliable_Public_AES256, worldMap.worldEntityData.characterData);*/
 
                         }
                         else if(false){   /** 2002 02 13, 맵뚫기 보정 버전 */  /** 2020 02 19 주석처리 함 */
@@ -741,15 +682,12 @@ public class FlyingObjectSystem {
 
                                 CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
                                 character.positionComponent.position.set((Vector3) flyingObjectPos.clone());
-
                             }else {
 
                                 flyingObjectComponent.flyingObjectRemainDistance = 0;
-
                             }
-
                         }
-                        else{   /** 2020 02 19 수 권령희 추가 */
+                        else{   /** 2020 02 19 수 추가 */
 
                             boolean isMovableTile = MapFactory.moveCheck(worldMap.gameMap, flyingObjectPos.x(), flyingObjectPos.z());
                             if(isMovableTile){
@@ -758,14 +696,9 @@ public class FlyingObjectSystem {
                                 CharacterEntity character = worldMap.characterEntity.get(flyingObject.flyingObjectComponent.userEntityID);
                                 Vector3 changedPos = (Vector3) flyingObjectPos.clone();
                                 worldMap.charNextPosList.put(character.entityID, changedPos);
-                                System.out.println("찌르기 투사체 이동, 남은 거리 : " + flyingObjectComponent.flyingObjectRemainDistance);
-                                System.out.println(changedPos.x() + ", " + changedPos.z());
-
                             }else {
 
                                 flyingObjectComponent.flyingObjectRemainDistance = 0;
-                                System.out.println("찌르기 이동 불가능한 지점에 도달해서 0");
-
                             }
                         }
 
@@ -800,8 +733,8 @@ public class FlyingObjectSystem {
                         float targetHP = monster.hpComponent.currentHP;
                         if( (currentDistance < (flyingObjectComponent.flyingObjectRadius )) && (targetHP > 0) && !(monster.conditionComponent.isUnTargetable))
                         {
-                            /* 2020 01 22 권령희 추가. */
-                            /* 찌르기의 경우, 범위각도 (뒤에있는 놈은 공격하지 않도록..?? ) 체크하는 처리 추가,, */
+                            /* 2020 01 22 추가. */
+                            /* 찌르기의 경우, 범위각도 (뒤에있는 놈은 공격하지 않도록? ) 체크하는 처리 추가,, */
                             if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE){
 
                                 // 투사체 방향 백터 구하기
@@ -824,32 +757,22 @@ public class FlyingObjectSystem {
                         }
 
 
-
                         /************************************************************************************************/
-
 
                         /* 범위에 들어있다면, 범위 대상 중 가장 가까운 녀석인지 판별한다 */
                         if(isInTargetRange){
 
-  //                          System.out.println("몬스터" + monster.entityID + "를 타겟 목록에 추가합니다.");
-
-
-                            /** 여기다 해줘서 될 지 모르겠네.. 이미 버프를 받고있는 애들의 경우는 제외하기 */
+                            /** 이미 버프를 받고있는 애들의 경우는 제외하기 */
                             /////if(flyingObjectComponent.createdSkillType == SkillType.KNIGHT_PIERCE){
                             if(true){
 
                                 List<BuffAction> buffActionList = monster.buffActionHistoryComponent.conditionHistory;
                                 boolean targetHasBuffAlready = false;
 
-                                //BuffAction targetsBuffAction = new BuffAction();
-                                BuffAction targetsBuffAction;
-
                                 /* 대상의 버프액션 갯수만큼 반복한다 */
                                 for(int k=0; k<buffActionList.size(); k++){
 
                                     if(flyingObject.entityID == buffActionList.get(k).unitID){
-
-                                        targetsBuffAction = buffActionList.get(k);
 
                                         targetHasBuffAlready = true;
                                         break;
@@ -872,18 +795,12 @@ public class FlyingObjectSystem {
                                         targetID = monster.entityID;
                                     }
                                 }
-
                             }
-
                         }
-
-
-
                     } /* 공격 대상 갯수만큼 반복 종료 */
 
 
                     /** 지정된 타겟에 대해 공격 처리를 한다 */
-
                     /* 타겟이 존재한다면 */
                     if(targetID > 0){
 
@@ -913,18 +830,13 @@ public class FlyingObjectSystem {
 
                                 }
                                 else{
-
                                     /** 2020 04 02 ver */
-
                                     target.buffActionHistoryComponent.conditionHistory.add(
                                             SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
-
-
                                 }
-
                             }
                             /**
-                             * 2020 01 29 수 저격 처리 추가 권령희
+                             * 2020 01 29 수 저격 처리 추가
                              *
                              */
                             else if(flyingObjectComponent.createdSkillType == SkillType.ARCHER_SNIPE) {
@@ -987,9 +899,6 @@ public class FlyingObjectSystem {
 
                                     snipeBuff.floatParam.clear();   // 상태이상(bool)만 들어가게끔
                                     target.buffActionHistoryComponent.conditionHistory.add(snipeBuff);
-
-
-
                                 }
                                 else{
 
@@ -1021,18 +930,14 @@ public class FlyingObjectSystem {
 
                                     // 상태. 추가할거라면 여기에.
                                 }
-
                             }
-
                             else{
 
                                 if(doOldVersion){
-
                                     /**
                                      * 2020 02 06
                                      * buff ; 현 투사체의 buffAction을 복사한 값.
                                      */
-
                                     BuffAction buff = (BuffAction) flyingObjectComponent.buffAction.clone();
 
                                     /* 데미지 버프 적용 */
@@ -1045,21 +950,17 @@ public class FlyingObjectSystem {
                                     target.buffActionHistoryComponent.conditionHistory.add(condBuff);
 
                                     /***************************************************************************************/
-
                                 }
                                 else{
-
                                     target.buffActionHistoryComponent.conditionHistory.add(
                                             SkillFactory.createSkillEffect(skillType, "데미지", skillLevel, skillUser, flyingObject.entityID));
                                 }
-
                             }
 
                             flyingObjectComponent.flyingObjectRemainDistance = 0;
 
                         }
                         else{
-
                             // 모든 대상에 대해 반복
                             for(int i=0; i<targetList.size(); i++){
 
@@ -1086,24 +987,42 @@ public class FlyingObjectSystem {
                                 }
 
                             }
-
                             flyingObjectComponent.flyingObjectRemainDistance -= moveVector.length();
                         }
-
                     }
                     else{
 
                         flyingObjectComponent.flyingObjectRemainDistance -= moveVector.length();
                     }
-
                 }
-
 
             } //논타겟 스킬인 경우.
 
         } //Entitiy목록 반복 부분.
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

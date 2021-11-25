@@ -7065,31 +7065,7 @@ public class SkillFactory {
     /**
      * 데미지 "버프"를 생성한다.
      * 일반 공격 또는 스킬 효과로 데미지만 들어가는 경우
-     * ㄴ 물론.. 잠깐 이동 못하게하기 뭐 그런게 들어갈 수도 있겠지만
-     *  ㅇ아 몰라 일단 만들어두고 생각하자
-     * 그.. 스킬 시전자나 효과적용 앤티티같은 경우는 외부에 넣어주는 걸로??
-     * @param defaultDamage
-     * @param attack
-     * @param condition
-     * @return
      */
-    public static BuffAction createDamageBuff(float defaultDamage, AttackComponent attack, ConditionComponent condition){
-
-        BuffAction damageBuff = new BuffAction();
-
-        damageBuff.remainTime = 0.15f;
-        damageBuff.remainCoolTime = -1f;
-        damageBuff.coolTime = -1f;
-
-        damageBuff.floatParam.add( createDamageParam(defaultDamage, attack, condition));
-
-        return damageBuff;
-
-    }
-
-    // 음 생각해보니까.. 아예 철저히 처음부터 데미지도 결정하고.. 뭐 그런 경우가 아니라면,
-    // damageParam을 통해 만들어진 거를 받아 버프로 구성해주는 걸로 ??
-    // 올,, 이걸 쓸 확률이 더 높을듯.
     public static BuffAction createDamageBuff(ConditionFloatParam damageParam, int unitID, int skillUserID){
 
         BuffAction damageBuff = new BuffAction();
@@ -7155,28 +7131,6 @@ public class SkillFactory {
         server_to_client.motionCharacterUseSkill(TARGET, RMI_Context.Reliable, event.userEntityID, skillInfoData);
     }
 
-    /**
-     * 작성날짜 : 2020 04 01 수요일
-     * 작성내용 :
-     * -- CSV 파일로부터 읽어들인 단위의 효과(BuffAction) 객체 하나를 생성하기 위해 필요한 절차들
-     * --
-     * --
-     *
-     */
-    /*******************************************************************************************************************/
-
-    /**
-     *      Aim : 매서드 작성 틀 예시
-     *    Input : 매서드 인자
-     *   Output : 리턴값
-     *  Process : 처리과정을을 적는다
-     *
-     */
-    public static void methodName(){
-
-
-
-    }
 
     /**
      *      Aim : 스킬에서 적용하고자 하는 효과를 생성할 때 호출하면 된다!

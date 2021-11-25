@@ -392,7 +392,6 @@ public class AttackTurretFactory {
     /**
      * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
      *
-     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
      */
     public static ConditionFloatParam createEffectParam(int turretType, BuffInfo effectInfo, AttackTurretEntity attackTurret){
 

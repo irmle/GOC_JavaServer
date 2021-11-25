@@ -145,7 +145,7 @@ public class LogManager {
 
 
             // 로그 메시지 객체를 가지고, 실제로 쓸 포맷을 만든다.
-            String logStr = logMessage.toString();  // 당연히 고쳐야지...
+            String logStr = logMessage.toString();
 
 
 
@@ -189,7 +189,7 @@ public class LogManager {
 
 
     /**
-     * 뭐..
+     *
      */
     static private class logWriting implements Runnable{
 

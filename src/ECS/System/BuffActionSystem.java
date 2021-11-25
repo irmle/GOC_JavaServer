@@ -86,9 +86,6 @@ public class BuffActionSystem {
             지속 시간 여부(끝났는지??)에 따른 처리를 한다.
          */
 
-        RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
-
-
         /** 캐릭터 */
         for(HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()){
 
@@ -122,8 +119,6 @@ public class BuffActionSystem {
             /* 버프액션 리스트 갯수만큼 반복한다 */
             for(int j=0; j<buffActionList.size(); j++){
 
-                ConditionData tempValue = new ConditionData();
-
                 BuffAction buffAction = buffActionList.get(j);
 
                 /** 버프액션의 남은 시간을 계산 후 깎는다 */
@@ -131,8 +126,6 @@ public class BuffActionSystem {
 
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
-
-                    //System.out.println("버프를 제거합니다.");
 
                     /** 2020 03 20 권령희 추가 */
                     /**
@@ -144,8 +137,6 @@ public class BuffActionSystem {
                         case SkillType.RECALL :
 
                             character.positionComponent.position.set(new Vector3(3f, 0f, -3f));
-
-                            /* 모션 중계.. 필요?? */
 
                             break;
 
@@ -171,7 +162,6 @@ public class BuffActionSystem {
                             HPComponent hpComponent = character.hpComponent;
                             hpComponent.maxHP = hpComponent.originalMaxHp;
 
-                            //System.out.println("체력버프 효과가 종료되었습니다. 현재 최대 체력 : " + hpComponent.maxHP);
                             break;
 
                         case SkillType.JUNGLE_BUFF_FAIRY :
@@ -197,13 +187,11 @@ public class BuffActionSystem {
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
-
                     if(buffAction.coolTime > 0){
 
                         /* 남은 쿨타임을 계산한다. */
                         // 2020 01 24 금 수정.
-                        buffAction.remainCoolTime -= deltaTime; // 이걸 여기서 먼저 까주는게 맞는지 모르겠네.
+                        buffAction.remainCoolTime -= deltaTime;
                         if(buffAction.remainCoolTime <= 0f){ /* 쿨타임이 끝나, 새로 효과를 넣음  */
 
                             /** 버프 효과를 발동한다 */
@@ -212,7 +200,7 @@ public class BuffActionSystem {
 
                                 ConditionBoolParam condition = buffAction.boolParam.get(k);
 
-                                if(condition.value == true){    // 아 근데 생각해보니까, 어차피 이쪽 상태들은.. 얘네를 false로 만드는 애들이 없을텐데..
+                                if(condition.value == true){
                                     switch (condition.type){
                                         case ConditionType.isDisableMove:
                                             newCondition.isDisableMove = true;
@@ -354,10 +342,6 @@ public class BuffActionSystem {
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
 
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                        // >> 이거.. 걍 hp 시스템으로 옮길거임
                                         break;
 
                                     case ConditionType.criticalDamageAmount :
@@ -368,27 +352,18 @@ public class BuffActionSystem {
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
 
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                         break;
 
                                     case ConditionType.hpRecoveryAmount:
 
                                         /* 최종 회복량 계산  */
                                         float recoveryAmount = condition.value;
-                                        //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                        if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                        if(recoveryAmount < 0f){
                                             recoveryAmount = 0f;
                                         }
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
 
                                         break;
                                     case ConditionType.mpRecoveryAmount:
@@ -410,7 +385,6 @@ public class BuffActionSystem {
                             /* 남은 쿨타임을 계산해준다. */
                             //buffAction.remainCoolTime -= deltaTime;
                         }
-
                     }
                     else { /** 쿨타임을 갖는 버프액션이 아니다 */
 
@@ -471,7 +445,6 @@ public class BuffActionSystem {
                                     case ConditionType.isReturning :
                                         newCondition.isReturning = true;
                                         break;
-
 
                                     default:
                                         break;
@@ -568,10 +541,6 @@ public class BuffActionSystem {
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
 
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                    // >> 이거.. 걍 hp 시스템으로 옮길거임
                                     break;
 
                                 case ConditionType.criticalDamageAmount :
@@ -582,27 +551,18 @@ public class BuffActionSystem {
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
 
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                     break;
 
                                 case ConditionType.hpRecoveryAmount:
 
                                     /* 최종 회복량 계산  */
                                     float recoveryAmount = condition.value;
-                                    //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
                                     if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
                                         recoveryAmount = 0f;
                                     }
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
 
                                     break;
                                 case ConditionType.mpRecoveryAmount:
@@ -709,14 +669,10 @@ public class BuffActionSystem {
             /* 버프액션 리스트 갯수만큼 반복한다 */
             for(int j=0; j<buffActionList.size(); j++){
 
-                ConditionData tempValue = new ConditionData();
-
                 BuffAction buffAction = buffActionList.get(j);
 
                 /** 버프액션의 남은 시간을 계산 후 깎는다 */
                 buffAction.remainTime -= deltaTime;
-
-                //System.out.println("남은  지속시간 : " + buffAction.remainTime);
 
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
@@ -733,7 +689,6 @@ public class BuffActionSystem {
                                 Vector3 monsterPos = monster.positionComponent.position;
                                 monsterPos.set(monsterPos.x(), 0f, monsterPos.z());
 
-                                System.out.println("에어본 원상복귀");
                             }
                             break;
 
@@ -741,7 +696,6 @@ public class BuffActionSystem {
                             break;
 
                     }
-
 
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
@@ -751,13 +705,9 @@ public class BuffActionSystem {
                 else{
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
-                    //System.out.println("버프가 지속중이므로, 상태에 반영합니다. ");
-
                     /* 쿨타임을 갖는지 여부를 판별한다 */
 
                     if(buffAction.coolTime > 0f){
-
-                        //System.out.println("쿨타임을 갖는 버프를 처리 합니다..");
 
                         /* 남은 쿨타임을 계산한다. */
                         buffAction.remainCoolTime -= deltaTime; // 이걸 여기서 먼저 까주는게 맞는지 모르겠네.
@@ -904,10 +854,6 @@ public class BuffActionSystem {
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
 
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                        // >> 이거.. 걍 hp 시스템으로 옮길거임
                                         break;
 
                                     case ConditionType.criticalDamageAmount :
@@ -918,27 +864,18 @@ public class BuffActionSystem {
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
 
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                         break;
 
                                     case ConditionType.hpRecoveryAmount:
 
                                         /* 최종 회복량 계산  */
                                         float recoveryAmount = condition.value;
-                                        //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
                                         if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
                                             recoveryAmount = 0f;
                                         }
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
 
                                         break;
 
@@ -1005,8 +942,6 @@ public class BuffActionSystem {
                     }
                     else { /** 쿨타임을 갖는 버프액션이 아니다 */
 
-                        //System.out.println("쿨타임을 갖지 않는 버프 액션에 대해 처리합니다. ");
-
                         /** 버프 효과를 발동한다 */
                         /* bool 파라미터들 처리 */
                         for(int k=0; k<buffAction.boolParam.size(); k++){
@@ -1037,21 +972,6 @@ public class BuffActionSystem {
                                         newCondition.isAriborne = true;
                                         newCondition.isDisableMove = true;
                                         newCondition.isDisableAttack = true;
-
-                                        // 2020 04 13 주석처리함.. 머지...
-                                        //Vector3 monsterPos = monster.positionComponent.position;
-                                        //monsterPos.set(monsterPos.x(), 10f, monsterPos.z());
-
-                                        /*Vector3 monsterPos = monster.positionComponent.position;
-                                        if(monsterPos.y() >= 0.4){
-
-                                            monsterPos.set(monsterPos.x(), 0.2f, monsterPos.z());
-                                        }
-                                        else{
-
-                                            monsterPos.set(monsterPos.x(), 0.4f, monsterPos.z());
-                                        }*/
-
 
                                         /**
                                          * 2020 05 29 에어본 처리방식 수정
@@ -1112,9 +1032,6 @@ public class BuffActionSystem {
                                         else{
 
                                             /** 내려가는 처리 수행 */
-
-                                            System.out.println("내려감");
-                                            System.out.println("남은 시간 :" + remainTime );
 
                                             /* 1. 이동량을 구한다 */
                                             float 이동량;
@@ -1258,10 +1175,6 @@ public class BuffActionSystem {
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
 
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                    // >> 이거.. 걍 hp 시스템으로 옮길거임
                                     break;
 
                                 case ConditionType.criticalDamageAmount :
@@ -1272,27 +1185,18 @@ public class BuffActionSystem {
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
 
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                     break;
 
                                 case ConditionType.hpRecoveryAmount:
 
                                     /* 최종 회복량 계산  */
                                     float recoveryAmount = condition.value;
-                                    //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                    if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                    if(recoveryAmount < 0f){
                                         recoveryAmount = 0f;
                                     }
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
 
                                     break;
 
@@ -1535,11 +1439,6 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                        // >> 이거.. 걍 hp 시스템으로 옮길거임
                                         break;
 
                                     case ConditionType.criticalDamageAmount :
@@ -1549,29 +1448,18 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                         break;
 
                                     case ConditionType.hpRecoveryAmount:
 
                                         /* 최종 회복량 계산  */
                                         float recoveryAmount = condition.value;
-                                        //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                        if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                        if(recoveryAmount < 0f){
                                             recoveryAmount = 0f;
                                         }
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                         break;
 
                                     default:
@@ -1695,11 +1583,6 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                    // >> 이거.. 걍 hp 시스템으로 옮길거임
                                     break;
 
                                 case ConditionType.criticalDamageAmount :
@@ -1709,29 +1592,18 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                     break;
 
                                 case ConditionType.hpRecoveryAmount:
 
                                     /* 최종 회복량 계산  */
                                     float recoveryAmount = condition.value;
-                                    //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
                                     if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
                                         recoveryAmount = 0f;
                                     }
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                     break;
 
                                 default:
@@ -1799,8 +1671,6 @@ public class BuffActionSystem {
             /* 버프액션 리스트 갯수만큼 반복한다 */
             for(int j=0; j<buffActionList.size(); j++){
 
-                ConditionData tempValue = new ConditionData();
-
                 BuffAction buffAction = buffActionList.get(j);
 
                 /** 버프액션의 남은 시간을 계산 후 깎는다 */
@@ -1809,23 +1679,18 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    //System.out.println("버프를 제거합니다.");
-
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
                     j--;    // 인덱스 제어.
-
                 }
                 else{
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
                         /* 남은 쿨타임을 계산한다. */
-                        //buffAction.remainCoolTime -= deltaTime; // 이걸 여기서 먼저 까주는게 맞는지 모르겠네.
                         if(buffAction.remainCoolTime <= 0f){ /* 쿨타임이 끝나, 새로 효과를 넣음  */
 
                             /** 버프 효과를 발동한다 */
@@ -1930,11 +1795,6 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                        // >> 이거.. 걍 hp 시스템으로 옮길거임
                                         break;
 
                                     case ConditionType.criticalDamageAmount :
@@ -1944,36 +1804,24 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                         break;
 
                                     case ConditionType.hpRecoveryAmount:
 
                                         /* 최종 회복량 계산  */
                                         float recoveryAmount = condition.value;
-                                        //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                        if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                        if(recoveryAmount < 0f){
                                             recoveryAmount = 0f;
                                         }
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                         break;
 
                                     default:
                                         break;
                                 }
                             }
-
 
                             /* 남은 쿨타임을 초기화한다 */
                             buffAction.remainCoolTime = buffAction.coolTime;
@@ -2089,11 +1937,6 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                    // >> 이거.. 걍 hp 시스템으로 옮길거임
                                     break;
 
                                 case ConditionType.criticalDamageAmount :
@@ -2103,29 +1946,18 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                     break;
 
                                 case ConditionType.hpRecoveryAmount:
 
                                     /* 최종 회복량 계산  */
                                     float recoveryAmount = condition.value;
-                                    //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                    if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                    if(recoveryAmount < 0f){
                                         recoveryAmount = 0f;
                                     }
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                     break;
 
                                 default:
@@ -2192,8 +2024,6 @@ public class BuffActionSystem {
             /* 버프액션 리스트 갯수만큼 반복한다 */
             for(int j=0; j<buffActionList.size(); j++){
 
-                ConditionData tempValue = new ConditionData();
-
                 BuffAction buffAction = buffActionList.get(j);
 
                 /** 버프액션의 남은 시간을 계산 후 깎는다 */
@@ -2202,23 +2032,18 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    //System.out.println("버프를 제거합니다.");
-
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
                     j--;    // 인덱스 제어.
-
                 }
                 else{
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
                         /* 남은 쿨타임을 계산한다. */
-                        //buffAction.remainCoolTime -= deltaTime; // 이걸 여기서 먼저 까주는게 맞는지 모르겠네.
                         if(buffAction.remainCoolTime <= 0f){ /* 쿨타임이 끝나, 새로 효과를 넣음  */
 
                             /** 버프 효과를 발동한다 */
@@ -2323,11 +2148,6 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                        // >> 이거.. 걍 hp 시스템으로 옮길거임
                                         break;
 
                                     case ConditionType.criticalDamageAmount :
@@ -2338,35 +2158,24 @@ public class BuffActionSystem {
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
 
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                         break;
 
                                     case ConditionType.hpRecoveryAmount:
 
                                         /* 최종 회복량 계산  */
                                         float recoveryAmount = condition.value;
-                                        //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                        if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                        if(recoveryAmount < 0f){
                                             recoveryAmount = 0f;
                                         }
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                         break;
 
                                     default:
                                         break;
                                 }
                             }
-
 
                             /* 남은 쿨타임을 초기화한다 */
                             buffAction.remainCoolTime = buffAction.coolTime;
@@ -2482,11 +2291,6 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                    // >> 이거.. 걍 hp 시스템으로 옮길거임
                                     break;
 
                                 case ConditionType.criticalDamageAmount :
@@ -2496,29 +2300,18 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                     break;
 
                                 case ConditionType.hpRecoveryAmount:
 
                                     /* 최종 회복량 계산  */
                                     float recoveryAmount = condition.value;
-                                    //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                    if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                    if(recoveryAmount < 0f){
                                         recoveryAmount = 0f;
                                     }
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                     break;
 
                                 default:
@@ -2582,8 +2375,6 @@ public class BuffActionSystem {
             /* 버프액션 리스트 갯수만큼 반복한다 */
             for(int j=0; j<buffActionList.size(); j++){
 
-                ConditionData tempValue = new ConditionData();
-
                 BuffAction buffAction = buffActionList.get(j);
 
                 /** 버프액션의 남은 시간을 계산 후 깎는다 */
@@ -2592,24 +2383,19 @@ public class BuffActionSystem {
                 if(buffAction.remainTime <= 0f){
                     /** 지속시간이 끝났으므로, 현 캐릭터에서 기존에 적용하던 효과를 제거한다. */
 
-                    //System.out.println("버프를 제거합니다.");
-
                     /* 현 버프액션을 버프액션 리스트에서 삭제한다. */
                     buffActionList.remove(j);
                     j--;    // 인덱스 제어.
-
                 }
                 else{
                     /** 여전히 효과가 지속중이므로, 그에 따른 처리(?)를 한다 */
 
                     /* 쿨타임을 갖는지 여부를 판별한다 */
-                    //System.out.println("남은 지속시간 : " + buffAction.remainTime);
 
                     if(buffAction.coolTime > 0){
 
                         /* 남은 쿨타임을 계산한다. */
-                        //buffAction.remainCoolTime -= deltaTime; // 이걸 여기서 먼저 까주는게 맞는지 모르겠네.
-                        if(buffAction.remainCoolTime <= 0f){ /* 쿨타임이 끝나, 새로 효과를 넣음  */
+                        if(buffAction.remainCoolTime <= 0f){
 
                             /** 버프 효과를 발동한다 */
                             /* bool 파라미터들 처리 */
@@ -2617,7 +2403,7 @@ public class BuffActionSystem {
 
                                 ConditionBoolParam condition = buffAction.boolParam.get(k);
 
-                                if(condition.value == true){    // 아 근데 생각해보니까, 어차피 이쪽 상태들은.. 얘네를 false로 만드는 애들이 없을텐데..
+                                if(condition.value == true){
                                     switch (condition.type){
                                         case ConditionType.isDisableMove:
                                             newCondition.isDisableMove = true;
@@ -2713,11 +2499,6 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                        // >> 이거.. 걍 hp 시스템으로 옮길거임
                                         break;
 
                                     case ConditionType.criticalDamageAmount :
@@ -2727,36 +2508,24 @@ public class BuffActionSystem {
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                         break;
 
                                     case ConditionType.hpRecoveryAmount:
 
                                         /* 최종 회복량 계산  */
                                         float recoveryAmount = condition.value;
-                                        //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                        if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                        if(recoveryAmount < 0f){
                                             recoveryAmount = 0f;
                                         }
 
                                         /* 데미지 적용 */
                                         hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                        /* 데미지량 중계 */
-                                        // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                        // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                         break;
 
                                     default:
                                         break;
                                 }
                             }
-
 
                             /* 남은 쿨타임을 초기화한다 */
                             buffAction.remainCoolTime = buffAction.coolTime;
@@ -2872,11 +2641,6 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, flatDmgAmount, DamageType.FLAT_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingFlatDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, flatDmgAmount);
-                                    // >> 이거.. 걍 hp 시스템으로 옮길거임
                                     break;
 
                                 case ConditionType.criticalDamageAmount :
@@ -2886,29 +2650,18 @@ public class BuffActionSystem {
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, true, criticalDmgAmount, DamageType.CRITICAL_DAMAGE));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 치명타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingCriticalDamageAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, criticalDmgAmount);
-
                                     break;
 
                                 case ConditionType.hpRecoveryAmount:
 
                                     /* 최종 회복량 계산  */
                                     float recoveryAmount = condition.value;
-                                    //float recoveryAmount = condition.value * character.conditionComponent.hpRecoveryRate;
-                                    if(recoveryAmount < 0f){ // 이런 경우가 있기는 할까??
+                                    if(recoveryAmount < 0f){
                                         recoveryAmount = 0f;
                                     }
 
                                     /* 데미지 적용 */
                                     hpDamageHistory.add(new DamageHistory(buffAction.skillUserID, false, recoveryAmount));
-
-                                    /* 데미지량 중계 */
-                                    // 여기에 서버에서 클라이언트로 평타 데미지를 중계하는 RMI 호출문을 작성. 아래는 예시.
-                                    // Logic_broadcastingHpRecoveryAmount(TARGET, rmi_ctx, EntityTye.CHARACTER, character.entityID, recoveryAmount);
-
                                     break;
 
                                 default:
@@ -2953,19 +2706,69 @@ public class BuffActionSystem {
             /**************************/
 
         } // 크리스탈 엔티티 하나에 대한 처리 끝
+    }
 
 
+    /**
+     * 현재 적용된 버프에 맞춰 체력 관련 정보들 적용하기
+     * @param character
+     */
+    public void applyNewCharCondValue_HP(CharacterEntity character){
 
+        ConditionComponent condition = character.conditionComponent;
+        HPComponent hpComponent = character.hpComponent;
 
+        /** 최대 체력 처리 */
+        float maxHpRate = condition.maxHPRate;
 
+        float formerMaxHP = hpComponent.maxHP;
+        hpComponent.maxHP = hpComponent.originalMaxHp + condition.maxHPBonus;
+        hpComponent.maxHP *= maxHpRate;
+        hpComponent.currentHP += (hpComponent.maxHP - formerMaxHP);
 
-
+        if(hpComponent.currentHP > hpComponent.maxHP){
+            hpComponent.currentHP = hpComponent.maxHP;
+        }
 
     }
 
-    /*
+    /**
+     * 현재 적용된 버프에 맞춰 마력 관련 정보들 적용하기
+     * @param character
+     */
+    public void applyNewCharCondValue_MP(CharacterEntity character){
+
+        ConditionComponent condition = character.conditionComponent;
+        MPComponent mpComponent = character.mpComponent;
+
+        /** 최대 마력 처리 */
+        float maxMpRate = condition.maxMPRate;
+
+        float formerMaxMP = mpComponent.maxMP;
+        mpComponent.maxMP = mpComponent.originalMaxMP + condition.maxMPBonus;
+        mpComponent.maxMP *= maxMpRate;
+        mpComponent.currentMP += (mpComponent.maxMP - formerMaxMP);
+
+        if(mpComponent.currentMP > mpComponent.maxMP){
+            mpComponent.currentMP = mpComponent.maxMP;
+        }
+
+    }
+
+}
 
 
+
+
+
+
+
+
+
+
+
+
+/*
    앤티티 리스트 = 버프액션 히스토리 컴포넌트 목록 다 가져옴 (플레이어, 몬스터, 각종 월드맵의 Entity 등)
 
    앤티티 리스트만큼 반복{
@@ -3043,72 +2846,4 @@ public class BuffActionSystem {
     } //버프액션 리스트에서 1개의 버프액션 처리 종료.
         -------------------------------------------------------
 }
-    */
-
-    /**
-     * 아 이거는.. 각자 컨디션 컴포넌트라던가 뭐 앤티티에 있어야 할 거같은데..........
-     * 또, 일단은 임시로?? 캐릭터에만 적용함 .
-     * 아 이거 공식이.. 어느쪽을 먼저 적용해야 되는거지...
-     * @param character
-     */
-    public void applyNewCharCondValue_HP(CharacterEntity character){
-
-        ConditionComponent condition = character.conditionComponent;
-        HPComponent hpComponent = character.hpComponent;
-
-        if(false){
-            System.out.println("최대체력 비율 : " + condition.maxHPRate);
-            System.out.println("최대체력 보너스 : " + condition.maxHPBonus);
-            System.out.println("오리지널 최대체력 : " + hpComponent.originalMaxHp);
-            System.out.println("현재 최대체력 : " + hpComponent.maxHP);
-            System.out.println("현재 체력 : " + hpComponent.currentHP);
-        }
-
-        /** 최대 체력 처리 */
-        float maxHpRate = condition.maxHPRate;
-
-        float formerMaxHP = hpComponent.maxHP;
-        hpComponent.maxHP = hpComponent.originalMaxHp + condition.maxHPBonus;
-        hpComponent.maxHP *= maxHpRate;
-        hpComponent.currentHP += (hpComponent.maxHP - formerMaxHP);
-
-        if(hpComponent.currentHP > hpComponent.maxHP){
-            hpComponent.currentHP = hpComponent.maxHP;
-        }
-
-    }
-
-    public void applyNewCharCondValue_MP(CharacterEntity character){
-
-        ConditionComponent condition = character.conditionComponent;
-        MPComponent mpComponent = character.mpComponent;
-
-        if(false){
-            System.out.println("최대체력 비율 : " + condition.maxMPRate);
-            System.out.println("최대체력 보너스 : " + condition.maxMPBonus);
-            System.out.println("오리지널 최대체력 : " + mpComponent.originalMaxMP);
-            System.out.println("현재 최대체력 : " + mpComponent.maxMP);
-            System.out.println("현재 체력 : " + mpComponent.currentMP);
-        }
-        /** 최대 마력 처리 */
-        float maxMpRate = condition.maxMPRate;
-
-        float formerMaxMP = mpComponent.maxMP;
-        mpComponent.maxMP = mpComponent.originalMaxMP + condition.maxMPBonus;
-        mpComponent.maxMP *= maxMpRate;
-        mpComponent.currentMP += (mpComponent.maxMP - formerMaxMP);
-
-        if(mpComponent.currentMP > mpComponent.maxMP){
-            mpComponent.currentMP = mpComponent.maxMP;
-        }
-
-    }
-
-
-
-
-
-
-
-
-}
+*/

@@ -66,7 +66,7 @@ public class JungleMonsterSlot {
     /**
      * 아니면.. 위에거 대신, 아래 두 함수를 연달아 호출할 수도.
      *  아래 setInfo 함수를 먼저 호출해, 몬스터 정보를 지정하고, 슬롯에 지정된 몬스터 타입 등 정보에 따라 몬스터가 생성이 된 후에
-     *      setMob 함수를 호출해서 생성된 몬스터객체와 연결해주는거임.
+     *      setMob 함수를 호출해서 생성된 몬스터객체와 연결해주는것임.
      * @param monsterID
      */
     public void setJungleMonster(int monsterID){

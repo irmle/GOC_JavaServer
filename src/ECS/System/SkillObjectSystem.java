@@ -316,27 +316,6 @@ public class SkillObjectSystem {
                     /** 회오리 */ // 2020 01 18
                     if(skillObjectComponent.createdSkillType == SkillType.KNIGHT_TORNADO){
 
-                        /*System.out.println("이미 회오리 효과를 받고있음");
-
-                        CharacterEntity character = worldMap.characterEntity.get(skillObjectComponent.userEntityID);
-
-                        Vector3 targetPos = target.positionComponent.position;
-
-                        System.out.println("회오리 타겟 버프 남은 쿨타임 : " + targetsBuffAction.remainCoolTime);
-
-                        if(target.conditionComponent.isAriborne){
-                        //if(targetsBuffAction.remainCoolTime <= 0){
-                            if(targetPos.y() <= 0.5f){
-                                System.out.println("0.5이하다. 1로 바꿔줌");
-
-                                targetPos.set(targetPos.x(), 1f, targetPos.z());
-                            }
-                            else{
-                                System.out.println("0.5 이상이라 0.5로 바꿔줌");
-                                targetPos.set(targetPos.x(), 0.5f, targetPos.z());
-                            }
-                        }*/
-
                         /**
                          * 2020 04 13
                          */
@@ -481,7 +460,6 @@ public class SkillObjectSystem {
                         Vector3 targetPos = target.positionComponent.position;
 
                         /** 2020 05 29 주석*/
-                        //targetPos.set(targetPos.x(), 2f, targetPos.z());
 
                         if(doOldVersion){
 
@@ -774,9 +752,6 @@ public class SkillObjectSystem {
                             newBuff.floatParam.clear();
                             target.buffActionHistoryComponent.conditionHistory.add(newBuff);
 
-                            //newBuff.remainTime = skillObjectComponent.skillObjectDurationTime;
-                            //buffActionList.add(newBuff);
-
                         }
                         else{
 
@@ -785,9 +760,7 @@ public class SkillObjectSystem {
 
                         }
 
-
                     }
-
 
                 }
 
@@ -802,6 +775,20 @@ public class SkillObjectSystem {
         }   /* 스킬 오브젝트 수만큼 반복 끝 */
 
     }
+    // END
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -816,7 +803,6 @@ public class SkillObjectSystem {
     //스킬오브젝트의 지속시간을 체크하여, 시간이 다 되었다면 맵에서 제거함.
     //지속시간동안 해당 스킬오브젝트 범위에 들어온 Target들의 목록을 가지고 있음.
     //스킬오브젝트의 타입에 따라서 Target들의 목록에게 데미지를 줄지, 디버프를줄지 등이 결정됨.
-
 
     /*
 
@@ -849,8 +835,6 @@ public class SkillObjectSystem {
 
 
 
-
-
         스킬오브젝트 컴포넌트의 createdSkillID; 값을 통해, 미리 CSV파일을 통해 불러왔던 데이터 모음집에서
         스킬오브젝트의 범위와 모양을 불러온다.
 
@@ -877,8 +861,6 @@ public class SkillObjectSystem {
             }
         }
 -------------------------------------
-
-
 
 
 
@@ -917,42 +899,13 @@ public class SkillObjectSystem {
             }
         }
 
-
-
-
     }
-
-
-
-
-
-
 
     몬스터, 캐릭터의 BuffActionList에 접근하여, 자신의 버프액션이 있는지 확인. (버프액션의 시전자ID를 자신의 ID와 비교함)
 
     없으면 대상 객체 목록에 들어있는 대상 객체의 BuffActionList에 자신의 버프액션을 추가해줌. ->
     있으면 남은 remainTime을 갱신함.
 
-
-
-
     */
-
-    /**
-     * 2020 01 27 월요일
-     */
-    /*******************************************************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

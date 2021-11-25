@@ -34,7 +34,7 @@ import Network.RMI_Common.server_to_client;
  * 작성날짜 : 2019 12 18 수 새벽
  * 업뎃날짜 :
  * 목    적 :
- *      포탑, 바리케이드 등 앤티티를 건설가능 지점에 건설 혹은 업그레이드 처리를 수행하기 위해 도는 시스템 (...)
+ *      포탑, 바리케이드 등 앤티티를 건설가능 지점에 건설 혹은 업그레이드 처리를 수행하기 위해 도는 시스템
  */
 public class BuildSystem {
 
@@ -46,7 +46,7 @@ public class BuildSystem {
 
     public static HashMap<Integer, Integer> installPriceTable;  // 설치 타입, 건설 가격 맵
     public static HashMap<Integer, Integer> upgradePriceTable;  //  업그레이드 타입, 건설 가격 맵 ; 바리는 업글 없음
-                                                                // 터렛 타입이랑 각 비용을 넣을 것,,,,,,으,,,
+                                                                // 터렛 타입이랑 각 비용을 넣을 것
 
     /* 생성자 */
     public BuildSystem(WorldMap worldMap, float coolTime) {
@@ -95,15 +95,10 @@ public class BuildSystem {
                         /* 설치하고자 하는 건물 Entity를 생성해준다 */
                         int newBuildingEntityID = createBuilding(currentBuildSlot);
 
-                        //System.out.println("새로 설치하는 건물 ID : " + newBuildingEntityID);
-
                         currentBuildSlot.setBuildingEntityID(newBuildingEntityID);
 
                     }
-                    else {                      /* 업그레이드 */
-
-                        //System.out.println("업그레이드하는 건물 ID : " + buildingEntityID);
-
+                    else {       /* 업그레이드 */
 
                     }
 
@@ -128,8 +123,6 @@ public class BuildSystem {
                     break;
 
                 case BuildSlotState.BUILDING:
-
-                    //System.out.println("건설중... 건물 ID : " + currentBuildSlot.getBuildingEntityID());
 
                     boolean isFinished = ( currentBuildSlot.getRemainBuildTime() <= 0f ) ? true : false;
                     if(isFinished){
@@ -175,8 +168,6 @@ public class BuildSystem {
 
                     if(upgraded){
 
-                        //System.out.println("건물 업글 완료 처리를 합니다. ");
-
                         AttackComponent attackComponent;
                         DefenseComponent defenseComponent;
                         HPComponent hpComponent;
@@ -194,13 +185,9 @@ public class BuildSystem {
                                 /* attack */
                                 attackComponent = attackTurret.attackComponent;
 
-                                //System.out.println("업글 전 데미지 : " + attackComponent.attackDamage);
-
                                 attackComponent.attackDamage = attackTurretInfo.attackDamage;
                                 attackComponent.attackRange = attackTurretInfo.attackRange;
                                 attackComponent.attackSpeed = attackTurretInfo.attackSpeed;
-
-                                //System.out.println("업글 후 데미지 : " + attackComponent.attackDamage);
 
                                 /* defense */
                                 defenseComponent = attackTurret.defenseComponent;
@@ -209,16 +196,9 @@ public class BuildSystem {
                                 /* hp */
                                 hpComponent = attackTurret.hpComponent;
 
-                                //System.out.println("업글 전 체력 : " + hpComponent.maxHP);
                                 hpComponent.maxHP = attackTurretInfo.maxHp;
                                 hpComponent.currentHP = hpComponent.maxHP;
                                 hpComponent.recoveryRateHP = attackTurretInfo.recoveryRateHP;
-
-                                //System.out.println("업글 후 체력 : " + hpComponent.maxHP);
-
-
-                                //System.out.println("혹시 공격 못하나?? : " + attackTurret.conditionComponent.isDisableAttack);
-
 
                                 break;
 
@@ -258,19 +238,13 @@ public class BuildSystem {
 
                     }
 
-                    /* 처리 끝났다! 는 중계처리 해주고 */
-
                     /* 상태 전이 */
                     currentBuildSlot.setSlotState(BuildSlotState.IDLE);
-
                     break;
 
                 case BuildSlotState.DESTROYED :
 
                     currentBuildSlot.emptySlot();
-                    //System.out.println("슬롯의 건물이 파괴되었습니다. 슬롯을 비웁니다.");
-                    /* 앤티티 파괴 요청 큐에 넣기 */
-
                     break;
 
             }
@@ -351,11 +325,8 @@ public class BuildSystem {
             mapUnit = buildableAreaList.get(i);
 
             int newSlotNum = i+1;   // 슬롯 번호는 1부터 시작한다
-            newBuildSlot = new BuildSlot(newSlotNum, mapUnit);  // 맵정보를 '복사'하면 안되지..
-            // 업그레이드 하고 나면, 그 결과가 전체 맵?에도
-            // 반영이 돼어야 하는데.
+            newBuildSlot = new BuildSlot(newSlotNum, mapUnit);
             buildSlots.add(newBuildSlot);
-
         }
 
         return buildSlots;
@@ -373,10 +344,6 @@ public class BuildSystem {
         boolean result;
 
         CharacterEntity user = worldMap.characterEntity.get(event.builderEntityID);
-
-
-        //System.out.println("건설이벤트 정보 - 슬롯 번호 : " + event.buildSlotNum);
-        //System.out.println("건설이벤트 정보 - 건설 타입 : " + event.buildType);
 
         /* 유효한 슬롯 번호인가 ? */
         BuildSlot slot = findBuildSlotBySlotNum(event.buildSlotNum);
@@ -565,9 +532,6 @@ public class BuildSystem {
 
         /* 넣어줄 상태버프. 건설이 진행되는 동안, 공격 하지도, 공격 받지도, 버프처리도 못하게끔 */
         BuffAction stateBuff = new BuffAction(newBuildingEntityID, newBuildingEntityID, 1f, 0f, 0f);
-        /*stateBuff.boolParam.add(new ConditionBoolParam(ConditionType.isUnTargetable, false));
-        stateBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableAttack, false));
-        stateBuff.boolParam.add(new ConditionBoolParam(ConditionType.isDisableSkill, false));*/
 
         Entity newBuilding;
         switch (buildType) {
@@ -582,12 +546,11 @@ public class BuildSystem {
                 newBarri.positionComponent.position.set( buildSlot.mapPosition.getCenterPositionFromMapArea());
                 newBarri.buffActionHistoryComponent.conditionHistory.add(stateBuff);
 
-                /** 2020 03 03 권령희 추가 */
+                /** 2020 03 03 추가 */
                 /* 바리케이드 건설 이후 업그레이드 할 시에 필요한 정보들 세팅 */
                 newBarri.barricadeComponent.upgradeLevel = 0;
                 newBarri.barricadeComponent.costGold = getBarricadeUpgradeCost(0);
                 newBarri.barricadeComponent.costTime = 0f;  // 일단 건설 시 바로 지어지는걸로?
-
 
                 worldMap.requestCreateQueue.add(newBarri);
                 worldMap.entityMappingList.put(newBuildingEntityID, EntityType.BarricadeEntity);
@@ -604,7 +567,6 @@ public class BuildSystem {
 
                 buildSlot.setBuildingEntityID(newBuildingEntityID);
 
-
                 worldMap.requestCreateQueue.add(newATurret);
                 worldMap.entityMappingList.put(newBuildingEntityID, EntityType.AttackTurretEntity);
 
@@ -619,7 +581,6 @@ public class BuildSystem {
                 newBTurret.buffActionHistoryComponent.conditionHistory.add(stateBuff);
 
                 buildSlot.setBuildingEntityID(newBuildingEntityID);
-
 
                 worldMap.requestCreateQueue.add(newBTurret);
                 worldMap.entityMappingList.put(newBuildingEntityID, EntityType.BuffTurretEntity);
@@ -639,18 +600,11 @@ public class BuildSystem {
 
             case BuildType.BARRIER :
 
-                /*slot.mapPosition.what = MapComponents.BARRIER;
-                slot.mapPosition.canMove = false;*/
-
                 slot.mapPosition.setComponentType(MapComponents.BARRIER);
-                //slot.mapPosition.setMapInfoMovable(false);
                 break;
 
             case BuildType.TURRET_ATTACK:
             case BuildType.TURRET_BUFF :
-
-                /*slot.mapPosition.what = MapComponents.TURRET;
-                slot.mapPosition.canMove = false;*/
 
                 slot.mapPosition.setComponentType(MapComponents.TURRET);
                 slot.mapPosition.setMapInfoMovable(false);
@@ -854,33 +808,6 @@ public class BuildSystem {
                 currentTurretComponent.costGold = newATurretInfo.costGold;
                 currentTurretComponent.costTime = newATurretInfo.costTime;
 
-                /** 2020 02 29 ?? */
-                /*HPComponent attackHPComponent = attackTurret.hpComponent;
-                attackHPComponent.recoveryRateHP = newATurretInfo.recoveryRateHP;
-
-                //포탑강화시 최대체력이 증가할텐데, 증가된 량을 추출한다.
-                float amountHP = newATurretInfo.maxHp - attackHPComponent.maxHP;
-
-                //최대HP를 변화된 수치로 적용
-                attackHPComponent.maxHP = newATurretInfo.maxHp;
-
-                //증가된량 만큼 현재체력을 더함
-                attackHPComponent.currentHP += amountHP;
-
-                //더한 값이 바뀐 maxHP를 넘었다면 현재체력을 maxHP로 설정
-                if(attackHPComponent.currentHP > newATurretInfo.maxHp)
-                    attackHPComponent.currentHP = newATurretInfo.maxHp;
-
-                //업그레이드 되면서 바뀐 공격력, 공격속도, 공격범위를 적용
-                AttackComponent attackAttackComponent = attackTurret.attackComponent;
-                attackAttackComponent.attackDamage = newATurretInfo.attackDamage;
-                attackAttackComponent.attackSpeed = newATurretInfo.attackSpeed;
-                attackAttackComponent.attackRange = newATurretInfo.attackRange;
-
-                //업그레이드 되면서 바뀐 방어력을 적용
-                DefenseComponent attackDefenseComponent = attackTurret.defenseComponent;
-                attackDefenseComponent.defense = newATurretInfo.defense;*/
-
                 break;
 
             case EntityType.BuffTurretEntity :
@@ -892,49 +819,11 @@ public class BuildSystem {
                 currentTurretComponent.costGold = newBTurretInfo.costGold;
                 currentTurretComponent.costTime = newBTurretInfo.costTime;
 
-                /** 2020 02 29 ?? */
-                /*HPComponent buffHPComponent = buffTurret.hpComponent;
-                buffHPComponent.recoveryRateHP = newBTurretInfo.recoveryRateHP;
-
-                //포탑강화시 최대체력이 증가할텐데, 증가된 량을 추출한다.
-                float amountHP1 = newBTurretInfo.maxHp - buffHPComponent.maxHP;
-
-                //최대HP를 변화된 수치로 적용
-                buffHPComponent.maxHP = newBTurretInfo.maxHp;
-
-                //증가된량 만큼 현재체력을 더함
-                buffHPComponent.currentHP += amountHP1;
-
-                //더한 값이 바뀐 maxHP를 넘었다면 현재체력을 maxHP로 설정
-                if(buffHPComponent.currentHP > newBTurretInfo.maxHp)
-                    buffHPComponent.currentHP = newBTurretInfo.maxHp;
-
-                //업그레이드 되면서 바뀐 버프효과를 적용
-                BuffComponent buffBuffComponent = buffTurret.buffComponent;
-
-                //버프 범위 적용
-                buffBuffComponent.buffAreaRange = newBTurretInfo.buffAreaRange;
-
-                //버프 지속시간, 버프적용 tickTime 적용
-                buffBuffComponent.buffActionInfo.remainTime = newBTurretInfo.remainTime;
-                buffBuffComponent.buffActionInfo.remainCoolTime = newBTurretInfo.remainCoolTime;
-                buffBuffComponent.buffActionInfo.coolTime = newBTurretInfo.coolTime;
-
-                //버프Action에서 모든 param값을 제거후,
-                buffBuffComponent.buffActionInfo.boolParam.clear();
-                buffBuffComponent.buffActionInfo.floatParam.clear();
-                //새로 값을 추가한다.
-                ConditionFloatParam newBuff = new ConditionFloatParam(newBTurretInfo.buffType, newBTurretInfo.buffValue);
-                buffBuffComponent.buffActionInfo.floatParam.add(newBuff);
-
-                //업그레이드 되면서 바뀐 방어력을 적용
-                DefenseComponent buffDefenseComponent = buffTurret.defenseComponent;
-                buffDefenseComponent.defense = newBTurretInfo.defense;*/
-
                 break;
         }
 
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
+
         //터렛이 업그레이드 되었음을, 모든 유저에게 중계한다.
         server_to_client.userSucceedInstallBuilding(TARGET, RMI_Context.Reliable_Public_AES256, turretEntityID, turretType);
     }
@@ -1045,9 +934,6 @@ public class BuildSystem {
         if(barricade.hpComponent.currentHP > barricade.hpComponent.maxHP){
             barricade.hpComponent.currentHP = barricade.hpComponent.maxHP;
         }
-
-
-
 
         // 바리케이드가 업그레이드 되었음을, 모든 유저에게 중계한다.
         RMI_ID[] TARGET = RMI_ID.getArray(worldMap.worldMapRMI_IDList.values());
@@ -1236,16 +1122,12 @@ public class BuildSystem {
                         Vector3 escapeDir = (worldMap.crystalEntity.get(worldMap.crystalID)).positionComponent.position;
 
                         worldMap.charNextPosList_gotStuck.put(characterEntity.entityID, escapeDir);
-                        System.out.println("캐릭터 " + characterEntity.characterComponent.characterName + "를 gotStuck에 집어넣음");
-
                     }
-
                 }
 
                 break;
 
             case EntityType.MonsterEntity :
-
 
                 for ( MonsterEntity monsterEntity : worldMap.monsterEntity.values()){
 
@@ -1265,21 +1147,11 @@ public class BuildSystem {
                     if(haveToMove){
 
                         Vector3 escapeDir = (worldMap.crystalEntity.get(worldMap.crystalID)).positionComponent.position;
-
                         worldMap.charNextPosList_gotStuck.put(monsterEntity.entityID, escapeDir);
-                        System.out.println("몬스터 " + monsterEntity.monsterComponent.monsterName + "를 gotStuck에 집어넣음");
-
                     }
-
                 }
 
                 break;
-
         }
-
-
     }
-
-
-
 }

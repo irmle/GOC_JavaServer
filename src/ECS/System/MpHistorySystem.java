@@ -85,12 +85,23 @@ public class MpHistorySystem {
 
         }
 
-
-
     }
 
+}
 
-    //월드의 모든 Entity 를 가져와서, MP히스토리의 내역을 일괄적용후 최종 MP 상태를 확정함.
+
+
+
+
+
+
+
+
+
+
+
+
+//월드의 모든 Entity 를 가져와서, MP히스토리의 내역을 일괄적용후 최종 MP 상태를 확정함.
 
     /*
 
@@ -118,42 +129,7 @@ public class MpHistorySystem {
 
     */
 
-    /* for문 버전
-    int size = worldMap.characterEntity.size();
-        for(int i=0; i<size; i++){
-
-            MPHistoryComponent mpHistoryList = worldMap.characterEntity.get(i).mpHistory;
-            List<DamageHistory> damageHistories = mpHistoryList.mpHistory;
-
-            // mp 총량 계산
-            float sum = 0;
-            for (int j=0; j<damageHistories.size(); j++){
-
-                DamageHistory damageHistory = damageHistories.get(j);
-                if(damageHistory.isDamage == true){
-                    sum -= damageHistory.amount;
-                }
-                else{
-                    sum += damageHistory.amount;
-                }
-            }
-
-            // 해당 앤티티의 mp 컴포넌트에 접근, 반영
-            MPComponent mp = worldMap.characterEntity.get(i).mp;
-
-            float tempMpValue = mp.currentMP + sum;
-            if(tempMpValue >= mp.maxMP){
-                mp.currentMP = mp.maxMP;
-            }
-            else if(tempMpValue <= 0){
-                mp.currentMP = 0;
-            }
-            else{
-                mp.currentMP = tempMpValue;
-            }
 
 
 
-        }
-     */
-}
+

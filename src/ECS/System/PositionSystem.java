@@ -115,8 +115,6 @@ public class PositionSystem {
                         }
                         */
 
-                        //System.out.println("매끄럽게 이동 ");
-
                         /** ... */
 
                         Vector3 newPosXChanged = (Vector3) character.positionComponent.position.clone();
@@ -129,17 +127,13 @@ public class PositionSystem {
                         if(MapFactory.moveCheck(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z()) == true){
 
                             character.positionComponent.position.set(newPosXChanged);
-                            //MapFactory.findTileByPosition(worldMap.gameMap, newPosXChanged.x(), newPosXChanged.z());
                         }
                         else if(MapFactory.moveCheck(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z()) == true){
 
                             character.positionComponent.position.set(newPosZChanged);
-                            //MapFactory.findTileByPosition(worldMap.gameMap, newPosZChanged.x(), newPosZChanged.z());
                         }
 
-
                         worldMap.charNextPosList.remove(character.entityID);
-
 
                         break;
                     }
@@ -160,10 +154,6 @@ public class PositionSystem {
 
                         //character.positionComponent.position.set(currentTile.getPixelPosition());
 
-                        /*System.out.println("경계 타일에 다다라서 멈춤");
-                        System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
-                                + character.positionComponent.position.z() );*/
-
                         break;
                     }
 
@@ -173,15 +163,10 @@ public class PositionSystem {
                     boolean arrived = (movedTile == currentTile) ? true : false;
                     if(arrived){
                         /* 도달했다면, 목적지 좌표를 현재 위치로 대입한다 */
-                        // 나중에 좀 수정할수도.. 목적좌표와 현재 거리 차가 1 혹은 0.n 이하일 때, 대입하는걸로.. ??
+                        // 나중에 좀 수정할수도.. 목적좌표와 현재 거리 차가 1 혹은 0.n 이하일 때, 대입하는걸로.. ?
                         // 당장은 이게 클라에서 어케 그려질지 잘 모르겟네.
 
                         character.positionComponent.position.set(movedPos);
-
-
-                        /*System.out.println("목적지 타일에 다다라서 멈춤");
-                        System.out.println("현재 좌표 : " + character.positionComponent.position.x() + ", "
-                                + character.positionComponent.position.z() );*/
 
                         break;
                     }

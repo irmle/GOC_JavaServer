@@ -8,8 +8,6 @@ import ECS.Components.PositionComponent;
 /**
  * 업뎃날짜 : 2002 02 04 화 권령희
  * 업뎃내용 : 속성 변수 추가
- * 업뎃할 내용 :
- *      아 생성자 엉망이네... 얘네도 스킬때 처럼 좀 정리할 필요 있을듯..
  */
 public class Entity implements Cloneable {
 

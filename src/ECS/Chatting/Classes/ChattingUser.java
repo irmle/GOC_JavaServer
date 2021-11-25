@@ -18,11 +18,7 @@ public class ChattingUser {
     public int userToken;   // DB상 등록되어있는, 유저 고유의 ID
     public String nickName;
 
-    // 그 외.. 닉네임 등등 유저 정보가 필요하다면 여기에 추가될 수도.
-    // 로그 쓸 때, 매번 패킷에 들어있는 유저 정보를 파싱하기 그렇잖아?? 아니.. 그래야하나?? 헐;
-    // 모르겟다 이거는 로그 설계 및 저장 해보고, 필요하다 싶으면 그 때 추가하지 머.
-    // 매번 파싱을 피할 수 없다면, 굳이 두지 않아도 될 듯.
-
+    // 그 외.. 닉네임 등등 유저 정보가 필요하다면 여기에 추가
 
     /* 속해있는 채팅 채널 정보 */
     public int lobbyChannelNum;   // 접속해있는 로비 채널.
@@ -51,7 +47,7 @@ public class ChattingUser {
         userToken = -1;
         nickName = "";
 
-        lobbyChannelNum = -1;   // 차후, 로비채널 할당 매서드를 여기서 호출해야 할 수도.
+        lobbyChannelNum = -1;   // 차후, 로비채널 할당 매서드를 여기서 호출해야 할 수도 있음
         sessionChannelNum = -1;
         guildChannelNum = -1;
 

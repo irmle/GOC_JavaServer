@@ -373,8 +373,6 @@ public class BuffTurretFactory {
         }
 
 
-        /* 별도 예외처리가 필요하다면?? */
-
 
         /** 효과 객체를 생성한다 (틀) */
         // 효과정보 객체에 들어있는 정보를 바탕으로, BuffAction 객체를 생성한다.
@@ -400,7 +398,7 @@ public class BuffTurretFactory {
 
         }
 
-        // 나중에.. 근거리 공격용? 매서드도 하나 만들자..
+        // 나중에.. 근거리 공격용 매서드도 하나 만들자..
         newEffect.unitID = effectEntityID;
         newEffect.skillUserID = newEffect.unitID;
         newEffect.skillType = effectType;
@@ -468,7 +466,6 @@ public class BuffTurretFactory {
     /**
      * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
      *
-     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
      */
     public static ConditionFloatParam createEffectParam(int turretType, BuffInfo effectInfo, BuffTurretEntity buffTurret){
 

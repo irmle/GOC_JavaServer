@@ -199,23 +199,6 @@ public class LevelUpSystem {
     }
 
 
-    /**
-     * 넘겨받은 레벨 값을 가지고, 현 레벨에서 다음 레벨로 업그레이드 하기 위해 필요한 경험치 량을 찾아 리턴한다
-     * @param
-     * @return
-     */
-    /*public static float getMaxExpByLevel(int currentLevel){
-
-        int CHAR_MAX_LEVEL = balanceDataInfoList.get(BalanceDataType.EXP_FOR_CHARACTER_LEVEL_UP).maxLevel;
-
-        float expAmount;
-        if(currentLevel == CHAR_MAX_LEVEL){
-            expAmount = levelUpTable.get(currentLevel);
-        }
-        expAmount = levelUpTable.get(currentLevel+1);
-
-        return expAmount;
-    }*/
 
     public void bringBalanceDataInfoListFromGDM(){
 

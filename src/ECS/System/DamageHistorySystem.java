@@ -87,7 +87,6 @@ public class DamageHistorySystem {
         damageRatePerSynastry = GameDataManager.synastryEffectValueList;
         attrTablePerAttacker = GameDataManager.elementalSynastryInfoList;
 
-        // readAttributeInfo();
     }
 
     public void onUpdate(float deltaTime){
@@ -109,8 +108,6 @@ public class DamageHistorySystem {
      * 캐릭터 엔티티들의 데미지 보정처리를 함.
      */
     public void updateCharacterDamage() {
-
-        //System.out.println("캐릭터 뎀 처리");
 
         for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
@@ -217,18 +214,11 @@ public class DamageHistorySystem {
                 /* damageHistory에 최종 데미지를 업데이트함 */
                 currentDamage.amount = attrDamage;
 
-                /* 중계용 RMI 호출 */
-
             }
-
-
         }
     }
 
     public void updateMonsterDamage(){
-
-        //System.out.println("몹뎀 처리");
-
 
         for (HashMap.Entry<Integer, MonsterEntity> monsterEntity : worldMap.monsterEntity.entrySet()) {
 
@@ -238,11 +228,6 @@ public class DamageHistorySystem {
             HPComponent monsterHp = monster.hpComponent;
             if(monsterHp.currentHP <= 0){
                 continue;
-
-                /**
-                 * 사실 이 처리는.. 몹의 정보를 참조하는 데 있어서, 얘가 죽은애든 말든
-                 * 일단 서버에서 아직 사라지진 않은 거라서 별 문제는 없을건데 말임...
-                 */
             }
 
             List<DamageHistory> damageHistory = monster.hpHistoryComponent.hpHistory;
@@ -277,8 +262,6 @@ public class DamageHistorySystem {
                         attacker = worldMap.characterEntity.get(currentDamage.unitID);
                         attackerAttack = ((CharacterEntity)attacker).attackComponent;
                         attackerCondition = ((CharacterEntity)attacker).conditionComponent;
-
-                        //defaultDamage = getMaxDamByCharacterTypeForCalculatingFlatDam(defaultDamage, (CharacterEntity)attacker);
                         break;
                     case EntityType.MonsterEntity :
                         attacker = worldMap.monsterEntity.get(currentDamage.unitID);
@@ -291,7 +274,6 @@ public class DamageHistorySystem {
                         attackerCondition = ((AttackTurretEntity)attacker).conditionComponent;
                         break;
                 }
-
 
                 /* 평타 구함 */
                 float flatDamage =
@@ -322,19 +304,13 @@ public class DamageHistorySystem {
                 }
 
 
-
                 /** 기타 최종딜 추가 처리가 필요하다면 여기에 */
 
                 /* damageHistory에 최종 데미지를 업데이트함 */
                 currentDamage.amount = attrDamage;
 
-                /* 중계용 RMI 호출 */
-
             }
-
-
         }
-
     }
 
     public void updateAttackTurretDamage(){
@@ -364,9 +340,7 @@ public class DamageHistorySystem {
                 AttackComponent attackerAttack = null;
                 ConditionComponent attackerCondition = null;
 
-                // .... 2020 02 13...
                 if(!worldMap.entityMappingList.containsKey(currentDamage.unitID)){
-
                     continue;
                 }
 
@@ -413,20 +387,13 @@ public class DamageHistorySystem {
                  * 2020 02 07 캐릭터랑 몬스터를 제외한 녀석들은 속성 없으므로
                  *  속성 처리 제외, 위에 finalDamage를 최종 데미지로 적용
                  */
-
                 /* 속성보정 처리함 */
-                //
 
-                /** 기타 최종딜 추가 처리가 필요하다면 여기에 */
 
                 /* damageHistory에 최종 데미지를 업데이트함 */
                 currentDamage.amount = finalDamage;
-
             }
-
-
         }
-
     }
 
     public void updateBuffTurretDamage(){
@@ -504,21 +471,14 @@ public class DamageHistorySystem {
                  * 2020 02 07 캐릭터랑 몬스터를 제외한 녀석들은 속성 없으므로
                  *  속성 처리 제외, 위에 finalDamage를 최종 데미지로 적용
                  */
-
                 /* 속성보정 처리함 */
-                //
 
                 /** 기타 최종딜 추가 처리가 필요하다면 여기에 */
 
                 /* damageHistory에 최종 데미지를 업데이트함 */
                 currentDamage.amount = finalDamage;
-
-
             }
-
-
         }
-
     }
 
     public void updateBarricadeDamage(){
@@ -595,21 +555,14 @@ public class DamageHistorySystem {
                  * 2020 02 07 캐릭터랑 몬스터를 제외한 녀석들은 속성 없으므로
                  *  속성 처리 제외, 위에 finalDamage를 최종 데미지로 적용
                  */
-
                 /* 속성보정 처리함 */
-                //
 
                 /** 기타 최종딜 추가 처리가 필요하다면 여기에 */
 
                 /* damageHistory에 최종 데미지를 업데이트함 */
                 currentDamage.amount = finalDamage;
-
-
             }
-
-
         }
-
     }
 
 
@@ -686,21 +639,14 @@ public class DamageHistorySystem {
                  * 2020 02 07 캐릭터랑 몬스터를 제외한 녀석들은 속성 없으므로
                  *  속성 처리 제외, 위에 finalDamage를 최종 데미지로 적용
                  */
-
                 /* 속성보정 처리함 */
-                //
 
                 /** 기타 최종딜 추가 처리가 필요하다면 여기에 */
 
                 /* damageHistory에 최종 데미지를 업데이트함 */
                 currentDamage.amount = finalDamage;
-
-
             }
-
-
         }
-
     }
 
 
@@ -748,8 +694,6 @@ public class DamageHistorySystem {
                 resultDamage = defaultDamage;
 
                 resultDamage += charDefense.defense * DEFENSE_COEFFIECIENT;
-
-                //resultDamage += charHp.originalMaxHp * HP_COEFFIECIENT;
 
                 resultDamage += charHp.maxHP * HP_COEFFIECIENT;
 
@@ -834,27 +778,12 @@ public class DamageHistorySystem {
             flatDamage = maxDam;
         }
 
-        //System.out.println("최대 데미지 : " + maxDam);
-        //System.out.println("최소 데미지 : " + minDam);
-        //System.out.println("기대 데미지 : " + flatDamageExp);
-        //System.out.println("평뎀뽑 & 보정 : " + flatDamage);
-
         flatDamage = ( flatDamage + attackerCondition.attackDamageBonus ) * attackerCondition.attackDamageRate;
-
-        //System.out.println("공격자 공격보너스 : " + attackerCondition.attackDamageBonus);
-        //System.out.println("공격자 데미지비율 : " + attackerCondition.attackDamageRate);
-        //System.out.println("상태적용 평뎀 : " + flatDamage);
 
 
         /** 공식에 따라 평타 데미지값을 도출 */
         float TARGET_DEFENSE = (targetDefense.defense + targetCondition.defenseBonus) * targetCondition.defenseRate;
         finalFlatDamage = (int)( flatDamage * 100 / (100 + TARGET_DEFENSE) );
-
-
-        //System.out.println("타겟 방어력 : " + TARGET_DEFENSE);
-        //System.out.println("최종 평댐 : " + finalFlatDamage);
-
-        //System.out.println("");
 
         return finalFlatDamage;
     }
@@ -920,10 +849,6 @@ public class DamageHistorySystem {
         criticalDamage = flatDamage * (100 + attackerAttack.criticalDamage) * 0.01f;
         finalCriticalDamage = (int) ( criticalDamage * attackerCondiiton.criticalDamageRate );
 
-        //System.out.println("크리티컬 뎀 데미지 적용 : " + criticalDamage);
-        //System.out.println("최종 크리뎀 : " + finalCriticalDamage);
-        //System.out.println("");
-
         return finalCriticalDamage;
     }
 
@@ -942,18 +867,10 @@ public class DamageHistorySystem {
 
         float attributedDamage = 0f;
 
-        //System.out.println("공격자 속성 : " + attackerAttrType);
-        //System.out.println("타겟 속성 : " + targetAttrType);
-
         int synastry = attrTablePerAttacker.get(attackerAttrType).get(targetAttrType);
         float synastryRate = ( 100f + damageRatePerSynastry.get(synastry) ) ;
 
         attributedDamage = damage * synastryRate * 0.01f;
-
-        //System.out.println("속성간 상성 적용 비율 : " + synastryRate);
-        //System.out.println("최종 속성뎀 : " + attributedDamage);
-
-        //System.out.println("=============================");
 
         return attributedDamage;
     }
@@ -1293,8 +1210,6 @@ public class DamageHistorySystem {
         }
 
     }
-
-
 
 }
 

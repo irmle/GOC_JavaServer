@@ -19,11 +19,11 @@ import java.util.Random;
  *
  *
  * 몬스터(MonsterEntity) 객체 생성을 위한 클래스다.
- * 월드맵매니저 초기화 작업 시 생성해줘야 할듯?
+ * 월드맵매니저 초기화 작업 시 생성해줘야 할듯
  *
  * 몬스터정보를 담고있는 CSV파일을 읽어들인다.
  * [ 몬스터ID : 몬스터앤티티 객체] 쌍을 갖도록 할지, 아니면 파일에서 통짜로 읽어온 구조체를 갖도록 할지를 아직 완전히 결정되지 않았다
- * 일단은 별도 구조체(클래스)를 사용하는 식으로..
+ * 일단은 별도 구조체(클래스)를 사용하는 식으로
  *
  * 시스템으로부터 몬스터 생성 요청을 받으면, MonsterID를 건네받아
  * 해당하는 몬스터 객체를 생성해 돌려준다.
@@ -86,187 +86,6 @@ public class MonsterFactory {
 
     /** 매서드 목록 */
 
-
-    /**
-     * 일단 하드코딩으로 값 채움.
-     * 파일 구조 및 파일 읽어들이는 방법 결정되면 수정할 것.
-     */
-    public static void readMonsterInfo(){
-
-        MonsterInfo monsterInfo;
-        // int monIDCount = 1;
-
-        /* 고블린 */
-        monsterInfo
-                = new MonsterInfo(MonsterType.GOBLIN, GradeType.NORMAL, AttributeType.BLUE,
-                "Goblin", 1000f, 0f,
-                35f, 0.625f, 2.5f,
-                0f, 10f, 2.5f * 2f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-
-
-/*
-
-
-        */
-/* 고블린 파이터 *//*
-
-        monsterInfo
-                = new MonsterInfo(2, "Goblin Fighter",
-                250f, 25f,
-                300f, 40f, 0.625f, 150f,
-                3f, 150 * 4f, 250f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* 고블린 axe(?) *//*
-
-        monsterInfo
-                = new MonsterInfo(3, "Goblin Axe",
-                300f, 30f,
-                300f, 45f, 0.625f, 180f,
-                5f, 180 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* 고블린 bomb *//*
-
-        monsterInfo
-                = new MonsterInfo(4, "Goblin Bomb",
-                200f, 20f,
-                300f, 100f, 0.625f, 150f,
-                0f, 150 * 4f, 300f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* goblinshman (?) *//*
-
-        monsterInfo
-                = new MonsterInfo(5, "Goblinshman",
-                200f, 20f,
-                300f, 30f, 0.625f, 600f,
-                0f, 600 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* 오크(Orc) *//*
-
-        monsterInfo
-                = new MonsterInfo(6, "Orc",
-                300f, 30f,
-                300f, 30f, 0.625f, 150f,
-                3f, 150 * 4f, 250f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Orc Sword *//*
-
-        monsterInfo
-                = new MonsterInfo(7, "Orc Sword",
-                400f, 40f,
-                300f, 45f, 0.625f, 180f,
-                3f, 180 * 4f, 250f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Orc Axe *//*
-
-        monsterInfo
-                = new MonsterInfo(8, "Orc Axe",
-                450f, 45f,
-                300f, 50f, 0.625f, 180f,
-                5f, 180 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Orc Bow *//*
-
-        monsterInfo
-                = new MonsterInfo(9, "Orc Bow",
-                300f, 30f,
-                300f, 30f, 0.625f, 600f,
-                1f, 600 * 4f, 250f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* OgreGeneral *//*
-
-        monsterInfo
-                = new MonsterInfo(10, "OgreGeneral",
-                1000f, 100f,
-                300f, 80f, 0.625f, 180f,
-                10f, 180 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Mummy *//*
-
-        monsterInfo
-                = new MonsterInfo(11, "Mummy",
-                500f, 50f,
-                300f, 30f, 0.625f, 150f,
-                2f, 150 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Mummy Pharaoh *//*
-
-        monsterInfo
-                = new MonsterInfo(12, "Mummy Pharaoh",
-                800f, 80f,
-                300f, 70f, 0.625f, 150f,
-                3f, 150 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Mummy Pirate *//*
-
-        monsterInfo
-                = new MonsterInfo(13, "Mummy Pirate",
-                600f, 60f,
-                300f, 55f, 0.625f, 180f,
-                3f, 180 * 4f, 230f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Mummy Pumpkin *//*
-
-        monsterInfo
-                = new MonsterInfo(14, "Mummy Pumpkin",
-                700f, 70f,
-                300f, 50f, 0.625f, 150f,
-                5f, 150 * 4f, 200f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-
-        */
-/* Mummy Kettle *//*
-
-        monsterInfo
-                = new MonsterInfo(15, "Mummy Kettle",
-                900f, 90f,
-                300f, 60f, 0.625f, 150f,
-                8f, 150 * 4f, 250f);
-
-        monsterInfoTable.put(monsterInfo.monsterType, monsterInfo);
-*/
-
-    }
-
     /**
      * 2020 04 01 작성
      * GDM가 파일로부터 읽어들인 정보를 가져와 목록을 구성한다
@@ -288,83 +107,6 @@ public class MonsterFactory {
 
     }
 
-
-    /**
-     * <MonsterID, MonsterInfo> 맵의 info를 하나씩 읽어, MonsterEntity 객체로 만들어준다.
-     * 여기서 쓰이는 MonsterEntity는, 각 월드의 실제 몹 생성을 위한 틀로써 존재한다.
-     * 모든 게임월드가 공유함.
-     *
-     */
-    public static void convertMonsterInfoToEntity(){
-
-        for( HashMap.Entry<Integer, MonsterInfo> monsterInfoEntry : monsterInfoTable.entrySet() ){
-
-            MonsterInfo monsterInfo = monsterInfoEntry.getValue();
-
-            /** 몬스터 생성에 필요한 각 컴포넌트들 생성한다 */
-
-            /* Monster Component */
-            MonsterComponent monsterComponent
-                    = new MonsterComponent(monsterInfo.monsterType, monsterInfo.monsterName);
-
-            /* Position Component */
-            // 여기에 몬스터 (생성) 위치를 지정해줄 Vector3 클래스를 만들어서 넣어줄 수도 있을듯
-            PositionComponent positionComponent
-                    = new PositionComponent(11, 0f, -19);
-
-            /* HP Component */
-            HPComponent hpComponent
-                    = new HPComponent(monsterInfo.maxHP, monsterInfo.recoveryRateHP);
-
-            /* Attack Component */
-            AttackComponent attackComponent
-                    = new AttackComponent( monsterInfo.attackDamage, monsterInfo.attackSpeed, monsterInfo.attackRange);
-
-            /* Defense Component */
-            DefenseComponent defenseComponent
-                    = new DefenseComponent(monsterInfo.defense);
-
-            /* Sight Component */
-            SightComponent sightComponent
-                    = new SightComponent(monsterInfo.lookRadius);
-
-            /* Rotation Component */
-            // 하드코딩. Info에는 들어있지 않음
-            RotationComponent rotationComponent
-                    = new RotationComponent(0f, 0f);
-
-            /* Velocity Component */
-            VelocityComponent velocityComponent
-                    = new VelocityComponent(monsterInfo.moveSpeed);
-
-            /* BuffActionHistory Component */
-            BuffActionHistoryComponent buffActionHistoryComponent = new BuffActionHistoryComponent();
-
-            /* HpHistory Component */
-            HpHistoryComponent hpHistoryComponent = new HpHistoryComponent();
-
-            /* Condition Component */
-            ConditionComponent conditionComponent = new ConditionComponent();
-
-            /** 생성된 컴포넌트들을 가지고, 몬스터 Entity 객체를 만든다 */
-
-            /* Monster Entity */
-            int entityID = 0;   // ?? 어케 지정해주지.. 어디서 지정해주지
-            MonsterEntity monsterEntity
-                    = new MonsterEntity(positionComponent, monsterComponent, hpComponent,
-                            attackComponent, defenseComponent, sightComponent,
-                            rotationComponent, velocityComponent,
-                            buffActionHistoryComponent, hpHistoryComponent, conditionComponent);
-
-            monsterEntity.attribute = monsterInfo.monsterElemental;
-
-            /** 목록에 추가 */
-
-            monsterEntityTable.put(monsterInfo.monsterType, monsterEntity);
-
-        }
-
-    }
 
     public static void createMonsterEntityFromInfo(){
 
@@ -491,78 +233,6 @@ public class MonsterFactory {
     }
 
 
-    /** 2020 02 28 권령희 추가, 정글몬스터 관련 매서드 */
-
-    public static void readJungleMonsterInfo(){
-
-        MonsterInfo jungleMobInfo;
-
-        /* 인간형1 */
-        /*jungleMobInfo
-                = new MonsterInfo(JungleMobType.HUMAN1, GradeType.NORMAL, AttributeType.RED,
-                "인간형1", 5f, 500f,
-                0f, 50f, 0.625f,
-                3f, 5f, 10f, 1.5f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);*/
-
-        /* 인간형2 */
-        /*jungleMobInfo
-                = new MonsterInfo(JungleMobType.HUMAN2, GradeType.NORMAL, AttributeType.RED,
-                "인간형2", 5f, 500f,
-                0f, 50f, 0.625f,
-                3f, 5f, 10f, 1.5f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);*/
-
-        /* 인간형3 */
-        /*jungleMobInfo
-                = new MonsterInfo(JungleMobType.HUMAN3, GradeType.NORMAL, AttributeType.GREEN,
-                "인간형3", 5f, 500f, 0f,
-                50f, 0.625f, 3.0f,
-                5f, 10f, 1.5f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);*/
-
-        /* 인간형4 */
-        /*jungleMobInfo
-                = new MonsterInfo(JungleMobType.HUMAN4, GradeType.NORMAL, AttributeType.BLUE,
-                "인간형4", 5f,  500f, 0f,
-                50f, 0.625f, 3.0f,
-                5f, 10f, 1.5f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);*/
-
-        /* 도마뱀 */
-        jungleMobInfo
-                = new MonsterInfo(JungleMobType.LIZARD, GradeType.RARE, AttributeType.YELLOW,
-                "도마뱀", 5f, 1000f, 0f,
-                100f, 0.625f, 3.0f,
-                10f, 10f, 3f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);
-
-        /* 요정 */
-        jungleMobInfo
-                = new MonsterInfo(JungleMobType.FAIRY, GradeType.RARE, AttributeType.PINK,
-                "요정", 5f, 1000f, 0f,
-                100f, 0.625f, 3.0f,
-                10f, 10f, 3f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);
-
-        /* 용 */
-        jungleMobInfo
-                = new MonsterInfo(JungleMobType.DRAGON, GradeType.UNIQUE, AttributeType.SKY_BLUE,
-                "용", 5f, 3000f, 0f,
-                300f, 0.625f, 3.0f,
-                30f, 10f, 5f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);
-
-        /* 악마 */
-        jungleMobInfo
-                = new MonsterInfo(JungleMobType.DEVIL, GradeType.UNIQUE, AttributeType.SKY_BLUE,
-                "악마", 5f, 3000f, 0f,
-                300f, 0.625f, 3.0f,
-                30f, 10f, 5f);
-        jungleMonsterInfoTable.put(jungleMobInfo.monsterType, jungleMobInfo);
-
-    }
-
     /**
      * 2020 04 01 작성
      *
@@ -580,78 +250,6 @@ public class MonsterFactory {
         }
 
         jungleMonsterInfoTable = GameDataManager.jungleMonsterInfoList;
-
-    }
-
-    public static void convertJungleMonsterInfoToEntity(){
-
-        for( HashMap.Entry<Integer, MonsterInfo> monsterInfoEntry : jungleMonsterInfoTable.entrySet() ){
-
-            MonsterInfo monsterInfo = monsterInfoEntry.getValue();
-
-            /** 몬스터 생성에 필요한 각 컴포넌트들 생성한다 */
-
-            /* Monster Component */
-            MonsterComponent monsterComponent
-                    = new MonsterComponent(monsterInfo.monsterType, monsterInfo.monsterName);
-
-            /* Position Component */
-            PositionComponent positionComponent
-                    = new PositionComponent(new Vector3());
-
-            /* HP Component */
-            HPComponent hpComponent
-                    = new HPComponent(monsterInfo.maxHP, monsterInfo.recoveryRateHP);
-
-            /* Attack Component */
-            AttackComponent attackComponent
-                    = new AttackComponent( monsterInfo.attackDamage, monsterInfo.attackSpeed, monsterInfo.attackRange);
-
-            /* Defense Component */
-            DefenseComponent defenseComponent
-                    = new DefenseComponent(monsterInfo.defense);
-
-            /* Sight Component */
-            SightComponent sightComponent
-                    = new SightComponent(monsterInfo.lookRadius);
-
-            /* Rotation Component */
-            // 하드코딩. Info에는 들어있지 않음
-            RotationComponent rotationComponent
-                    = new RotationComponent(0f, 0f);
-
-            /* Velocity Component */
-            VelocityComponent velocityComponent
-                    = new VelocityComponent(monsterInfo.moveSpeed);
-
-            /* BuffActionHistory Component */
-            BuffActionHistoryComponent buffActionHistoryComponent = new BuffActionHistoryComponent();
-
-            /* HpHistory Component */
-            HpHistoryComponent hpHistoryComponent = new HpHistoryComponent();
-
-            /* Condition Component */
-            ConditionComponent conditionComponent = new ConditionComponent();
-
-            /** 생성된 컴포넌트들을 가지고, 몬스터 Entity 객체를 만든다 */
-
-            /* Monster Entity */
-            int entityID = 0;   // ?? 어케 지정해주지.. 어디서 지정해주지
-            MonsterEntity monsterEntity
-                    = new MonsterEntity(positionComponent, monsterComponent, hpComponent,
-                    attackComponent, defenseComponent, sightComponent,
-                    rotationComponent, velocityComponent,
-                    buffActionHistoryComponent, hpHistoryComponent, conditionComponent);
-
-            monsterEntity.attribute = monsterInfo.monsterElemental;
-
-            monsterEntity.team = Team.JUNGLE;
-
-            /** 목록에 추가 */
-
-            jungleMonsterEntityTable.put(monsterInfo.monsterType, monsterEntity);
-
-        }
 
     }
 
@@ -886,7 +484,6 @@ public class MonsterFactory {
     /**
      * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
      *
-     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
      */
     public static ConditionFloatParam createEffectParam(int attackType,  BuffInfo effectInfo, MonsterEntity monster){
 
@@ -1170,7 +767,7 @@ public class MonsterFactory {
          *      지금까지 플레에한 유저들의 게임 등급이 F를 벗어나지 않았다면 이런 문제는 애초에 발생하지 않았을 건데 말임??
          *       1. 스탯이 문제냐
          *       2. 통신이나 뭐 다른게 문제냐
-         *       같은 방에서 플레이할 때에도 두 기기의 중계 상황이 다른데, 이거는 또 뭐 때문이냐
+         *       같은 방에서 플레이할 때에도 두 기기의 중계 상황이 다른데, 이거는 또 뭐 때문이지
          *
          */
         //monsterAttack.attackRange *= statRate;

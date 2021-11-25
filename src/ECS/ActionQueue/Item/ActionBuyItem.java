@@ -19,7 +19,7 @@ public class ActionBuyItem extends ClientAction {
 
     /* 멤버 변수 */
     public int buyerEntityID;   // 아이템 구매자 캐릭터 ID
-    public int itemSlotNum;     // 이걸.. 구매 시점에 결정할 수 는 없을텐데?? 이미 해당 템을 가지고 있는 상황이라면 모를까
+    public int itemSlotNum;     // 이걸.. 구매 시점에 결정할 수 는 없을텐데 이미 해당 템을 가지고 있는 상황이라면 모를까
     public int itemID;          // 아이템에 할당된 ID.
                                 //      현재는 ItemType 클래스에 정의되어있는 값으로 쓰는데,
                                 //      나중에 '타입'이랑 'ID(고유번호)'랑 분리해야 할듯?

@@ -92,9 +92,7 @@ public class CharDataFromJS {
          * 오전 4:56 2020-04-07
          * 밸런스값 추가
          * 일단은 80 고정하기로 했으니까 이렇게 하고..
-         * 성준씨랑 이야기 해 보고? 웹서버에서 보내준다고 하면
-         * 그때 풀지 머.
-         * 근데.. 아마 DB도 새로 짜야할텐데, 밸런스 필드 추가하고 그래야할듯
+         * 성준씨랑 이야기 해 보고, 웹서버에서 보내준다고 하면 그때 풀것
          */
         this.balance = 80f;
         //this.balance = playerInfo.get("balance").getAsFloat();

@@ -39,40 +39,38 @@ public class BuffTurretSystem {
         }*/
 
         /* 버프타워 갯수만큼 반복한다 */
-        for(HashMap.Entry<Integer, BuffTurretEntity> buffTurretEntity : worldMap.buffTurretEntity.entrySet()){
+        for (HashMap.Entry<Integer, BuffTurretEntity> buffTurretEntity : worldMap.buffTurretEntity.entrySet()) {
 
             /* 타워의 버프 정보 */
             BuffTurretEntity buffTurret = buffTurretEntity.getValue();
             BuffComponent buff = buffTurret.buffComponent;
-            //BuffAction buffInfo = buff.buffActionInfo;
 
             /** 2020 04 03 */
             String effectName = "";
-            switch (buffTurret.turretComponent.turretType){
+            switch (buffTurret.turretComponent.turretType) {
 
-                case TurretType.BUFF_TURRET_DEFAULT :
+                case TurretType.BUFF_TURRET_DEFAULT:
 
                     effectName = "체력회복";
                     break;
 
-                case TurretType.BUFF_TURRET_TYPE1_UPGRADE1 :
-                case TurretType.BUFF_TURRET_TYPE1_UPGRADE2 :
-                case TurretType.BUFF_TURRET_TYPE1_UPGRADE3 :
-
+                case TurretType.BUFF_TURRET_TYPE1_UPGRADE1:
+                case TurretType.BUFF_TURRET_TYPE1_UPGRADE2:
+                case TurretType.BUFF_TURRET_TYPE1_UPGRADE3:
 
                     effectName = "마력회복";
                     break;
 
-                case TurretType.BUFF_TURRET_TYPE2_UPGRADE1 :
-                case TurretType.BUFF_TURRET_TYPE2_UPGRADE2 :
-                case TurretType.BUFF_TURRET_TYPE2_UPGRADE3 :
+                case TurretType.BUFF_TURRET_TYPE2_UPGRADE1:
+                case TurretType.BUFF_TURRET_TYPE2_UPGRADE2:
+                case TurretType.BUFF_TURRET_TYPE2_UPGRADE3:
 
                     effectName = "이동속도증가";
                     break;
 
-                case TurretType.BUFF_TURRET_TYPE3_UPGRADE1 :
-                case TurretType.BUFF_TURRET_TYPE3_UPGRADE2 :
-                case TurretType.BUFF_TURRET_TYPE3_UPGRADE3 :
+                case TurretType.BUFF_TURRET_TYPE3_UPGRADE1:
+                case TurretType.BUFF_TURRET_TYPE3_UPGRADE2:
+                case TurretType.BUFF_TURRET_TYPE3_UPGRADE3:
 
                     effectName = "체력회복";
                     break;
@@ -80,13 +78,12 @@ public class BuffTurretSystem {
             }
 
 
-
-            if( (buffTurret.hpComponent.currentHP <= 0)){
+            if ((buffTurret.hpComponent.currentHP <= 0)) {
                 continue;
             }
 
             /* 버프대상(캐릭터) 갯수만큼 반복한다 */
-            for(HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()){
+            for (HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()) {
 
                 CharacterEntity character = characterEntity.getValue();
 
@@ -102,30 +99,21 @@ public class BuffTurretSystem {
                 boolean isInTargetRange = false;
 
                 float targetHP = character.hpComponent.currentHP;
-                if( (currentDistance < buff.buffAreaRange) && targetHP > 0) {
+                if ((currentDistance < buff.buffAreaRange) && targetHP > 0) {
                     isInTargetRange = true;
-
-                    //System.out.println("타겟을 찾았습니다");
-
                 }
 
                 /** 대상이 버프 적용 범위에 위치한다면 */
-                if(isInTargetRange) {
+                if (isInTargetRange) {
 
-                    /**
-                     * 버프의 타겟 목록 배열을 list로 대체함.
-                     */
                     /* 버프적용 타겟으로 추가한다 */
-                    // buff.targetIDList[buff.targetIDList.length] = character.entityID;
                     buff.targetIDList.add(character.entityID);
-
                 }
-
             }
 
 
             /* 버프 타겟 갯수만큼 반복한다 */
-            for(int j=0; j<buff.targetIDList.size(); j++){
+            for (int j = 0; j < buff.targetIDList.size(); j++) {
 
                 /* 버프 대상 */
                 int targetID = buff.targetIDList.get(j);
@@ -135,39 +123,23 @@ public class BuffTurretSystem {
                 List<BuffAction> buffActionList = target.buffActionHistoryComponent.conditionHistory;
                 boolean targetHasBuffAlready = false;
 
-                BuffAction targetsBuffAction = new BuffAction();
-
                 /* 대상의 버프액션 갯수만큼 반복한다 */
-                for(int k=0; k<buffActionList.size(); k++){
+                for (int k = 0; k < buffActionList.size(); k++) {
 
-                    if(buffTurret.entityID == buffActionList.get(k).unitID){
-
-                        targetsBuffAction = buffActionList.get(k);
+                    if (buffTurret.entityID == buffActionList.get(k).unitID) {
 
                         targetHasBuffAlready = true;
                         break;
                     }
                 }
 
-                if(targetHasBuffAlready) { /** 대상이 이미 효과를 받고 있다면 */
+                if (targetHasBuffAlready) { /** 대상이 이미 효과를 받고 있다면 */
 
-                    //System.out.println("이미 버프포탑의 버프를 받고 있는 사용자");
-
-                    // buffInfo.remainTime = deltaTime;    // 버프 지속 남은 시간을 초기화해준다
-                    //targetsBuffAction.remainTime = deltaTime;
-                    //targetsBuffAction.remainTime = targetsBuffAction.buffDurationTime;
-
-                }
-                else{   /** 기존에 효과를 받고있지 않다면 */
-
-                    //System.out.println("버프포탑의 버프를 새로 추가해줍니다 ");
-
-                    /* 대상의 버프 목록에 추가해준다. */
-                    //BuffAction newBuff = (BuffAction) buffInfo.clone();
+                    // ~
+                } else {   /** 기존에 효과를 받고있지 않다면 */
 
                     // 죽은 애 넘어가기
-                    if( worldMap.checkUserIsDead(target)){
-
+                    if (worldMap.checkUserIsDead(target)) {
                         continue;
                     }
 
@@ -177,23 +149,27 @@ public class BuffTurretSystem {
 
                     newBuff.unitID = buffTurret.entityID;
 
-
                     /**
                      * 2019 12 23 월요일 추가
                      */
                     BuildSlot buildSlot = worldMap.buildSystem.findBuildSlotByEntityID(buffTurret.entityID);
-                    newBuff.skillUserID =  buildSlot.getBuilderEntityID();
-
+                    newBuff.skillUserID = buildSlot.getBuilderEntityID();
 
                     buffActionList.add(newBuff);
-                    // ㄴ깊은 복사가 이루어졌는지,, 테스트 필요할 듯.
                 }
             }   /* 버프타겟 수만큼 반복 끝 */
             buffTurret.buffComponent.targetIDList.clear();
 
         }   /* 버프타워 수만큼 반복 끝 */
-
     }
+}
+
+
+
+
+
+
+
 
 
 
@@ -281,5 +257,3 @@ public class BuffTurretSystem {
     }
 
     */
-
-}

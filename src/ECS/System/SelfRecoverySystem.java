@@ -61,25 +61,6 @@ public class SelfRecoverySystem {
 
                 /** 1초동안 지속되는 회복 버프를 넣어준다 */
 
-                /*BuffAction recoveryBuff = new BuffAction();
-                recoveryBuff.unitID = characterID;
-                recoveryBuff.skillUserID = characterID;
-
-                recoveryBuff.remainTime = 1f;
-                recoveryBuff.remainCoolTime = 0f;
-                recoveryBuff.coolTime = 1f;
-
-                float hpRecoveryAmount = character.hpComponent.recoveryRateHP * character.conditionComponent.hpRecoveryRate;
-                System.out.println("초당 체력회복량 : " + hpRecoveryAmount);
-                recoveryBuff.floatParam.add(new ConditionFloatParam(ConditionType.hpRecoveryAmount, hpRecoveryAmount));
-
-                float mpRecoveryAmount = character.mpComponent.recoveryRateMP * character.conditionComponent.mpRecoveryRate;
-                System.out.println("초당 마력회복량 : " + mpRecoveryAmount);
-                recoveryBuff.floatParam.add(new ConditionFloatParam(ConditionType.mpRecoveryAmount, mpRecoveryAmount));
-
-                character.buffActionHistoryComponent.conditionHistory.add(recoveryBuff);*/
-
-
                 character.buffActionHistoryComponent.conditionHistory.add(
                         createSystemActionEffect(
                                 SystemEffectType.SELF_RECOVERY, "체력회복", character, characterID));
@@ -160,10 +141,7 @@ public class SelfRecoverySystem {
                         createSystemActionEffect(
                                 SystemEffectType.SELF_RECOVERY, "체력회복", barricade.hpComponent.recoveryRateHP, barricadeID));
 
-
             }
-
-
 
 
             remainCoolTime = COOL_TIME;
@@ -203,7 +181,7 @@ public class SelfRecoverySystem {
 
 
 
-        // 하드코딩 타입 보정....ㅜ
+        // 하드코딩 타입 보정....
         int skillType = 0;
         if(type == SystemEffectType.WELL){
             skillType = SkillType.WELL_RECOVERY;
@@ -280,7 +258,7 @@ public class SelfRecoverySystem {
 
 
 
-        // 하드코딩 타입 보정....ㅜ
+        // 하드코딩 타입 보정...
         int skillType = 0;
         if(type == SystemEffectType.WELL){
             skillType = SkillType.WELL_RECOVERY;
@@ -381,8 +359,6 @@ public class SelfRecoverySystem {
 
     /**
      * 상태이상이 아닌 타입의 스킬 효과 이펙트를 생성하는 매서드
-     *
-     * 아 이름짓는거때문에 먼가 통일하고싶은데.. bool 이랑 param 이랑.. 그럴 여유는 없겟지..
      */
     public static ConditionFloatParam createEffectParam(int type,  BuffInfo effectInfo, CharacterEntity character){
 
@@ -408,8 +384,6 @@ public class SelfRecoverySystem {
             default :
 
                 effectValue = Float.parseFloat( GameDataManager.removePercentage(effectValueStr) );
-
-                //System.out.println("그 외 ; 이미 값이 정해져 있음. %나 파싱해");
                 break;
 
         }
@@ -470,7 +444,7 @@ public class SelfRecoverySystem {
      * 처    리 :
      *      ItemSlotSystem에서 필요로 하는 GDM 데이터는 다음과 같다
      *      -- (아이템) 효과 정보 목록
-     *      -- 파싱, %제거 매서드... >> 뭐 길지도 않고.. 중요한 처리도 아니니까? 그냥 일단 복붙해다가 쓰지머.
+     *      -- 파싱, %제거 매서드...
      *
      */
     public void getNeedDataFromGDM(){

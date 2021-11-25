@@ -58,7 +58,6 @@ public class JungleMonsterSystem {
             switch (slotState) {
 
                 case JungleMobState.EMPTY :
-//                    System.out.println(" EMPTY 상태 ");
 
                     /* 슬롯에 지정된 타입의 몬스터를 생성한다 */
                     createNewMonster(slot);
@@ -71,7 +70,6 @@ public class JungleMonsterSystem {
 
                 case JungleMobState.IDLE :
 
-//                    System.out.println("IDLE 상태 ");
                     /*
                      * 체력이 MAX 이하라면 체력을 회복한다 // 나중에 변경될지도 오후 9:51 2020-04-08
                      * 만약 IDLE 상태에 있다가 캐릭터로부터 데미지를 입는다면, 상태가 IDLE >> TARGET_INDICATE로 변하게 됨.
@@ -82,7 +80,6 @@ public class JungleMonsterSystem {
 
                 case JungleMobState.TARGET_INDICATE :
 
-//                    System.out.println("TARGET_INDICATE 상태 ");
                     /*
                      * 시야에 적이 있는지 검색한다
                      * if 없으면
@@ -110,7 +107,7 @@ public class JungleMonsterSystem {
                     CharacterEntity target = findTarget(slot);
                     if(target == null){
 
-//                        System.out.println("시야에 인식 가능한 대상이 없습니다 ");
+                        //System.out.println("시야에 인식 가능한 대상이 없습니다 ");
 
                         /** 인식 가능한 대상이 없는 경우, 귀환 모드로 들어간다 */
                         slot.setMonsterState(JungleMobState.RETURN_TO_SP);
@@ -127,14 +124,12 @@ public class JungleMonsterSystem {
 
                     monster.monsterComponent.targetID = target.entityID;
 
-//                    System.out.println("지정된 타겟 : " + target.entityID);
 
                     /** 타겟 추적 상태로 이동한다 */
                     slot.setMonsterState(JungleMobState.TARGET_TRACE);
                     // 타겟이 지정된 경우, break를 걸지 않고 바로 아래의 TRACE 처리를 이어나가도록 한다
 
                 case JungleMobState.TARGET_TRACE :
-//                    System.out.println(" TARGET_TRACE 상태 ");
 
                     /**
                      * 지정된 타겟을 추적하는 것이 가능한지 확인한다
@@ -158,8 +153,6 @@ public class JungleMonsterSystem {
                     isReturnCondition = ckeckMonsterReturningCondition(slot);
                     if(isReturnCondition){
 
-                        //System.out.println("귀환 조건을 만족하여 상태를 변경합니다. ");
-
                         slot.setMonsterState(JungleMobState.RETURN_TO_SP);
                         break;
                     }
@@ -172,7 +165,6 @@ public class JungleMonsterSystem {
                         //slot.reducePatience();
 
                         slot.setMonsterState(JungleMobState.TARGET_INDICATE);
-//                        System.out.println("타겟 추적이 불가능하므로 INDICATE로 상태변환함");
                         break;
                     }
 
@@ -180,20 +172,16 @@ public class JungleMonsterSystem {
                     if(targetIsInAttackRange){
 
                         slot.setMonsterState(JungleMobState.TARGET_ATTACK);
-//                        System.out.println("타겟 공격이 가능하므로 ATTACK로 상태변환함");
-                        // 타겟이 공격 가능한 범위 안에 있는 경우, 타겟 공격 단계로 바로 넘어간다
                     }
                     else{
 
-//                        System.out.println("아직 공격 불가능하므로, 이동추적 ");
                         /* 아직 타겟이 공격 범위에 들지 않은 경우, 타겟을 향해 이동한다 */
-                        moveToTargetPos(slot);  // ㅋㅋ... 왤케 불안하지
+                        moveToTargetPos(slot);
                         break;
                     }
 
                 case JungleMobState.TARGET_ATTACK :
 
-//                    System.out.println(" TARGET_ATTACK 상태 ");
                     /**
                      * 대상이 공격 가능한 거리에 있는지, 타게팅 가능한지 죽었는지 살아있는지 등을 체크한다
                      * if 범위 밖이라면
@@ -213,8 +201,6 @@ public class JungleMonsterSystem {
                     /** 귀환 조건을 먼저 체크 후, 조건을 만족한다면 상태를 변경한다 */
                     isReturnCondition = ckeckMonsterReturningCondition(slot);
                     if(isReturnCondition){
-
-                        //System.out.println("귀환 조건을 만족하여 상태를 변경합니다. ");
 
                         slot.setMonsterState(JungleMobState.RETURN_TO_SP);
                         break;
@@ -249,7 +235,6 @@ public class JungleMonsterSystem {
 
                 case JungleMobState.RETURN_TO_SP :
 
-//                    System.out.println(" RETURN_TO_SP 상태 ");
                     /**
                      * 현재 위치의 타일을 검사한다
                      * if SP에 속한 타일이라면? (목적지에 도달)
@@ -258,9 +243,6 @@ public class JungleMonsterSystem {
                      * else
                      *  길찾기 시전
                      *  ..해서 나온 첫 번째 칸을 목적지로 삼고 이동한다
-                     *      // 여기는 고정 위치에 대한 길찾기니까..
-                     *      // 그냥 루트 딱 박아놓고 따라가다가, 충돌했을 때에만 다시 길찾기 시전하게 해도 되기는 할듯
-                     *      // 근데 귀찮으니까 일단은 걍 계속 시전하게 하다가, 만~약에 부하가 걸린다 싶으면 그 때 개선하던지.
                      * break;
                      */
 
@@ -279,7 +261,6 @@ public class JungleMonsterSystem {
 
                 case JungleMobState.DIED :
 
-//                    System.out.println(" DIED 상태 ");
                     /**
                      * 부활시간 세팅해주기
                      * 상태변환 : DIED >> REGEN_WAITING
@@ -291,8 +272,6 @@ public class JungleMonsterSystem {
                     //break;
 
                 case JungleMobState.REGEN_WAITING :
-
-//                    System.out.println(" REGEN_WAITING 상태 ");
 
                     /**
                      * 리젠 쿨타임 체크함
@@ -318,17 +297,11 @@ public class JungleMonsterSystem {
                     }
                     else {
                         slot.reduceRemainedRegenTime(deltaTime);
-//                        System.out.println("남은 리젠시간 : " + slot.remainedRegenTime);
                     }
 
                     break;
-
             }
-
-
         }
-
-
 
     }
 
@@ -338,8 +311,6 @@ public class JungleMonsterSystem {
      *      나중에 뭐 몹이 죽은 횟수에 따라 더 강해진다거나 레벨이 올라간다거나.. 한다면 조금 고치긴 해야겠지만.
      */
     public void createNewMonster(JungleMonsterSlot slot){
-
-//        System.out.println("정글몹을 생성합니다");
 
         /** 몹을 생성함 */
         MonsterEntity newJungleMob = MonsterFactory.createJungleMonster(slot.jungleMobType, worldMap, slot.regenCount);
@@ -354,12 +325,8 @@ public class JungleMonsterSystem {
 
         /** 몹 위치를, 슬롯 위치랑 매칭시켜주고 */
         Vector3 spawnPos = slot.slotPoint.getPixelPosition();
-        //newJungleMob.positionComponent.position.set((Vector3) spawnPos.clone());
         newJungleMob.positionComponent.position.set(spawnPos.x(), spawnPos.y(), spawnPos.z());
 
-  /*      System.out.println("슬롯 위치 : " + spawnPos.x() + ", " + spawnPos.z());
-        System.out.println("몹 위치 : " + newJungleMob.positionComponent.position.x() + ", " + newJungleMob.positionComponent.position.z());
-*/
         /** 월드에도 매핑해주고 */
         worldMap.jungleMonsterSlotHashMap.put(newEntityID, slot);
         worldMap.jungleMonsterSlotMonsterEntityHashMap.put(slot, newJungleMob);
@@ -378,8 +345,6 @@ public class JungleMonsterSystem {
         PositionComponent monsterPos = monster.positionComponent;
         float monsterSight = monster.sightComponent.lookRadius;
 
-//        System.out.println("몹의 위치 : " + monsterPos.position.x() + ", " + monsterPos.position.z());
-
         float minDistance = monsterSight;   // 몬스터가 인지 가능한 거리를 시작으로, 제일 가까이 있는 녀석을 찾을 것임
         for(HashMap.Entry<Integer, CharacterEntity> characterEntity : worldMap.characterEntity.entrySet()){
 
@@ -394,9 +359,6 @@ public class JungleMonsterSystem {
             /* 대상과의 거리를 구한다 */
             PositionComponent targetPos = currentTarget.positionComponent;
             float currentDistance = Vector3.distance(monsterPos.position, targetPos.position);
-  //          System.out.println("타겟의 위치 : " + targetPos.position.x() + ", " + targetPos.position.z());
-
-    //        System.out.println("타겟과의 거리 : " + currentDistance);
 
             if(currentDistance <= minDistance){
 
@@ -417,7 +379,6 @@ public class JungleMonsterSystem {
      */
     public boolean checkIsAbleToTraceTarget(JungleMonsterSlot slot){
 
-        //System.out.println("checkIsAbleToTraceTarget");
         boolean ableToTrace = true;
 
         MonsterEntity monster = worldMap.monsterEntity.get(slot.monsterID);
@@ -440,7 +401,6 @@ public class JungleMonsterSystem {
             }
         }
 
-        //System.out.println("리턴값 : " + ableToTrace);
         return ableToTrace;
 
     }
@@ -476,9 +436,7 @@ public class JungleMonsterSystem {
 
         /* 몹 정보 */
         MonsterEntity monster = worldMap.monsterEntity.get(slot.monsterID);
-        if(monster == null){
-            //System.out.println("몹정보가 널.. moveToTargetPos");
-        }
+
         PositionComponent monsterPos = monster.positionComponent;
         Vector3 currentPos = monsterPos.position;
 
@@ -486,12 +444,7 @@ public class JungleMonsterSystem {
             return;
         }
 
-        /* 현재 위치가 속한 타일을 구하기 */
         MapInfo currentTile = MapFactory.findTileByPosition(worldMap.gameMap, currentPos.x(), currentPos.z());
-/*
-        System.out.println("몬스터 위치 : " + currentPos.x() + ", " + currentPos.z());
-        System.out.println("몬스터 위치 타일 : " + currentTile.arrayX + ", " + currentTile.arrayY);
-*/
 
         /* 타겟 정보 */
         CharacterEntity target = worldMap.characterEntity.get(monster.monsterComponent.targetID);
@@ -500,62 +453,37 @@ public class JungleMonsterSystem {
 
         /* 타겟이 속한 타일 찾기 */
         MapInfo targetTile = MapFactory.findTileByPosition(worldMap.gameMap, targetCurrentPos.x(), targetCurrentPos.z());
-/*
-        System.out.println("타겟 위치 : " + targetCurrentPos.x() + ", " + targetCurrentPos.z());
-        System.out.println("타겟 위치 타일 : " + targetTile.arrayX + ", " + targetTile.arrayY);
-*/
 
         /* 경로 구하기 */
         ArrayList<MapInfo> pathToTarget = MapFactory.pathFindForJungle(worldMap, currentTile, targetTile, target.entityID);
-//        System.out.println("경로 사이즈 : " + pathToTarget.size());
-        /*if(pathToTarget.get(1) == null){
-            System.out.println("또 널이냐.. moveToTargetPos");
-        }*/
         if(pathToTarget.size() == 1){
 
             /* 이동 처리하기 */
             moveTo(monster, pathToTarget.get(0));
-
         }
         else{
 
             /* 이동 처리하기 */
             moveTo(monster, pathToTarget.get(1));
-
         }
-
-
-        /* 이동 처리하기 */
-        //moveTo(monster, pathToTarget.get(1));
-
 
     }
 
 
     public void moveTo(MonsterEntity monster, MapInfo targetTile){
 
-        //System.out.println("moveTo");
         /* 몹 정보 */
         PositionComponent monsterPos = monster.positionComponent;
         Vector3 currentPos = monsterPos.position;
-        //System.out.println("몬스터 위치 : " + currentPos.x() + ", " + currentPos.z());
 
         float mobMoveSpeed = monster.velocityComponent.moveSpeed;
         float moveSpeedBonus = monster.conditionComponent.moveSpeedBonus;
         float moveSpeedRate = monster.conditionComponent.moveSpeedRate;
 
-        /*System.out.println("몬스터 속도 : " + mobMoveSpeed);
-        System.out.println("몬스터 속도보너스 : " + moveSpeedBonus);
-        System.out.println("몬스터 속도비율 : " + moveSpeedRate);
-
-        System.out.println("타겟 위치 : " + targetTile.getPixelPosition().x() + ", " +
-                targetTile.getPixelPosition().z());
-        System.out.println("타겟 위치 타일 : " + targetTile.arrayX + ", " + targetTile.arrayY);
-*/
         Vector3 targetPos = targetTile.getPixelPosition();
         Vector3 directionToTarget
                 = Vector3.normalizeVector(currentPos, targetPos);
-        //System.out.println("단위백터 : " + directionToTarget.x() + ", " + directionToTarget.z());
+
         float movementSpeedToTarget
                 = 0.1f * (mobMoveSpeed + moveSpeedBonus) * moveSpeedRate;
         Vector3 moveVectorToTarget
@@ -563,8 +491,6 @@ public class JungleMonsterSystem {
 
         Vector3 movementPosToTarget = (Vector3) currentPos.clone();
         movementPosToTarget.movePosition(movementPosToTarget, moveVectorToTarget);
-
-        //System.out.println("이동 위치 : " + movementPosToTarget.x() + ", " + movementPosToTarget.z());
 
         currentPos.set(movementPosToTarget);
 
@@ -606,7 +532,6 @@ public class JungleMonsterSystem {
         else{
             moveTo(monster, pathToTarget.get(1));
         }
-
 
     }
 
@@ -669,18 +594,12 @@ public class JungleMonsterSystem {
                 monster.entityID, (short)EntityType.CharacterEntity, target.entityID);
 
         /* 대상에게 데미지 버프를 넣어줌 */
-        /*ConditionFloatParam damageParam = new ConditionFloatParam(ConditionType.damageAmount, monsterAttack.attackDamage);
-        BuffAction damageBuff = SkillFactory.createDamageBuff(damageParam, monster.entityID, monster.entityID);
-        target.buffActionHistoryComponent.conditionHistory.add(damageBuff);
-*/
         target.buffActionHistoryComponent.conditionHistory.add(
                 MonsterFactory.createMonsterActionEffect(
                         MonsterActionType_ForEffect.MONSTER_ATTACK, "데미지", monster, monster.entityID));
 
-
         /* 공격 쿨타임을 초기화한다 */
         monster.attackComponent.remainCoolTime = 1 / monster.attackComponent.attackSpeed;
-
 
     }
 
@@ -742,16 +661,12 @@ public class JungleMonsterSystem {
      */
     public void regenMonster(JungleMonsterSlot slot){
 
-        //System.out.println("몸 리벤 처리 함 ");
-
         /** GDM 데이터 참조 */
         HashMap<Integer, MonsterInfo> jungleMonsterInfoList = GameDataManager.jungleMonsterInfoList;
         MonsterInfo jungleInfo;
 
         /** 다음에 생성될 정글 몬스터를 랜덤으로 결정한다 */
         int newType = worldMap.decideJungleMonsterToBeSpawned();
-        //System.out.println("기존 타입 : " + slot.jungleMobType);
-        //System.out.println("결정된 타입 : " + newType);
 
         /** 생성될 몹 타입을 슬롯에 지정한다 */
         jungleInfo = jungleMonsterInfoList.get(newType);
@@ -808,18 +723,15 @@ public class JungleMonsterSystem {
         /** 체력 검사 */
         //float HP_RATE_FOR_RETURNING = 30f;
         //boolean isHPLow = ( monsterHP.checkCurrentHpPercentage() < HP_RATE_FOR_RETURNING ) ? true : false;
-        //System.out.println("남은 체력 : " + monsterHP.checkCurrentHpPercentage());
 
         /** 인내심 테스트 */
         boolean isNoPatience = slot.checkMonsterIsNotPatient();
-        //System.out.println("인내심 : " + slot.patience);
 
         /** 너무 멀리왔나? */
         float distnaceFromSP =  Vector3.distance(new Vector3(spawnPoint.x(), 0, spawnPoint.z()),
                 new Vector3(monsterPos.x(), 0, monsterPos.z()));
 
         boolean isFarFromHome = (distnaceFromSP > monsterLookRadius) ? true : false;
-        //System.out.println("거리 : " + distnaceFromSP + ", 시야 : " + monsterLookRadius);
 
 
         /** 결과 판단 */
@@ -851,18 +763,13 @@ public class JungleMonsterSystem {
         boolean needRecovery = monsterHp.checkIfNeedHpRecovery();
         if(needRecovery){
 
-            //System.out.println("정글 회복 효과를 적용합니다 ");
-
             /** 회복효과 생성 및 적용 */
             monsterBuffList.conditionHistory.add(
                     MonsterFactory.createMonsterActionEffect(
                             MonsterActionType_ForEffect.JUNGLE_MOB_RETURN, "체력회복", monster, monster.entityID));
-
         }
 
-
         return;
-
     }
 
     /*******************************************************************************************************************/

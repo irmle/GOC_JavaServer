@@ -75,7 +75,8 @@ public class MapDataManager implements Cloneable {
 
     private static String mapPath(String name) {
         String mapname = null;
-        mapname = localPath + "/src/JSONFiles/Maps/"+name+ ".json";
+//        mapname = localPath + "/src/JSONFiles/Maps/"+name+ ".json";
+        mapname = localPath + "/JSONFiles/Maps/"+name+ ".json"; // 2021 10 06 테스트중
         return mapname;
     }
 
